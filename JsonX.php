@@ -3,7 +3,7 @@
  * An interface for any object that can be represented in JSON notation. The class 
  * follows the specifications found at https://www.json.org/index.html.
  * @author Ibrahim <ibinshikh@hotmail.com>
- * @since 1.1
+ * @since 1.2
  */
 class JsonX {
     /**
@@ -176,31 +176,36 @@ class JsonX {
             else{
                 $comma = ', ';
             }
-            $valueType = gettype($value[$x]);
-            if($valueType == 'integr' || $valueType == 'double'){
-                if(is_nan($value[$x])){
-                    $arr .= '"NAN"'.$comma;
-                }
-                else if($value[$x] == INF){
-                    $arr .= '"INF"'.$comma;
-                }
-                else{
-                    $arr .= $value[$x].$comma;
-                }
+            if($value[$x] instanceof JsonI){
+                $arr .= $value[$x]->toJSON().$comma;
             }
-            else if($valueType == 'string'){
-                $arr .= '"'.JsonX::escapeJSONSpecialChars($value[$x]).'"'.$comma;
-            }
-            else if($valueType == 'boolean'){
-                if($value[$x] == TRUE){
-                    $arr .= 'true'.$comma;
+            else{
+                $valueType = gettype($value[$x]);
+                if($valueType == 'integr' || $valueType == 'double'){
+                    if(is_nan($value[$x])){
+                        $arr .= '"NAN"'.$comma;
+                    }
+                    else if($value[$x] == INF){
+                        $arr .= '"INF"'.$comma;
+                    }
+                    else{
+                        $arr .= $value[$x].$comma;
+                    }
                 }
-                else{
-                    $arr .= 'false'.$comma;
+                else if($valueType == 'string'){
+                    $arr .= '"'.JsonX::escapeJSONSpecialChars($value[$x]).'"'.$comma;
                 }
-            }
-            else if($valueType == 'array'){
-                $arr .= $this->parseArray($value[$x]);
+                else if($valueType == 'boolean'){
+                    if($value[$x] == TRUE){
+                        $arr .= 'true'.$comma;
+                    }
+                    else{
+                        $arr .= 'false'.$comma;
+                    }
+                }
+                else if($valueType == 'array'){
+                    $arr .= $this->parseArray($value[$x]);
+                }
             }
         }
         $arr.= ']';
