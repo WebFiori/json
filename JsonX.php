@@ -68,17 +68,39 @@ class JsonX {
     /**
      * Adds an object to the JSON string.
      * @param string $key The key value.
-     * @param JsonI $val
-     * @return boolean <p>TRUE</b> if the object is added. f the given 
-     * value is an object that does not implement the interface <b>JsonI</b>
-     * or the key value is invalid string, the method 
+     * @param JsonI|Object $val The object that will be added.
+     * @return boolean <p>TRUE</b> if the object is added. If the given 
+     * value is an object that does not implement the interface <b>JsonI</b>, 
+     * The function will try to extract object information based on its public 
+     * functions. In that case, the generated JSON will be on the formate <b>{"prop-0":"prop-1","prop-n":"","":""}</b>. 
+     * If the key value is invalid string, the method 
      * will return <b>FALSE</b>.
      * @since 1.0
      */
     public function addObject($key, $val){
-        if($val instanceof JsonI){
-            $this->attributes[$key] = ''.$val->toJSON();
-            return TRUE;
+        if(gettype($val) == 'object'){
+            if(is_subclass_of($val, 'JsonI')){
+                $this->attributes[$key] = ''.$val->toJSON();
+                return TRUE;
+            }
+            else if($val instanceof JsonX){
+                $this->attributes[$key] = $val;
+            }
+            else{
+                $methods = get_class_methods($val);
+                $count = count($methods);
+                $json = new JsonX();
+                set_error_handler(function() {});
+                for($x = 0 ; $x < $count; $x++){
+                    $propVal = $val->$methods[$x]();
+                    if($propVal != NULL){
+                        $json->add('prop-'.$x, $propVal);
+                    }
+                }
+                $this->add($key, $json);
+                restore_error_handler();
+                return TRUE;
+            }
         }
         return FALSE;
     }
@@ -152,10 +174,21 @@ class JsonX {
         }
         return FALSE;
     }
+    /**
+     * Adds an array to the JSON.
+     * @param string $key The name of the key.
+     * @param array $value The array that will be added. If the given array 
+     * is indexed array, all values will be added as single entity (e.g. [1, 2, 3]). 
+     * If the array is associative, the values of the array will be added as 
+     * objects.
+     * @return boolean <b>FALSE</b> if the given key is invalid or the given value 
+     * is not an array.
+     */
     public function addArray($key, $value){
         if(JsonX::isValidKey($key)){
             if(gettype($value) == 'array'){
-                $this->attributes[$key] = $this->parseArray($value);
+                $this->attributes[$key] = $this->arrayToJSONString($value);
+                return TRUE;
             }
         }
         return FALSE;
@@ -166,45 +199,60 @@ class JsonX {
      * @return string A JSON string that represents the array.
      * @since 1.0
      */
-    private function parseArray($value){
+    private function arrayToJSONString($value){
+        $keys = array_keys($value);
+        $keysCount = count($keys);
         $arr = '[';
-        $count = count($value);
-        for($x = 0 ; $x < $count ; $x++){
-            if($x + 1 == $count){
+        for($x = 0 ; $x < $keysCount ; $x++){
+            if($x + 1 == $keysCount){
                 $comma = '';
             }
             else{
                 $comma = ', ';
             }
-            if($value[$x] instanceof JsonI){
-                $arr .= $value[$x]->toJSON().$comma;
+            $valueAtKey = $value[$keys[$x]];
+            $keyType = gettype($keys[$x]);
+            $valueType = gettype($valueAtKey);
+            //echo '$x = '.$x.'<br/>';
+            //echo '$keys[$x] = '.$keys[$x].'<br/>';
+            //echo '$valueAtKey = '.$valueAtKey.'</br>';
+            //echo '$keyType = '.$keyType.'<br/>';
+            //echo '$valueType = '.$valueType.'<br/><br/>';
+            if($valueAtKey instanceof JsonI){
+                $arr .= $valueAtKey->toJSON().$comma;
             }
             else{
-                $valueType = gettype($value[$x]);
-                if($valueType == 'integr' || $valueType == 'double'){
-                    if(is_nan($value[$x])){
-                        $arr .= '"NAN"'.$comma;
+                if($keyType == 'integer'){
+                    if($valueType == 'integer' || $valueType == 'double'){
+                        if(is_nan($valueAtKey)){
+                            $arr .= '"NAN"'.$comma;
+                        }
+                        else if($valueAtKey == INF){
+                            $arr .= '"INF"'.$comma;
+                        }
+                        else{
+                            $arr .= $valueAtKey.$comma;
+                        }
                     }
-                    else if($value[$x] == INF){
-                        $arr .= '"INF"'.$comma;
+                    else if($valueType == 'string'){
+                        $arr .= '"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                     }
-                    else{
-                        $arr .= $value[$x].$comma;
+                    else if($valueType == 'boolean'){
+                        if($valueAtKey == TRUE){
+                            $arr .= 'true'.$comma;
+                        }
+                        else{
+                            $arr .= 'false'.$comma;
+                        }
+                    }
+                    else if($valueType == 'array'){
+                        $arr .= $this->arrayToJSONString($valueAtKey);
                     }
                 }
-                else if($valueType == 'string'){
-                    $arr .= '"'.JsonX::escapeJSONSpecialChars($value[$x]).'"'.$comma;
-                }
-                else if($valueType == 'boolean'){
-                    if($value[$x] == TRUE){
-                        $arr .= 'true'.$comma;
-                    }
-                    else{
-                        $arr .= 'false'.$comma;
-                    }
-                }
-                else if($valueType == 'array'){
-                    $arr .= $this->parseArray($value[$x]);
+                else{
+                    $j = new JsonX();
+                    $j->add($keys[$x], $valueAtKey);
+                    $arr .= $j.$comma;
                 }
             }
         }
