@@ -121,14 +121,16 @@ class JsonX {
         return FALSE;
     }
     /**
-     * NOT IMPLEMENTED
-     * @param string $key
-     * @return type
+     * Returns a string that represents the value at the given key.
+     * @param string $key The value of the key.
+     * @return string | NULL The function will return a string that 
+     * represents the value. If the key does not exists,  the function will 
+     * return <b>NULL</b>.
+     * @since 1.2
      */
     public function get($key) {
-        $key = ''.$key;
-        if(strlen($key) != 0){
-            
+        if($this->hasKey($key)){
+            return $this->attributes[$key];
         }
         return NULL;
     }
