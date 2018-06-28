@@ -45,17 +45,41 @@ class JsonX {
      * @param mixed $value The value of the key. It can be an integer, a double, 
      * a string, an array or an object. If <b>NULL</b> is given, the method will 
      * set the value at the given key to null.
+     * @param array $options [Optional] An associative array of options. Currently, the 
+     * array has the following options: 
+     * <ul>
+     * <li><b>string-as-boolean</b>: A boolean value. If set to <b>TRUE</b> and 
+     * the given string represents a boolean value (like 'yes' or 'no'), 
+     * the string will be added as a boolean value. Default is <b>FALSE</b>.</li>
+     * <li><b>array-as-object</b>: A boolean value. If set to <b>TRUE</b>, 
+     * the array will be added as an object. Default is <b>FALSE</b>.</li>
+     * </ul>
      * @return boolean <b>TRUE</b> if the value is set. If the given value or key 
      * is invalid, the method will return <b>FALSE</b>.
      * @since 1.1
      */
-    public function add($key, $value){
+    public function add($key, $value, $options=array(
+        'string-as-boolean'=>false,
+        'array-as-object'=>false
+    )){
         if($value !== NULL){
-            return $this->addArray($key, $value) ||
+            if(isset($options['string-as-boolean'])){
+                $strAsbool = $options['string-as-boolean'] === TRUE ? TRUE : FALSE;
+            }
+            else{
+                $strAsbool = FALSE;
+            }
+            if(isset($options['array-as-object'])){
+                $arrAsObj = $options['array-as-object'] === TRUE ? TRUE : FALSE;
+            }
+            else{
+                $arrAsObj = FALSE;
+            }
+            return $this->addArray($key, $value, $arrAsObj) ||
             $this->addBoolean($key, $value) ||
             $this->addNumber($key, $value) || 
             $this->addObject($key, $value) ||
-            $this->addString($key, $value);
+            $this->addString($key, $value,$strAsbool);
         }
         else{
             if(JsonX::isValidKey($key)){
