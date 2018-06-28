@@ -105,14 +105,18 @@ class JsonX {
         return FALSE;
     }
     /**
-     * NOT IMPLEMENTED
-     * @param string $key
-     * @return boolean
+     * Checks if the current JsonX instance has the given key or not.
+     * @param string $key The value of the key.
+     * @return boolean The function will return <b>TRUE</b> if the 
+     * key exists. <b>FALSE</b> if not.
+     * @since 1.2
      */
     public function hasKey($key) {
         $key = ''.$key;
         if(strlen($key) != 0){
-            
+            if(isset($this->attributes[$key])){
+                return TRUE;
+            }
         }
         return FALSE;
     }
