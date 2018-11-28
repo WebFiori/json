@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 namespace jsonx;
 use jsonx\JsonI;
 /**
@@ -120,7 +121,7 @@ class JsonX {
      * the generated JSON string customizable. Also, the object can be of 
      * type JsonX. If the given value is an object that does not implement the 
      * interface JsonI or it is not of type JsonX, 
-     * The function will try to extract object information based on its public 
+     * The function will try to extract object information based on its "get" public 
      * functions. In that case, the generated JSON will be on the formate 
      * <b>{"prop-0":"prop-1","prop-n":"","":""}</b>.
      * @param string $key The key value.
@@ -144,9 +145,12 @@ class JsonX {
                 $json = new JsonX();
                 set_error_handler(function() {});
                 for($x = 0 ; $x < $count; $x++){
-                    $propVal = $val->$methods[$x]();
-                    if($propVal != NULL){
-                        $json->add('prop-'.$x, $propVal);
+                    $funcNm = substr($methods[$x], 0, 3);
+                    if(strtolower($funcNm) == 'get'){
+                        $propVal = call_user_func(array($val, $methods[$x]));
+                        if($propVal !== FALSE && $propVal !== NULL){
+                            $json->add('prop-'.$x, $propVal);
+                        }
                     }
                 }
                 $this->add($key, $json);
