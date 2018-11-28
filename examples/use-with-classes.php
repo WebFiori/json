@@ -8,7 +8,8 @@ error_reporting(-1);
 require_once '../JsonX.php';
 require_once '../JsonI.php';
 
-
+use jsonx\JsonX;
+use jsonx\JsonI;
 //defining a class user
 //in order for the class to be added in JsonX object,
 //it must implement the interface JsonI

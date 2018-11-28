@@ -7,6 +7,7 @@ error_reporting(-1);
 
 //load JsonX
 require_once '../JsonX.php';
+use jsonx\JsonX;
 
 //initialize an object of the class JsonX
 $j = new JsonX();
