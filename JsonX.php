@@ -1,14 +1,25 @@
 <?php
+namespace jsonx;
+use jsonx\JsonI;
 /**
- * An interface for any object that can be represented in JSON notation. The class 
- * follows the specifications found at https://www.json.org/index.html.
+ * An a class that can be used to create well formatted JSON strings. 
+ * The class follows the specifications found at https://www.json.org/index.html.
  * @author Ibrahim <ibinshikh@hotmail.com>
  * @since 1.2
  */
 class JsonX {
     /**
-     * An array of supported types.
-     * @var array An array of supported types.
+     * An array of supported JOSN data types. 
+     * The array has the following strings:
+     * <ul>
+     * <li>integer</li>
+     * <li>string</li>
+     * <li>double</li>
+     * <li>boolean</li>
+     * <li>NULL</li>
+     * <li>object</li>
+     * </ul>
+     * @var array An array of supported JOSN data types.
      * @since 1.0
      */
     const TYPES = array(
@@ -17,6 +28,16 @@ class JsonX {
     );
     /**
      * An array that contains JSON special characters.
+     * The array contains the following characters:
+     * <ul>
+     * <li>\</li>
+     * <li>/</li>
+     * <li>"</li>
+     * <li>\t</li>
+     * <li>\r</li>
+     * <li>\n</li>
+     * <li>\f</li>
+     * </ul>
      * @var array JSON special characters.
      * @since 1.0
      */
@@ -35,27 +56,31 @@ class JsonX {
     );
     /**
      * An array that contains JSON data.
+     * This array will store the keys as indices and every value will be at 
+     * each index.
      * @var array 
      * @since 1.0
      */
     private $attributes = array();
     /**
      * Adds a new value to the JSON string.
+     * This function can be used to add an integer, a double, 
+     * a string, an array or an object. If NULL is given, the method will 
+     * set the value at the given key to null. If the given value or key is 
+     * invalid, the function will not add the value and will return FALSE.
      * @param string $key The value of the key.
-     * @param mixed $value The value of the key. It can be an integer, a double, 
-     * a string, an array or an object. If <b>NULL</b> is given, the method will 
-     * set the value at the given key to null.
-     * @param array $options [Optional] An associative array of options. Currently, the 
+     * @param mixed $value The value of the key.
+     * @param array $options An associative array of options. Currently, the 
      * array has the following options: 
      * <ul>
-     * <li><b>string-as-boolean</b>: A boolean value. If set to <b>TRUE</b> and 
+     * <li><b>string-as-boolean</b>: A boolean value. If set to TRUE and 
      * the given string represents a boolean value (like 'yes' or 'no'), 
-     * the string will be added as a boolean value. Default is <b>FALSE</b>.</li>
-     * <li><b>array-as-object</b>: A boolean value. If set to <b>TRUE</b>, 
-     * the array will be added as an object. Default is <b>FALSE</b>.</li>
+     * the string will be added as a boolean value. Default is FALSE.</li>
+     * <li><b>array-as-object</b>: A boolean value. If set to TRUE, 
+     * the array will be added as an object. Default is FALSE.</li>
      * </ul>
-     * @return boolean <b>TRUE</b> if the value is set. If the given value or key 
-     * is invalid, the method will return <b>FALSE</b>.
+     * @return boolean The function will return TRUE if the value is set. 
+     * If the given value or key is invalid, the method will return FALSE.
      * @since 1.1
      */
     public function add($key, $value, $options=array(
@@ -82,7 +107,7 @@ class JsonX {
             $this->addString($key, $value,$strAsbool);
         }
         else{
-            if(JsonX::isValidKey($key)){
+            if(JsonX::_isValidKey($key)){
                 $this->attributes[$key] = 'null';
                 return TRUE;
             }
@@ -91,14 +116,17 @@ class JsonX {
     }
     /**
      * Adds an object to the JSON string.
-     * @param string $key The key value.
-     * @param JsonI|Object $val The object that will be added.
-     * @return boolean <p>TRUE</b> if the object is added. If the given 
-     * value is an object that does not implement the interface <b>JsonI</b>, 
+     * The object that will be added can implement the interface JsonI to make 
+     * the generated JSON string customizable. Also, the object can be of 
+     * type JsonX. If the given value is an object that does not implement the 
+     * interface JsonI or it is not of type JsonX, 
      * The function will try to extract object information based on its public 
-     * functions. In that case, the generated JSON will be on the formate <b>{"prop-0":"prop-1","prop-n":"","":""}</b>. 
-     * If the key value is invalid string, the method 
-     * will return <b>FALSE</b>.
+     * functions. In that case, the generated JSON will be on the formate 
+     * <b>{"prop-0":"prop-1","prop-n":"","":""}</b>.
+     * @param string $key The key value.
+     * @param JsonI|JsonX|Object $val The object that will be added.
+     * @return boolean The function will return TRUE if the object is added. 
+     * If the key value is invalid string, the function will return FALSE.
      * @since 1.0
      */
     public function addObject($key, $val){
@@ -131,8 +159,8 @@ class JsonX {
     /**
      * Checks if the current JsonX instance has the given key or not.
      * @param string $key The value of the key.
-     * @return boolean The function will return <b>TRUE</b> if the 
-     * key exists. <b>FALSE</b> if not.
+     * @return boolean The function will return TRUE if the 
+     * key exists. FALSE if not.
      * @since 1.2
      */
     public function hasKey($key) {
@@ -147,9 +175,9 @@ class JsonX {
     /**
      * Returns a string that represents the value at the given key.
      * @param string $key The value of the key.
-     * @return string | NULL The function will return a string that 
+     * @return string|NULL The function will return a string that 
      * represents the value. If the key does not exists,  the function will 
-     * return <b>NULL</b>.
+     * return NULL.
      * @since 1.2
      */
     public function get($key) {
@@ -180,17 +208,19 @@ class JsonX {
     }
     /**
      * Adds a number to the JSON data.
+     * Note that if the given number is the constant <b>INF</b> or the constant 
+     * <b>NAN</b>, The function will add them as a string.
      * @param string $key The name of the key.
-     * @param int|double $value The value of the key. Note that if the given 
-     * number is <b>INF</b> or <b>NAN</b>, The method will add them as a string.
-     * @return boolean <b>TRUE</b> in case the number is added. If the given 
-     * value is not a number or the key value is invalid string, the method 
-     * will return <b>FALSE</b>. 
+     * @param int|double $value The value of the key.
+     * @return boolean The function will return TRUE in case the number is 
+     * added. If the given value is not a number or the key value is invalid 
+     * string, the method 
+     * will return FALSE. 
      * @since 1.0
      */
     public function addNumber($key,$value){
         $val_type = gettype($value);
-        if(JsonX::isValidKey($key)){
+        if(JsonX::_isValidKey($key)){
             if($val_type == 'integer' || $val_type == 'double'){
                 if(is_nan($value)){
                     return $this->addString($key, 'NAN');
@@ -204,7 +234,7 @@ class JsonX {
         }
         return FALSE;
     }
-    private function stringAsBoolean($str){
+    private function _stringAsBoolean($str){
         $lower = strtolower($str);
         $boolTypes = array(
             't'=>TRUE,
@@ -227,15 +257,15 @@ class JsonX {
     /**
      * Adds a boolean value (true or false) to the JSON data.
      * @param string $key The name of the key.
-     * @param boolean $val [Optional] <b>TRUE</b> or <b>FALSE</b>. If not specified, 
-     * The default will be <b>TRUE</b>.
-     * @return boolean <b>TRUE</b> in case the value is set. If the given 
-     * value is not a boolean or the key value is invalid string, the method 
-     * will return <b>FALSE</b>.
+     * @param boolean $val TRUE or FALSE. If not specified, 
+     * The default will be TRUE.
+     * @return boolean The function will return TRUE in case the value is set. 
+     * If the given value is not a boolean or the key value is invalid string, 
+     * the method will return FALSE.
      * @since 1.0
      */
     public function addBoolean($key,$val=true){
-        if(JsonX::isValidKey($key)){
+        if(JsonX::_isValidKey($key)){
             if(gettype($val) == 'boolean'){
                 if($val == TRUE){
                     $this->attributes[$key] = 'true';
@@ -250,20 +280,20 @@ class JsonX {
     }
     /**
      * Adds an array to the JSON.
+     * If the given array is indexed array, all values will be added as single 
+     * entity (e.g. [1, 2, 3]). If the array is associative, the values of the 
+     * array will be added as objects.
      * @param string $key The name of the key.
-     * @param array $value The array that will be added. If the given array 
-     * is indexed array, all values will be added as single entity (e.g. [1, 2, 3]). 
-     * If the array is associative, the values of the array will be added as 
-     * objects.
-     * @param boolean $asObject [Optional] If this parameter is set to <b>TRUE</b>, 
-     * the array will be added as an object in JSON string. Default is <b>FALSE</b>.
-     * @return boolean <b>FALSE</b> if the given key is invalid or the given value 
-     * is not an array.
+     * @param array $value The array that will be added.
+     * @param boolean $asObject If this parameter is set to TRUE, 
+     * the array will be added as an object in JSON string. Default is FALSE.
+     * @return boolean The function will return FALSE if the given key is invalid 
+     * or the given value is not an array.
      */
     public function addArray($key, $value,$asObject=true){
-        if(JsonX::isValidKey($key)){
+        if(JsonX::_isValidKey($key)){
             if(gettype($value) == 'array'){
-                $this->attributes[$key] = $this->arrayToJSONString($value,$asObject);
+                $this->attributes[$key] = $this->_arrayToJSONString($value,$asObject);
                 return TRUE;
             }
         }
@@ -275,7 +305,7 @@ class JsonX {
      * @return string A JSON string that represents the array.
      * @since 1.0
      */
-    private function arrayToJSONString($value,$asObject=false){
+    private function _arrayToJSONString($value,$asObject=false){
         $keys = array_keys($value);
         $keysCount = count($keys);
         if($asObject === TRUE){
@@ -335,7 +365,7 @@ class JsonX {
                     }
                     else if($valueType == 'string'){
                         if($asObject === TRUE){
-                            $asBool = $this->stringAsBoolean($valueAtKey);
+                            $asBool = $this->_stringAsBoolean($valueAtKey);
                             if(gettype($asBool) == 'boolean'){
                                 $arr .= '"'.$keys[$x].'":"'. $asBool === TRUE ? 'true'.$comma : 'false'.$comma;
                             }
@@ -344,7 +374,7 @@ class JsonX {
                             }
                         }
                         else{
-                            $asBool = $this->stringAsBoolean($valueAtKey);
+                            $asBool = $this->_stringAsBoolean($valueAtKey);
                             if(gettype($asBool) == 'boolean'){
                                 $arr .= $asBool === true ? 'true'.$comma : 'false'.$comma;
                             }
@@ -373,10 +403,10 @@ class JsonX {
                     }
                     else if($valueType == 'array'){
                         if($asObject === TRUE){
-                            $arr .= '"'.$keys[$x].'":'.$this->arrayToJSONString($valueAtKey,$asObject).$comma;
+                            $arr .= '"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                         }
                         else{
-                            $arr .= '"'.$keys[$x].'":'.$this->arrayToJSONString($valueAtKey,$asObject).$comma;
+                            $arr .= '"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                         }
                     }
                 }
@@ -385,7 +415,7 @@ class JsonX {
                         $arr .= '"'.$keys[$x].'":';
                         $type = gettype($valueAtKey);
                         if($type == 'string'){
-                            $asBool = $this->stringAsBoolean($valueAtKey);
+                            $asBool = $this->_stringAsBoolean($valueAtKey);
                             if(gettype($asBool) == 'boolean'){
                                 $result = $asBool === TRUE ? 'true'.$comma : 'false'.$comma;
                                 $arr .= $result;
@@ -404,7 +434,7 @@ class JsonX {
                             $arr .= 'null'.$comma;
                         }
                         else if($type == 'array'){
-                            $result = $this->arrayToJSONString($valueAtKey, $asObject);
+                            $result = $this->_arrayToJSONString($valueAtKey, $asObject);
                             $arr .= $result.$comma;
                         }
                         else if($type == 'object'){
@@ -454,7 +484,7 @@ class JsonX {
      * @return boolean <b>TRUE</b> if the key is valid. False otherwise.
      * @since 1.0
      */
-    private static function isValidKey($key){
+    private static function _isValidKey($key){
         $key_type = gettype($key);
         return $key_type == 'string' && strlen($key) != 0;
     }
@@ -462,7 +492,8 @@ class JsonX {
      * Adds a new key to the JSON data with its value as string.
      * @param string $key The name of the key.
      * @param string $val The value of the string. Note that if the given string 
-     * is one of the following and the parameter <b>$toBool</b> is set to <b>TRUE</b>, it will be converted into boolean (case insensitive).
+     * is one of the following and the parameter <b>$toBool</b> is set to TRUE, 
+     * it will be converted into boolean (case insensitive).
      * <ul>
      * <li>yes => <b>TRUE</b></li>
      * <li>no => <b>FALSE</b></li>
@@ -476,18 +507,19 @@ class JsonX {
      * <li>off => <b>FALSE</b></li>
      * <li>ok => <b>TRUE</b></li>
      * </ul>
-     * @param boolean $toBool [Optional] If set to <b>TRUE</b> and the string represents a boolean 
-     * value, then the string will be added as a boolean. Default is <b>FALSE</b>.
-     * @return boolean <b>TRUE</b> in case the string is added. If the given value 
-     * is not a string or the given key is invalid, the method will return <b>FALSE</b>.
+     * @param boolean $toBool If set to TRUE and the string represents a boolean 
+     * value, then the string will be added as a boolean. Default is FALSE.
+     * @return boolean The function will return TRUE in case the string is added. 
+     * If the given value is not a string or the given key is invalid, the 
+     * method will return FALSE.
      * @since 1.0
      */
     public function addString($key, $val,$toBool=false){
-        if(JsonX::isValidKey($key)){
+        if(JsonX::_isValidKey($key)){
             if(gettype($val) == 'string'){
                 if($toBool === TRUE){
                     if($val != 'INV'){
-                        $boolVal = $this->stringAsBoolean($val);
+                        $boolVal = $this->_stringAsBoolean($val);
                         if($boolVal != 'INV'){
                             return $this->addBoolean($key, $boolVal);
                         }
@@ -501,8 +533,8 @@ class JsonX {
     }
     /**
     * Escape JSON special characters from string.
-    * @param string $string A value of one of JSON object properties. If it is 
-    * null,the method will return empty string.
+    * If the given string is NULL,the function will return empty string.
+    * @param string $string A value of one of JSON object properties. 
     * @return string An escaped version of the string.
     * @since 1.0
     */
