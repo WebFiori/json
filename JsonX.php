@@ -1,7 +1,5 @@
 <?php
-declare(strict_types = 1);
 namespace jsonx;
-use jsonx\JsonI;
 /**
  * An a class that can be used to create well formatted JSON strings. 
  * The class follows the specifications found at https://www.json.org/index.html.
