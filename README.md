@@ -1,4 +1,6 @@
 # jsonx
 A JSON helper classes for creating JSON strings in PHP.
 
-[![Build Status](https://travis-ci.org/usernane/jsonx.svg?branch=master)](https://travis-ci.org/usernane/jsonx)
+<p align="center">
+  <a href="https://travis-ci.org/usernane/jsonx"><img src="https://travis-ci.org/usernane/jsonx.svg?branch=master"></a>
+</p>
