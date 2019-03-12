@@ -1,0 +1,12 @@
+{
+    "name": "jsonx/jsonx",
+    "type": "library",
+    "description": "PHP library for creating well-formatted JSON strings.",
+    "keywords": [
+        "JSON","PHP"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.6"
+    }
+}
