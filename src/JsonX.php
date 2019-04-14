@@ -40,7 +40,7 @@ class JsonX {
      * <li>string</li>
      * <li>double</li>
      * <li>boolean</li>
-     * <li>null</li>
+     * <li>NULL</li>
      * <li>object</li>
      * </ul>
      * @var array An array of supported JOSN data types.
@@ -48,7 +48,7 @@ class JsonX {
      */
     const TYPES = array(
         'integer','string','double',
-        'boolean','array','null','object'
+        'boolean','array','NULL','object'
     );
     /**
      * An array that contains JSON special characters.
@@ -131,8 +131,9 @@ class JsonX {
             $this->addString($key, $value,$strAsbool);
         }
         else{
-            if(JsonX::_isValidKey($key)){
-                $this->attributes[$key] = 'null';
+            $keyValidated = JsonX::_isValidKey($key);
+            if($keyValidated !== false){
+                $this->attributes[$keyValidated] = 'null';
                 return true;
             }
         }
@@ -144,7 +145,7 @@ class JsonX {
      * the generated JSON string customizable. Also, the object can be of 
      * type JsonX. If the given value is an object that does not implement the 
      * interface JsonI or it is not of type JsonX, 
-     * The method will try to extract object information based on its "get" public 
+     * The method will try to extract object information based on its "getXxxxx()" public 
      * methods. In that case, the generated JSON will be on the formate 
      * <b>{"prop-0":"prop-1","prop-n":"","":""}</b>.
      * @param string $key The key value.
@@ -154,29 +155,32 @@ class JsonX {
      * @since 1.0
      */
     public function addObject($key, $val){
-        if(gettype($val) == 'object'){
+        $keyValidated = self::_isValidKey($key);
+        if($keyValidated !== false && gettype($val) == 'object'){
             if(is_subclass_of($val, 'jsonx\JsonI')){
-                $this->attributes[$key] = ''.$val->toJSON();
+                $this->attributes[$keyValidated] = ''.$val->toJSON();
                 return true;
             }
             else if($val instanceof JsonX){
-                $this->attributes[$key] = $val;
+                $this->attributes[$keyValidated] = $val;
             }
             else{
                 $methods = get_class_methods($val);
                 $count = count($methods);
                 $json = new JsonX();
+                $propNum = 0;
                 set_error_handler(function() {});
                 for($x = 0 ; $x < $count; $x++){
                     $funcNm = substr($methods[$x], 0, 3);
                     if(strtolower($funcNm) == 'get'){
                         $propVal = call_user_func(array($val, $methods[$x]));
                         if($propVal !== false && $propVal !== null){
-                            $json->add('prop-'.$x, $propVal);
+                            $json->add('prop-'.$propNum, $propVal);
+                            $propNum++;
                         }
                     }
                 }
-                $this->add($key, $json);
+                $this->add($keyValidated, $json);
                 restore_error_handler();
                 return true;
             }
@@ -191,7 +195,7 @@ class JsonX {
      * @since 1.2
      */
     public function hasKey($key) {
-        $key = ''.$key;
+        $key = trim($key);
         if(strlen($key) != 0){
             if(isset($this->attributes[$key])){
                 return true;
@@ -208,6 +212,7 @@ class JsonX {
      * @since 1.2
      */
     public function get($key) {
+        $key = trim($key);
         if($this->hasKey($key)){
             return $this->attributes[$key];
         }
@@ -247,15 +252,16 @@ class JsonX {
      */
     public function addNumber($key,$value){
         $val_type = gettype($value);
-        if(JsonX::_isValidKey($key)){
+        $keyValidated = self::_isValidKey($key);
+        if($keyValidated !== false){
             if($val_type == 'integer' || $val_type == 'double'){
                 if(is_nan($value)){
-                    return $this->addString($key, 'NAN');
+                    return $this->addString($keyValidated, 'NAN');
                 }
                 else if($value == INF){
-                    return $this->addString($key, 'INF');
+                    return $this->addString($keyValidated, 'INF');
                 }
-                $this->attributes[$key] = $value;
+                $this->attributes[$keyValidated] = $value;
                 return true;
             }
         }
@@ -292,13 +298,14 @@ class JsonX {
      * @since 1.0
      */
     public function addBoolean($key,$val=true){
-        if(JsonX::_isValidKey($key)){
+        $keyValidated = JsonX::_isValidKey($key);
+        if($keyValidated !== false){
             if(gettype($val) == 'boolean'){
                 if($val == true){
-                    $this->attributes[$key] = 'true';
+                    $this->attributes[$keyValidated] = 'true';
                 }
                 else{
-                    $this->attributes[$key] = 'false';
+                    $this->attributes[$keyValidated] = 'false';
                 }
                 return true;
             }
@@ -307,20 +314,18 @@ class JsonX {
     }
     /**
      * Adds an array to the JSON.
-     * If the given array is indexed array, all values will be added as single 
-     * entity (e.g. [1, 2, 3]). If the array is associative, the values of the 
-     * array will be added as objects.
      * @param string $key The name of the key.
      * @param array $value The array that will be added.
      * @param boolean $asObject If this parameter is set to true, 
-     * the array will be added as an object in JSON string. Default is false.
+     * the array will be added as an object in JSON string. Default is true.
      * @return boolean The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
     public function addArray($key, $value,$asObject=true){
-        if(JsonX::_isValidKey($key)){
+        $keyValidated = JsonX::_isValidKey($key);
+        if($keyValidated !== false){
             if(gettype($value) == 'array'){
-                $this->attributes[$key] = $this->_arrayToJSONString($value,$asObject);
+                $this->attributes[$keyValidated] = $this->_arrayToJSONString($value,$asObject);
                 return true;
             }
         }
@@ -436,6 +441,14 @@ class JsonX {
                             $arr .= '"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                         }
                     }
+                    else if($valueType == 'NULL'){
+                        if($asObject === true){
+                            $arr .= '"'.$keys[$x].'":'.'null'.$comma;
+                        }
+                        else{
+                            $arr .= 'null'.$comma;
+                        }
+                    }
                 }
                 else{
                     if($asObject === true){
@@ -457,7 +470,7 @@ class JsonX {
                         else if($type == 'boolean'){
                             $arr .= $valueAtKey === true ? 'true'.$comma : 'false'.$comma;
                         }
-                        else if($type == 'null'){
+                        else if($type == 'NULL'){
                             $arr .= 'null'.$comma;
                         }
                         else if($type == 'array'){
@@ -509,12 +522,16 @@ class JsonX {
      * Checks if the key is a valid key string.
      * The key is invalid if its an empty string.
      * @param string $key The key that will be validated.
-     * @return boolean true if the key is valid. False otherwise.
+     * @return boolean|string If the key is valid, it will be returned 
+     * after trimmed. If not valid, false is returned.
      * @since 1.0
      */
     private static function _isValidKey($key){
         $trimmedKey = trim($key);
-        return strlen($trimmedKey) != 0;
+        if(strlen($trimmedKey) != 0){
+            return $trimmedKey;
+        }
+        return false;
     }
     /**
      * Adds a new key to the JSON data with its value as string.
@@ -543,17 +560,18 @@ class JsonX {
      * @since 1.0
      */
     public function addString($key, $val,$toBool=false){
-        if(JsonX::_isValidKey($key)){
+        $keyValidated = JsonX::_isValidKey($key);
+        if($keyValidated !== false){
             if(gettype($val) == 'string'){
                 if($toBool === true){
                     if($val != 'INV'){
                         $boolVal = $this->_stringAsBoolean($val);
                         if($boolVal != 'INV'){
-                            return $this->addBoolean($key, $boolVal);
+                            return $this->addBoolean($keyValidated, $boolVal);
                         }
                     }
                 }
-                $this->attributes[$key] = '"'. JsonX::escapeJSONSpecialChars($val).'"';
+                $this->attributes[$keyValidated] = '"'. JsonX::escapeJSONSpecialChars($val).'"';
                 return true;
             }
         }
