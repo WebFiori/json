@@ -1,5 +1,6 @@
-# jsonx
-A JSON helper classes for creating JSON strings in PHP.
+# JsonX
+
+A JSON helper library for creating JSON strings in PHP. More information about JSON notation can be found at https://www.json.org/.
 
 <p align="center">
   <a href="https://travis-ci.org/usernane/jsonx"><img src="https://travis-ci.org/usernane/jsonx.svg?branch=master"></a>
@@ -10,15 +11,18 @@ A JSON helper classes for creating JSON strings in PHP.
     <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fprogrammingacademia.com%2Fwebfiori%2Fapis%2Fshields-get-dontate-badget">
   </a>
 </p>
-# Usage
+## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
-* Import the class "JsonX".
-* Create an instance of the class.
-* Add JSON data as needed.
-* Output the object using 'echo' command or any similar one.
-# Simple Example
+
+  * Import the class "JsonX".
+  * Create an instance of the class.
+  * Add JSON data as needed.
+  * Output the object using 'echo' command or any similar one.
+  
+## Simple Example
 The following code shows a very simple usage example.
-```
+
+```php
 //load the class JsonX
 require_once '../src/JsonX.php';
 use jsonx\JsonX;
