@@ -155,6 +155,32 @@ class JsonXTest extends TestCase{
     /**
      * @test
      */
+    public function testAdd08() {
+        $j = new JsonX();
+        $subJ = new JsonX();
+        $subJ->add('test', true);
+        $arr = array(
+            'hello'=>'world',
+            new Obj0('Nice', 'To', 99, INF, NAN),
+            array(4,1.7,true,null,'t','f'),
+            new Obj1('1', 'Hello', 'No', true, false),
+            $subJ,
+            array(array(new Obj0('p0', 'p1', 'p2', 'p3', 'p4'),$subJ,new Obj1('p0', 'p1', 'p2', 'p3', 'p4'))));
+        $j->add('big-array', $arr);
+        $this->assertEquals('{'
+                . '"big-array":[{"hello":"world"}, '
+                . '{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                . '[4, 1.7, true, null, true, false], '
+                . '{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
+                . '{"test":true}, '
+                . '[[{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                . '{"test":true}, '
+                . '{"property-00":"p0", "property-01":"p1", "property-02":"p2"}]]]'
+                . '}',$j->toJSONString());
+    }
+    /**
+     * @test
+     */
     public function testGetKeyValue00() {
         $j = new JsonX();
         $this->assertNull($j->get('not-exist'));
