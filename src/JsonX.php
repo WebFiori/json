@@ -411,8 +411,9 @@ class JsonX {
                     else if($valueType == 'string'){
                         if($asObject === true){
                             $asBool = $this->_stringAsBoolean($valueAtKey);
-                            if(gettype($asBool) == 'boolean'){
-                                $arr .= '"'.$keys[$x].'":"'. $asBool === true ? 'true'.$comma : 'false'.$comma;
+                            if($asBool === true || $asBool === false){
+                                $toAdd = $asBool === true ? 'true'.$comma : 'false'.$comma;
+                                $arr .= '"'.$keys[$x].'":'.$toAdd;
                             }
                             else{
                                 $arr .= '"'.$keys[$x].'":"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
@@ -420,8 +421,9 @@ class JsonX {
                         }
                         else{
                             $asBool = $this->_stringAsBoolean($valueAtKey);
-                            if(gettype($asBool) == 'boolean'){
-                                $arr .= $asBool === true ? 'true'.$comma : 'false'.$comma;
+                            if($asBool === true || $asBool === false){
+                                $toAdd = $asBool === true ? 'true'.$comma : 'false'.$comma;
+                                $arr .= $toAdd;
                             }
                             else{
                                 $arr .= '"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
@@ -464,7 +466,7 @@ class JsonX {
                     }
                     else if($valueType == 'object'){
                         if($asObject === true){
-                            if(is_subclass_of($valueAtKey, 'JsonI')){
+                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
                                 $arr .= '"'.$keys[$x].'":'.$valueAtKey->toJSON().$comma;
                             }
                             else if($valueAtKey instanceof JsonX){
@@ -490,7 +492,7 @@ class JsonX {
                             }
                         }
                         else{
-                            if(is_subclass_of($valueAtKey, 'JsonI')){
+                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
                                 $arr .= $valueAtKey->toJSON().$comma;
                             }
                             else if($valueAtKey instanceof JsonX){
@@ -523,7 +525,7 @@ class JsonX {
                         $type = gettype($valueAtKey);
                         if($type == 'string'){
                             $asBool = $this->_stringAsBoolean($valueAtKey);
-                            if(gettype($asBool) == 'boolean'){
+                            if($asBool === true || $asBool === false){
                                 $result = $asBool === true ? 'true'.$comma : 'false'.$comma;
                                 $arr .= $result;
                             }
@@ -545,21 +547,26 @@ class JsonX {
                             $arr .= $result.$comma;
                         }
                         else if($type == 'object'){
-                            if(is_subclass_of($valueAtKey, 'JsonI')){
+                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
                                 $arr .= $valueAtKey->toJSON().$comma;
                             }
                             else if($valueAtKey instanceof JsonX){
-                                $arr .= $valueAtKey;
+                                $arr .= $valueAtKey.$comma;
                             }
                             else{
                                 $methods = get_class_methods($valueAtKey);
                                 $count = count($methods);
                                 $json = new JsonX();
+                                $propNum = 0;
                                 set_error_handler(function() {});
-                                for($x = 0 ; $x < $count; $x++){
-                                    $propVal = $valueAtKey->$methods[$x]();
-                                    if($propVal != null){
-                                        $json->add('prop-'.$x, $propVal);
+                                for($y = 0 ; $y < $count; $y++){
+                                    $funcNm = substr($methods[$y], 0, 3);
+                                    if(strtolower($funcNm) == 'get'){
+                                        $propVal = call_user_func(array($valueAtKey, $methods[$y]));
+                                        if($propVal !== false && $propVal !== null){
+                                            $json->add('prop-'.$propNum, $propVal);
+                                            $propNum++;
+                                        }
                                     }
                                 }
                                 $arr .= $json.$comma;

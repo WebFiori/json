@@ -114,6 +114,40 @@ class JsonXTest extends TestCase{
     /**
      * @test
      */
+    public function testAdd07() {
+        $j = new JsonX();
+        $subJ = new JsonX();
+        $subJ->add('test', true);
+        $arr = array(
+            'hello'=>'world',
+            'null'=>null,
+            'boolean'=>true,
+            'number'=>665,
+            'str-as-bool'=>'f',
+            'object-0'=>new Obj0('Nice', 'To', 99, INF, NAN),
+            'array-0'=>array(4,1.7,true,null,'t','f'),
+            'object-1'=>new Obj1('1', 'Hello', 'No', true, false),
+            'jsonx-obj'=>$subJ,
+            'array-1'=>array(array(new Obj0('p0', 'p1', 'p2', 'p3', 'p4'),$subJ,new Obj1('p0', 'p1', 'p2', 'p3', 'p4'))));
+        $j->add('big-array', $arr,array('array-as-object'=>true));
+        $this->assertEquals('{'
+                . '"big-array":{"hello":"world", '
+                . '"null":null, '
+                . '"boolean":true, '
+                . '"number":665, '
+                . '"str-as-bool":false, '
+                . '"object-0":{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                . '"array-0":{"0":4, "1":1.7, "2":true, "3":null, "4":true, "5":false}, '
+                . '"object-1":{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
+                . '"jsonx-obj":{"test":true}, '
+                . '"array-1":{"0":{"0":{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                . '"1":{"test":true}, '
+                . '"2":{"property-00":"p0", "property-01":"p1", "property-02":"p2"}}}}'
+                . '}',$j->toJSONString());
+    }
+    /**
+     * @test
+     */
     public function testAdd06() {
         $j = new JsonX();
         $this->assertFalse($j->add('boolean','null',array('string-as-boolean'=>true)));
