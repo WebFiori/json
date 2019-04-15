@@ -5,8 +5,8 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 
 
-//load JsonX
-require_once '../JsonX.php';
+//load the class JsonX
+require_once '../src/JsonX.php';
 use jsonx\JsonX;
 
 //initialize an object of the class JsonX

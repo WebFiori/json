@@ -5,8 +5,8 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 
 //load required files
-require_once '../JsonX.php';
-require_once '../JsonI.php';
+require_once '../src/JsonX.php';
+require_once '../src/JsonI.php';
 
 use jsonx\JsonX;
 //defining a class user
