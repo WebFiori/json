@@ -1,6 +1,6 @@
 # JsonX
 
-A JSON helper library for creating JSON strings in PHP. More information about JSON notation can be found at https://www.json.org/.
+A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
 
 <p align="center">
   <a href="https://travis-ci.org/usernane/jsonx"><img src="https://travis-ci.org/usernane/jsonx.svg?branch=master"></a>
@@ -12,6 +12,8 @@ A JSON helper library for creating JSON strings in PHP. More information about J
   </a>
 </p>
 
+## API Docs
+This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://programmingacademia.com/webfiori/docs/jsonx.
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
