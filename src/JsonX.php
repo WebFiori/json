@@ -466,10 +466,7 @@ class JsonX {
                     }
                     else if($valueType == 'object'){
                         if($asObject === true){
-                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
-                                $arr .= '"'.$keys[$x].'":'.$valueAtKey->toJSON().$comma;
-                            }
-                            else if($valueAtKey instanceof JsonX){
+                            if($valueAtKey instanceof JsonX){
                                 $arr .= '"'.$keys[$x].'":'.$valueAtKey.$comma;
                             }
                             else{
@@ -492,10 +489,7 @@ class JsonX {
                             }
                         }
                         else{
-                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
-                                $arr .= $valueAtKey->toJSON().$comma;
-                            }
-                            else if($valueAtKey instanceof JsonX){
+                            if($valueAtKey instanceof JsonX){
                                 $arr .= $valueAtKey.$comma;
                             }
                             else{
@@ -547,10 +541,7 @@ class JsonX {
                             $arr .= $result.$comma;
                         }
                         else if($type == 'object'){
-                            if(is_subclass_of($valueAtKey, 'jsonx\JsonI')){
-                                $arr .= $valueAtKey->toJSON().$comma;
-                            }
-                            else if($valueAtKey instanceof JsonX){
+                            if($valueAtKey instanceof JsonX){
                                 $arr .= $valueAtKey.$comma;
                             }
                             else{
