@@ -11,18 +11,14 @@ A JSON helper classes for creating JSON strings in PHP.
   </a>
 </p>
 # Usage
-<p>
 The process of using the classes is very simple. What you have to do is the following steps:
-</p>
 * Import the class "JsonX".
 * Create an instance of the class.
 * Add JSON data as needed.
 * Output the object using 'echo' command or any similar one.
-#Simple Example
-<p>
+# Simple Example
 The following code shows a very simple usage example.
-</p>
-```php
+```
 //load the class JsonX
 require_once '../src/JsonX.php';
 use jsonx\JsonX;
