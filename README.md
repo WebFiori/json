@@ -11,6 +11,7 @@ A JSON helper library for creating JSON strings in PHP. More information about J
     <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fprogrammingacademia.com%2Fwebfiori%2Fapis%2Fshields-get-dontate-badget">
   </a>
 </p>
+
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
