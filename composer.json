@@ -1,5 +1,5 @@
 {
-    "name": "jsonx/jsonx",
+    "name": "webfiori/jsonx",
     "type": "library",
     "description": "PHP library for creating well-formatted JSON strings.",
     "keywords": [
