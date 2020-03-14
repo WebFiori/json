@@ -1,4 +1,5 @@
 <?php
+
 //show errors
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
@@ -14,22 +15,22 @@ use jsonx\JsonX;
 //implement the interface 'JsonI'.
 //In this case, the generated JSON object will contain
 //the information returmed by the public methods.
-class User{
-    private $username;
+class User {
     private $email;
-    
-    public function getEmail(){
+    private $username;
+
+    public function getEmail() {
         return $this->email;
     }
-    public function getUserName(){
+    public function getUserName() {
         return $this->username;
     }
-    public function setUsername($username){
-        $this->username = $username;
-    }
 
-    public function setEmail($email){
+    public function setEmail($email) {
         $this->email = $email;
+    }
+    public function setUsername($username) {
+        $this->username = $username;
     }
 }
 

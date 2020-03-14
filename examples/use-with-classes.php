@@ -1,4 +1,5 @@
 <?php
+
 //show errors
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
@@ -8,32 +9,33 @@ error_reporting(-1);
 require_once '../src/JsonX.php';
 require_once '../src/JsonI.php';
 
-use jsonx\JsonX;
 use jsonx\JsonI;
+use jsonx\JsonX;
 //defining a class user
 //in order for the class to be added in JsonX object,
 //it must implement the interface JsonI
-class User implements JsonI{
-    private $username;
+class User implements JsonI {
     private $email;
-    
-    public function getUserName(){
+    private $username;
+
+    public function getUserName() {
         return $this->username;
     }
-    public function setUsername($username){
-        $this->username = $username;
-    }
 
-    public function setEmail($email){
+    public function setEmail($email) {
         $this->email = $email;
+    }
+    public function setUsername($username) {
+        $this->username = $username;
     }
 
     //this function is from the interface JsonI
     // it must return JsonX object
-    public function toJSON(){
+    public function toJSON() {
         $retVal = new JsonX();
         $retVal->addString('username', $this->username);
         $retVal->addString('email', $this->email);
+
         return $retVal;
     }
 }
@@ -46,7 +48,7 @@ $json->addBoolean('my-boolean');
 $json->addObject('user', $user);
 
 //adding arrays
-$json->addArray('my-arr', array(1,2,"hello",array("nested array")));
+$json->addArray('my-arr', [1,2,"hello",["nested array"]]);
 
 header('content-type:application/json');
 //display json object in the browser.

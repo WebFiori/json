@@ -1,4 +1,5 @@
 <?php
+
 //show any errors
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
@@ -32,4 +33,3 @@ The output of the code will be like that:
 }
 */
 echo $j;
-
