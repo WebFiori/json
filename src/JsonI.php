@@ -23,6 +23,7 @@
  * THE SOFTWARE.
  */
 namespace jsonx;
+
 /**
  * An interface for the objects that can be added to an instance of JsonX.
  * @author Ibrahim 

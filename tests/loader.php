@@ -30,12 +30,12 @@ $testsDirName = 'tests';
 $rootDir = substr(__DIR__, 0, strlen(__DIR__) - strlen($testsDirName));
 $DS = DIRECTORY_SEPARATOR;
 $rootDirTrimmed = trim($rootDir,'/\\');
-echo 'Include Path: \''. get_include_path().'\''."\n";
-if(explode($DS, $rootDirTrimmed)[0] == 'home'){
+echo 'Include Path: \''.get_include_path().'\''."\n";
+
+if (explode($DS, $rootDirTrimmed)[0] == 'home') {
     //linux.
     $rootDir = $DS.$rootDirTrimmed.$DS;
-}
-else{
+} else {
     $rootDir = $rootDirTrimmed.$DS;
 }
 define('ROOT', $rootDir);
