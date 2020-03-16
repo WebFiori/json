@@ -191,288 +191,6 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
-    public function testFormat00() {
-        $j = new JsonX([],true);
-        $this->assertEquals("{\n}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat01() {
-        $j = new JsonX([],true);
-        $j->addBoolean('hello');
-        $this->assertEquals("{\n"
-                . '    "hello":true'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat02() {
-        $j = new JsonX([],true);
-        $j->addNumber('hello',66);
-        $this->assertEquals("{\n"
-                . '    "hello":66'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat03() {
-        $j = new JsonX([],true);
-        $j->addString('hello','world');
-        $j->addString('hello2','another string');
-        $this->assertEquals("{\n"
-                . '    "hello":"world", '."\n"
-                . '    "hello2":"another string"'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat04() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[]);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":['."\n"
-                . '    ]'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat05() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[1,2,3,4]);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":['."\n"
-                . '        1, '."\n"
-                . '        2, '."\n"
-                . '        3, '."\n"
-                . '        4'."\n"
-                . '    ]'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat06() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[[],["hello world"]]);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":['."\n"
-                . '        ['."\n"
-                . '        ], '."\n"
-                . '        ['."\n"
-                . '            "hello world"'."\n"
-                . '        ]'."\n"
-                . '    ]'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat07() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[[],["hello world",["another sub","with two elements"]]]);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":['."\n"
-                . '        ['."\n"
-                . '        ], '."\n"
-                . '        ['."\n"
-                . '            "hello world", '."\n"
-                . '            ['."\n"
-                . '                "another sub", '."\n"
-                . '                "with two elements"'."\n"
-                . '            ]'."\n"
-                . '        ]'."\n"
-                . '    ]'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat17() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',["my-j"=>new JsonX(),new JsonX(['hello'=>"world"])],true);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":{'."\n"
-                . '        "my-j":{'."\n"
-                . '        }, '."\n"
-                . '        "0":{'."\n"
-                . '            "hello":"world"'."\n"
-                . '        }'."\n"
-                . '    }'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat16() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[new JsonX(),new JsonX(['hello'=>"world"])]);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":['."\n"
-                . '        {'."\n"
-                . '        }, '."\n"
-                . '        {'."\n"
-                . '            "hello":"world"'."\n"
-                . '        }'."\n"
-                . '    ]'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat08() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[], true);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":{'."\n"
-                . '    }'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat09() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[1, 2, 3, "hello mr ali"], true);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":{'."\n"
-                . '        "0":1, '."\n"
-                . '        "1":2, '."\n"
-                . '        "2":3, '."\n"
-                . '        "3":"hello mr ali"'."\n"
-                . '    }'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat10() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',["is-good"=>"You are good", 2, 3, "hello mr ali",[],["a sub with element","hello"=>'world']], true);
-        $this->assertEquals("{\n"
-                . '    "hello-arr":{'."\n"
-                . '        "is-good":"You are good", '."\n"
-                . '        "0":2, '."\n"
-                . '        "1":3, '."\n"
-                . '        "2":"hello mr ali", '."\n"
-                . '        "3":{'."\n"
-                . '        }, '."\n"
-                . '        "4":{'."\n"
-                . '            "0":"a sub with element", '."\n"
-                . '            "hello":"world"'."\n"
-                . '        }'."\n"
-                . '    }'."\n"
-                . "}",$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat11() {
-        $j = new JsonX([],true);
-        $obj = new Obj1('Hello', 0, true, null, 'he');
-        $j->addObject('object', $obj);
-        $this->assertEquals('{'."\n"
-                . '    "object":{'."\n"
-                . '        "property-00":"Hello", '."\n"
-                . '        "property-01":0, '."\n"
-                . '        "property-02":true'."\n"
-                . '    }'."\n"
-                . '}',$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat12() {
-        $j = new JsonX([],true);
-        $obj = new Obj1('Hello', 0, true, null, 'he');
-        $j->addArray('array', [$obj]);
-        $this->assertEquals('{'."\n"
-                . '    "array":['."\n"
-                . '        {'."\n"
-                . '            "property-00":"Hello", '."\n"
-                . '            "property-01":0, '."\n"
-                . '            "property-02":true'."\n"
-                . '        }'."\n"
-                . '    ]'."\n"
-                . '}',$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat13() {
-        $j = new JsonX([],true);
-        $obj = new Obj1('Hello', 0, true, null, 'he');
-        $j->addArray('array', [$obj], true);
-        $this->assertEquals('{'."\n"
-                . '    "array":{'."\n"
-                . '        "0":{'."\n"
-                . '            "property-00":"Hello", '."\n"
-                . '            "property-01":0, '."\n"
-                . '            "property-02":true'."\n"
-                . '        }'."\n"
-                . '    }'."\n"
-                . '}',$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat14() {
-        $j = new JsonX([],true);
-        $obj = new Obj1('Hello', 0, true, null, 'he');
-        $j->addArray('array', ["my-obj"=>$obj,"empty-arr"=>[]], true);
-        $this->assertEquals('{'."\n"
-                . '    "array":{'."\n"
-                . '        "my-obj":{'."\n"
-                . '            "property-00":"Hello", '."\n"
-                . '            "property-01":0, '."\n"
-                . '            "property-02":true'."\n"
-                . '        }, '."\n"
-                . '        "empty-arr":{'."\n"
-                . '        }'."\n"
-                . '    }'."\n"
-                . '}',$j.'');
-    }
-    /**
-     * @test
-     */
-    public function testFormat15() {
-        $j = new JsonX([
-            "hello"=>"world",
-            'object'=>new Obj0('8', 7, '6', '5', 4),
-            'null'=>null,
-            'nan'=>NAN,
-            'inf'=>INF,
-            'bool'=>true,
-            'number'=>667,
-            'jsonx'=> new JsonX(['sub-json-x'=>new JsonX()])
-        ], true);
-        $this->assertEquals(''
-                . '{'."\n"
-                . '    "hello":"world", '."\n"
-                . '    "object":{'."\n"
-                . '        "prop-0":"8", '."\n"
-                . '        "prop-1":7, '."\n"
-                . '        "prop-2":"6", '."\n"
-                . '        "prop-3":4'."\n"
-                . '    }, '."\n"
-                . '    "null":null, '."\n"
-                . '    "nan":"NAN", '."\n"
-                . '    "inf":"INF", '."\n"
-                . '    "bool":true, '."\n"
-                . '    "number":667, '."\n"
-                . '    "jsonx":{'."\n"
-                . '        "sub-json-x":{}'."\n"
-                . '    }'."\n"
-                . '}'
-                . '',$j.'');
-    }
-    /**
-     * @test
-     */
     public function testAddArray01() {
         $j = new JsonX();
         $arr = [1,"Hello",true,NAN,null,99.8,INF];
@@ -582,6 +300,288 @@ class JsonXTest extends TestCase {
         $result = JsonX::escapeJSONSpecialChars($str);
         $this->assertEquals('\\\\tI\'m good. But \"YOU\" are \"Better\".\\\\r\\\\n'
                 .'\\\\An inline comment is good.',$result);
+    }
+    /**
+     * @test
+     */
+    public function testFormat00() {
+        $j = new JsonX([],true);
+        $this->assertEquals("{\n}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat01() {
+        $j = new JsonX([],true);
+        $j->addBoolean('hello');
+        $this->assertEquals("{\n"
+                .'    "hello":true'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat02() {
+        $j = new JsonX([],true);
+        $j->addNumber('hello',66);
+        $this->assertEquals("{\n"
+                .'    "hello":66'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat03() {
+        $j = new JsonX([],true);
+        $j->addString('hello','world');
+        $j->addString('hello2','another string');
+        $this->assertEquals("{\n"
+                .'    "hello":"world", '."\n"
+                .'    "hello2":"another string"'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat04() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[]);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":['."\n"
+                .'    ]'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat05() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[1,2,3,4]);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":['."\n"
+                .'        1, '."\n"
+                .'        2, '."\n"
+                .'        3, '."\n"
+                .'        4'."\n"
+                .'    ]'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat06() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[[],["hello world"]]);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":['."\n"
+                .'        ['."\n"
+                .'        ], '."\n"
+                .'        ['."\n"
+                .'            "hello world"'."\n"
+                .'        ]'."\n"
+                .'    ]'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat07() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[[],["hello world",["another sub","with two elements"]]]);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":['."\n"
+                .'        ['."\n"
+                .'        ], '."\n"
+                .'        ['."\n"
+                .'            "hello world", '."\n"
+                .'            ['."\n"
+                .'                "another sub", '."\n"
+                .'                "with two elements"'."\n"
+                .'            ]'."\n"
+                .'        ]'."\n"
+                .'    ]'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat08() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[], true);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":{'."\n"
+                .'    }'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat09() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[1, 2, 3, "hello mr ali"], true);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":{'."\n"
+                .'        "0":1, '."\n"
+                .'        "1":2, '."\n"
+                .'        "2":3, '."\n"
+                .'        "3":"hello mr ali"'."\n"
+                .'    }'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat10() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',["is-good" => "You are good", 2, 3, "hello mr ali",[],["a sub with element","hello" => 'world']], true);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":{'."\n"
+                .'        "is-good":"You are good", '."\n"
+                .'        "0":2, '."\n"
+                .'        "1":3, '."\n"
+                .'        "2":"hello mr ali", '."\n"
+                .'        "3":{'."\n"
+                .'        }, '."\n"
+                .'        "4":{'."\n"
+                .'            "0":"a sub with element", '."\n"
+                .'            "hello":"world"'."\n"
+                .'        }'."\n"
+                .'    }'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat11() {
+        $j = new JsonX([],true);
+        $obj = new Obj1('Hello', 0, true, null, 'he');
+        $j->addObject('object', $obj);
+        $this->assertEquals('{'."\n"
+                .'    "object":{'."\n"
+                .'        "property-00":"Hello", '."\n"
+                .'        "property-01":0, '."\n"
+                .'        "property-02":true'."\n"
+                .'    }'."\n"
+                .'}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat12() {
+        $j = new JsonX([],true);
+        $obj = new Obj1('Hello', 0, true, null, 'he');
+        $j->addArray('array', [$obj]);
+        $this->assertEquals('{'."\n"
+                .'    "array":['."\n"
+                .'        {'."\n"
+                .'            "property-00":"Hello", '."\n"
+                .'            "property-01":0, '."\n"
+                .'            "property-02":true'."\n"
+                .'        }'."\n"
+                .'    ]'."\n"
+                .'}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat13() {
+        $j = new JsonX([],true);
+        $obj = new Obj1('Hello', 0, true, null, 'he');
+        $j->addArray('array', [$obj], true);
+        $this->assertEquals('{'."\n"
+                .'    "array":{'."\n"
+                .'        "0":{'."\n"
+                .'            "property-00":"Hello", '."\n"
+                .'            "property-01":0, '."\n"
+                .'            "property-02":true'."\n"
+                .'        }'."\n"
+                .'    }'."\n"
+                .'}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat14() {
+        $j = new JsonX([],true);
+        $obj = new Obj1('Hello', 0, true, null, 'he');
+        $j->addArray('array', ["my-obj" => $obj,"empty-arr" => []], true);
+        $this->assertEquals('{'."\n"
+                .'    "array":{'."\n"
+                .'        "my-obj":{'."\n"
+                .'            "property-00":"Hello", '."\n"
+                .'            "property-01":0, '."\n"
+                .'            "property-02":true'."\n"
+                .'        }, '."\n"
+                .'        "empty-arr":{'."\n"
+                .'        }'."\n"
+                .'    }'."\n"
+                .'}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat15() {
+        $j = new JsonX([
+            "hello" => "world",
+            'object' => new Obj0('8', 7, '6', '5', 4),
+            'null' => null,
+            'nan' => NAN,
+            'inf' => INF,
+            'bool' => true,
+            'number' => 667,
+            'jsonx' => new JsonX(['sub-json-x' => new JsonX()])
+        ], true);
+        $this->assertEquals(''
+                .'{'."\n"
+                .'    "hello":"world", '."\n"
+                .'    "object":{'."\n"
+                .'        "prop-0":"8", '."\n"
+                .'        "prop-1":7, '."\n"
+                .'        "prop-2":"6", '."\n"
+                .'        "prop-3":4'."\n"
+                .'    }, '."\n"
+                .'    "null":null, '."\n"
+                .'    "nan":"NAN", '."\n"
+                .'    "inf":"INF", '."\n"
+                .'    "bool":true, '."\n"
+                .'    "number":667, '."\n"
+                .'    "jsonx":{'."\n"
+                .'        "sub-json-x":{}'."\n"
+                .'    }'."\n"
+                .'}'
+                .'',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat16() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',[new JsonX(),new JsonX(['hello' => "world"])]);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":['."\n"
+                .'        {'."\n"
+                .'        }, '."\n"
+                .'        {'."\n"
+                .'            "hello":"world"'."\n"
+                .'        }'."\n"
+                .'    ]'."\n"
+                ."}",$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testFormat17() {
+        $j = new JsonX([],true);
+        $j->addArray('hello-arr',["my-j" => new JsonX(),new JsonX(['hello' => "world"])],true);
+        $this->assertEquals("{\n"
+                .'    "hello-arr":{'."\n"
+                .'        "my-j":{'."\n"
+                .'        }, '."\n"
+                .'        "0":{'."\n"
+                .'            "hello":"world"'."\n"
+                .'        }'."\n"
+                .'    }'."\n"
+                ."}",$j.'');
     }
     /**
      * @test

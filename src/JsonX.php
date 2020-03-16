@@ -41,28 +41,6 @@ namespace jsonx;
  */
 class JsonX {
     /**
-     * New line character.
-     */
-    private $NL = "\n";
-    /**
-     * A number that represents the number of spaces in a tab.
-     * @var int
-     * @since 1.2.2 
-     */
-    private $tabSize;
-    /**
-     * The number of tabs that have been pressed.
-     * @var int
-     * @since 1.2.2 
-     */
-    private $currentTab;
-    /**
-     *
-     * @var string 
-     * @since 1.2.2
-     */
-    private $tabStr;
-    /**
      * An array that contains JSON special characters.
      * The array contains the following characters:
      * <ul>
@@ -117,6 +95,28 @@ class JsonX {
      */
     private $attributes = [];
     /**
+     * The number of tabs that have been pressed.
+     * @var int
+     * @since 1.2.2 
+     */
+    private $currentTab;
+    /**
+     * New line character.
+     */
+    private $NL = "\n";
+    /**
+     * A number that represents the number of spaces in a tab.
+     * @var int
+     * @since 1.2.2 
+     */
+    private $tabSize;
+    /**
+     *
+     * @var string 
+     * @since 1.2.2
+     */
+    private $tabStr;
+    /**
      * Creates new instance of the class.
      * @param array|string $initialData Initial data which is used to initialize 
      * the object. It can be a string which looks like JSON or it can be an 
@@ -127,55 +127,17 @@ class JsonX {
      * JSON will be indented and have new lines (readable).
      * @since 1.2.2
      */
-    public function __construct($initialData=[],$isFormatted=false) {
+    public function __construct($initialData = [],$isFormatted = false) {
         $this->currentTab = 0;
-        if($isFormatted === true){
+
+        if ($isFormatted === true) {
             $this->tabSize = 4;
             $this->NL = "\n";
-        }
-        else{
+        } else {
             $this->tabSize = 0;
             $this->NL = '';
         }
         $this->_initData($initialData);
-    }
-    /**
-     * 
-     * @return string
-     * @since 1.2.2
-     */
-    private function _getTab() {
-        $tabLen = $this->tabSize*$this->currentTab;
-        if(strlen($this->tabStr) != $tabLen){
-            $this->tabStr = '';
-            for($x = 0 ; $x < $tabLen ; $x++){
-                $this->tabStr .= ' ';
-            }
-        }
-        return $this->tabStr;
-    }
-    /**
-     * @since 1.2.2
-     */
-    private function _addTab() {
-        $this->currentTab++;
-    }
-    private function _reduceTab() {
-        if($this->currentTab > 0){
-            $this->currentTab--;
-        }
-    }
-    /**
-     * 
-     * @param array $data
-     * @since 1.2.2
-     */
-    private function _initData($data) {
-        if(gettype($data) == 'array'){
-            foreach ($data as $key => $value){
-                $this->add($key, $value);
-            }
-        }
     }
     /**
      * Returns the data on the object as a JSON string.
@@ -536,25 +498,35 @@ class JsonX {
         return $this.'';
     }
     /**
+     * @since 1.2.2
+     */
+    private function _addTab() {
+        $this->currentTab++;
+    }
+    /**
      * A helper method used to parse arrays.
      * @param array $value
      * @return string A JSON string that represents the array.
      * @since 1.0
      */
-    private function _arrayToJSONString($value,$asObject = false,$isSubArray=false) {
+    private function _arrayToJSONString($value,$asObject = false,$isSubArray = false) {
         $keys = array_keys($value);
         $keysCount = count($keys);
+
         if ($asObject === true) {
             $arr = '{'.$this->NL;
         } else {
             $arr = '['.$this->NL;
         }
-        if(!$isSubArray){
+
+        if (!$isSubArray) {
             $this->_addTab();
         }
-        if($keysCount > 0){
+
+        if ($keysCount > 0) {
             $this->_addTab();
         }
+
         for ($x = 0 ; $x < $keysCount ; $x++) {
             if ($x + 1 == $keysCount) {
                 $comma = ''.$this->NL;
@@ -574,6 +546,7 @@ class JsonX {
                 $jsonXObj->tabSize = $this->tabSize;
                 $jsonXObj->currentTab = $this->currentTab;
                 $jsonXObj->NL = $this->NL;
+
                 if ($asObject === true) {
                     $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($jsonXObj).$comma;
                 } else {
@@ -584,6 +557,7 @@ class JsonX {
                     $valueAtKey->tabSize = $this->tabSize;
                     $valueAtKey->currentTab = $this->currentTab;
                     $valueAtKey->NL = $this->NL;
+
                     if ($asObject === true) {
                         $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey).$comma;
                     } else {
@@ -815,18 +789,52 @@ class JsonX {
                 }
             }
         }
-        if($keysCount > 0){
+
+        if ($keysCount > 0) {
             $this->_reduceTab();
         }
+
         if ($asObject === true) {
             $arr .= $this->_getTab().'}';
         } else {
             $arr .= $this->_getTab().']';
         }
-        if(!$isSubArray){
+
+        if (!$isSubArray) {
             $this->_reduceTab();
         }
+
         return $arr;
+    }
+    /**
+     * 
+     * @return string
+     * @since 1.2.2
+     */
+    private function _getTab() {
+        $tabLen = $this->tabSize * $this->currentTab;
+
+        if (strlen($this->tabStr) != $tabLen) {
+            $this->tabStr = '';
+
+            for ($x = 0 ; $x < $tabLen ; $x++) {
+                $this->tabStr .= ' ';
+            }
+        }
+
+        return $this->tabStr;
+    }
+    /**
+     * 
+     * @param array $data
+     * @since 1.2.2
+     */
+    private function _initData($data) {
+        if (gettype($data) == 'array') {
+            foreach ($data as $key => $value) {
+                $this->add($key, $value);
+            }
+        }
     }
     /**
      * Checks if the key is a valid key string.
@@ -844,6 +852,11 @@ class JsonX {
         }
 
         return false;
+    }
+    private function _reduceTab() {
+        if ($this->currentTab > 0) {
+            $this->currentTab--;
+        }
     }
     private function _stringAsBoolean($str) {
         $lower = strtolower($str);
