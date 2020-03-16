@@ -17,17 +17,17 @@ This library is a part of <a href="https://github.com/usernane/webfiori">WebFior
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
-  * Import the class "JsonX".
+  * Import the class `JsonX`.
   * Create an instance of the class.
   * Add JSON data as needed.
-  * Output the object using 'echo' command or any similar one.
+  * Output the object using `echo` command or any similar one.
   
 ## Simple Example
 The following code shows a very simple usage example.
 
 ```php
 //load the class JsonX
-require_once '../src/JsonX.php';
+require_once 'JsonX.php';
 use jsonx\JsonX;
 
 //initialize an object of the class JsonX
