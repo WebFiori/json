@@ -37,9 +37,31 @@ namespace jsonx;
  * against the created instance.</li>
  * </ul>
  * @author Ibrahim
- * @since 1.2.1
+ * @since 1.2.2
  */
 class JsonX {
+    /**
+     * New line character.
+     */
+    private $NL = "\n";
+    /**
+     * A number that represents the number of spaces in a tab.
+     * @var int
+     * @since 1.2.2 
+     */
+    private $tabSize;
+    /**
+     * The number of tabs that have been pressed.
+     * @var int
+     * @since 1.2.2 
+     */
+    private $currentTab;
+    /**
+     *
+     * @var string 
+     * @since 1.2.2
+     */
+    private $tabStr;
     /**
      * An array that contains JSON special characters.
      * The array contains the following characters:
@@ -95,23 +117,86 @@ class JsonX {
      */
     private $attributes = [];
     /**
+     * Creates new instance of the class.
+     * @param array|string $initialData Initial data which is used to initialize 
+     * the object. It can be a string which looks like JSON or it can be an 
+     * associative array. If it is an associative array, then the keys will be 
+     * acting as properties and the value of each key will be the value of 
+     * the property.
+     * @param boolean $isFormatted If this attribute is set to true, the generated 
+     * JSON will be indented and have new lines (readable).
+     * @since 1.2.2
+     */
+    public function __construct($initialData=[],$isFormatted=false) {
+        $this->currentTab = 0;
+        if($isFormatted === true){
+            $this->tabSize = 4;
+            $this->NL = "\n";
+        }
+        else{
+            $this->tabSize = 0;
+            $this->NL = '';
+        }
+        $this->_initData($initialData);
+    }
+    /**
+     * 
+     * @return string
+     * @since 1.2.2
+     */
+    private function _getTab() {
+        $tabLen = $this->tabSize*$this->currentTab;
+        if(strlen($this->tabStr) != $tabLen){
+            $this->tabStr = '';
+            for($x = 0 ; $x < $tabLen ; $x++){
+                $this->tabStr .= ' ';
+            }
+        }
+        return $this->tabStr;
+    }
+    /**
+     * @since 1.2.2
+     */
+    private function _addTab() {
+        $this->currentTab++;
+    }
+    private function _reduceTab() {
+        if($this->currentTab > 0){
+            $this->currentTab--;
+        }
+    }
+    /**
+     * 
+     * @param array $data
+     * @since 1.2.2
+     */
+    private function _initData($data) {
+        if(gettype($data) == 'array'){
+            foreach ($data as $key => $value){
+                $this->add($key, $value);
+            }
+        }
+    }
+    /**
      * Returns the data on the object as a JSON string.
      * @return string
      */
     public function __toString() {
-        $retVal = '{';
+        $retVal = $this->_getTab().'{'.$this->NL;
+        $this->_addTab();
         $count = count($this->attributes);
         $index = 0;
 
         foreach ($this->attributes as $key => $val) {
             if ($index + 1 == $count) {
-                $retVal .= '"'.$key.'":'.$val;
+                $retVal .= $this->_getTab().'"'.$key.'":'.trim($val).$this->NL;
             } else {
-                $retVal .= '"'.$key.'":'.$val.', ';
+                $retVal .= $this->_getTab().'"'.$key.'":'.trim($val).', '.$this->NL;
             }
             $index++;
         }
-        $retVal .= '}';
+        $this->_reduceTab();
+        $retVal .= $this->_getTab().'}';
 
         return $retVal;
     }
@@ -188,11 +273,12 @@ class JsonX {
      * @param string $key The name of the key.
      * @param array $value The array that will be added.
      * @param boolean $asObject If this parameter is set to true, 
-     * the array will be added as an object in JSON string. Default is true.
+     * the array will be added as an object in JSON string. Note that if the 
+     * array is associative, each index will be added as an object. Default is false.
      * @return boolean The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
-    public function addArray($key, $value,$asObject = true) {
+    public function addArray($key, $value,$asObject = false) {
         $keyValidated = JsonX::_isValidKey($key);
 
         if ($keyValidated !== false) {
@@ -285,16 +371,25 @@ class JsonX {
 
         if ($keyValidated !== false && gettype($val) == 'object') {
             if (is_subclass_of($val, 'jsonx\JsonI')) {
-                $this->attributes[$keyValidated] = ''.$val->toJSON();
+                $jsonXObj = $val->toJSON();
+                $jsonXObj->currentTab = $this->currentTab + 1;
+                $jsonXObj->tabSize = $this->tabSize;
+                $jsonXObj->NL = $this->NL;
+                $this->attributes[$keyValidated] = ''.$jsonXObj;
 
                 return true;
             } else {
                 if ($val instanceof JsonX) {
+                    $val->currentTab = $this->currentTab + 1;
+                    $val->tabSize = $this->tabSize;
+                    $val->NL = $this->NL;
                     $this->attributes[$keyValidated] = $val;
                 } else {
                     $methods = get_class_methods($val);
                     $count = count($methods);
                     $json = new JsonX();
+                    $json->currentTab = $this->currentTab + 1;
+                    $json->tabSize = $this->tabSize;
                     $propNum = 0;
                     set_error_handler(function()
                     {
@@ -446,21 +541,25 @@ class JsonX {
      * @return string A JSON string that represents the array.
      * @since 1.0
      */
-    private function _arrayToJSONString($value,$asObject = false) {
+    private function _arrayToJSONString($value,$asObject = false,$isSubArray=false) {
         $keys = array_keys($value);
         $keysCount = count($keys);
-
         if ($asObject === true) {
-            $arr = '{';
+            $arr = '{'.$this->NL;
         } else {
-            $arr = '[';
+            $arr = '['.$this->NL;
         }
-
+        if(!$isSubArray){
+            $this->_addTab();
+        }
+        if($keysCount > 0){
+            $this->_addTab();
+        }
         for ($x = 0 ; $x < $keysCount ; $x++) {
             if ($x + 1 == $keysCount) {
-                $comma = '';
+                $comma = ''.$this->NL;
             } else {
-                $comma = ', ';
+                $comma = ', '.$this->NL;
             }
             $valueAtKey = $value[$keys[$x]];
             $keyType = gettype($keys[$x]);
@@ -471,39 +570,46 @@ class JsonX {
             //echo '$keyType = '.$keyType.'<br/>';
             //echo '$valueType = '.$valueType.'<br/><br/>';
             if ($valueAtKey instanceof JsonI) {
+                $jsonXObj = $valueAtKey->toJSON();
+                $jsonXObj->tabSize = $this->tabSize;
+                $jsonXObj->currentTab = $this->currentTab;
+                $jsonXObj->NL = $this->NL;
                 if ($asObject === true) {
-                    $arr .= '"'.$keys[$x].'":'.$valueAtKey->toJSON().$comma;
+                    $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($jsonXObj).$comma;
                 } else {
-                    $arr .= $valueAtKey->toJSON().$comma;
+                    $arr .= $this->_getTab().trim($jsonXObj).$comma;
                 }
             } else {
                 if ($valueAtKey instanceof JsonX) {
+                    $valueAtKey->tabSize = $this->tabSize;
+                    $valueAtKey->currentTab = $this->currentTab;
+                    $valueAtKey->NL = $this->NL;
                     if ($asObject === true) {
-                        $arr .= '"'.$keys[$x].'":'.$valueAtKey.$comma;
+                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey).$comma;
                     } else {
-                        $arr .= $valueAtKey.$comma;
+                        $arr .= $this->_getTab().trim($valueAtKey).$comma;
                     }
                 } else {
                     if ($keyType == 'integer') {
                         if ($valueType == 'integer' || $valueType == 'double') {
                             if ($asObject === true) {
                                 if (is_nan($valueAtKey)) {
-                                    $arr .= '"'.$keys[$x].'":"NAN"'.$comma;
+                                    $arr .= $this->_getTab().'"'.$keys[$x].'":"NAN"'.$comma;
                                 } else {
                                     if ($valueAtKey == INF) {
-                                        $arr .= '"'.$keys[$x].'":"INF"'.$comma;
+                                        $arr .= $this->_getTab().'"'.$keys[$x].'":"INF"'.$comma;
                                     } else {
-                                        $arr .= '"'.$keys[$x].'":'.$valueAtKey.$comma;
+                                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.$valueAtKey.$comma;
                                     }
                                 }
                             } else {
                                 if (is_nan($valueAtKey)) {
-                                    $arr .= '"NAN"'.$comma;
+                                    $arr .= $this->_getTab().'"NAN"'.$comma;
                                 } else {
                                     if ($valueAtKey == INF) {
-                                        $arr .= '"INF"'.$comma;
+                                        $arr .= $this->_getTab().'"INF"'.$comma;
                                     } else {
-                                        $arr .= $valueAtKey.$comma;
+                                        $arr .= $this->_getTab().$valueAtKey.$comma;
                                     }
                                 }
                             }
@@ -514,9 +620,9 @@ class JsonX {
 
                                     if ($asBool === true || $asBool === false) {
                                         $toAdd = $asBool === true ? 'true'.$comma : 'false'.$comma;
-                                        $arr .= '"'.$keys[$x].'":'.$toAdd;
+                                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.$toAdd;
                                     } else {
-                                        $arr .= '"'.$keys[$x].'":"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
+                                        $arr .= $this->_getTab().'"'.$keys[$x].'":"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                                     }
                                 } else {
                                     $asBool = $this->_stringAsBoolean($valueAtKey);
@@ -525,47 +631,53 @@ class JsonX {
                                         $toAdd = $asBool === true ? 'true'.$comma : 'false'.$comma;
                                         $arr .= $toAdd;
                                     } else {
-                                        $arr .= '"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
+                                        $arr .= $this->_getTab().'"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                                     }
                                 }
                             } else {
                                 if ($valueType == 'boolean') {
                                     if ($asObject === true) {
                                         if ($valueAtKey == true) {
-                                            $arr .= '"'.$keys[$x].'":true'.$comma;
+                                            $arr .= $this->_getTab().'"'.$keys[$x].'":true'.$comma;
                                         } else {
-                                            $arr .= '"'.$keys[$x].'":false'.$comma;
+                                            $arr .= $this->_getTab().'"'.$keys[$x].'":false'.$comma;
                                         }
                                     } else {
                                         if ($valueAtKey == true) {
-                                            $arr .= 'true'.$comma;
+                                            $arr .= $this->_getTab().'true'.$comma;
                                         } else {
-                                            $arr .= 'false'.$comma;
+                                            $arr .= $this->_getTab().'false'.$comma;
                                         }
                                     }
                                 } else {
                                     if ($valueType == 'array') {
                                         if ($asObject === true) {
-                                            $arr .= '"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
+                                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject,true).$comma;
                                         } else {
-                                            $arr .= $this->_arrayToJSONString($valueAtKey,$asObject).$comma;
+                                            $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject, true).$comma;
                                         }
                                     } else {
                                         if ($valueType == 'NULL') {
                                             if ($asObject === true) {
-                                                $arr .= '"'.$keys[$x].'":'.'null'.$comma;
+                                                $arr .= $this->_getTab().'"'.$keys[$x].'":'.'null'.$comma;
                                             } else {
-                                                $arr .= 'null'.$comma;
+                                                $arr .= $this->_getTab().'null'.$comma;
                                             }
                                         } else {
                                             if ($valueType == 'object') {
                                                 if ($asObject === true) {
                                                     if ($valueAtKey instanceof JsonX) {
-                                                        $arr .= '"'.$keys[$x].'":'.$valueAtKey.$comma;
+                                                        $valueAtKey->currentTab = $this->currentTab;
+                                                        $valueAtKey->tabSize = $this->tabSize;
+                                                        $valueAtKey->NL = $this->NL;
+                                                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey).$comma;
                                                     } else {
                                                         $methods = get_class_methods($valueAtKey);
                                                         $count = count($methods);
                                                         $json = new JsonX();
+                                                        $json->currentTab = $this->currentTab;
+                                                        $json->tabSize = $this->tabSize;
+                                                        $json->NL = $this->NL;
                                                         $propNum = 0;
                                                         set_error_handler(function()
                                                         {
@@ -583,15 +695,21 @@ class JsonX {
                                                                 }
                                                             }
                                                         }
-                                                        $arr .= '"'.$keys[$x].'":'.$json.$comma;
+                                                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json).$comma;
                                                     }
                                                 } else {
                                                     if ($valueAtKey instanceof JsonX) {
-                                                        $arr .= $valueAtKey.$comma;
+                                                        $valueAtKey->tabSize = $this->tabSize;
+                                                        $valueAtKey->currentTab = $this->currentTab;
+                                                        $valueAtKey->NL = $this->NL;
+                                                        $arr .= $this->_getTab().$valueAtKey.$comma;
                                                     } else {
                                                         $methods = get_class_methods($valueAtKey);
                                                         $count = count($methods);
                                                         $json = new JsonX();
+                                                        $json->currentTab = $this->currentTab;
+                                                        $json->tabSize = $this->tabSize;
+                                                        $json->NL = $this->NL;
                                                         $propNum = 0;
                                                         set_error_handler(function()
                                                         {
@@ -609,7 +727,7 @@ class JsonX {
                                                                 }
                                                             }
                                                         }
-                                                        $arr .= $json.$comma;
+                                                        $arr .= $this->_getTab().trim($json).$comma;
                                                     }
                                                 }
                                             }
@@ -620,7 +738,7 @@ class JsonX {
                         }
                     } else {
                         if ($asObject === true) {
-                            $arr .= '"'.$keys[$x].'":';
+                            $arr .= $this->_getTab().'"'.$keys[$x].'":';
                             $type = gettype($valueAtKey);
 
                             if ($type == 'string') {
@@ -643,16 +761,22 @@ class JsonX {
                                             $arr .= 'null'.$comma;
                                         } else {
                                             if ($type == 'array') {
-                                                $result = $this->_arrayToJSONString($valueAtKey, $asObject);
+                                                $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
                                                 $arr .= $result.$comma;
                                             } else {
                                                 if ($type == 'object') {
                                                     if ($valueAtKey instanceof JsonX) {
-                                                        $arr .= $valueAtKey.$comma;
+                                                        $valueAtKey->currentTab = $this->currentTab;
+                                                        $valueAtKey->tabSize = $this->tabSize;
+                                                        $valueAtKey->NL = $this->NL;
+                                                        $arr .= trim($valueAtKey).$comma;
                                                     } else {
                                                         $methods = get_class_methods($valueAtKey);
                                                         $count = count($methods);
                                                         $json = new JsonX();
+                                                        $json->currentTab = $this->currentTab;
+                                                        $json->tabSize = $this->tabSize;
+                                                        $json->NL = $this->NL;
                                                         $propNum = 0;
                                                         set_error_handler(function()
                                                         {
@@ -670,7 +794,7 @@ class JsonX {
                                                                 }
                                                             }
                                                         }
-                                                        $arr .= $json.$comma;
+                                                        $arr .= trim($json).$comma;
                                                     }
                                                 } else {
                                                     $arr .= 'null'.$comma;
@@ -682,6 +806,8 @@ class JsonX {
                             }
                         } else {
                             $j = new JsonX();
+                            $j->currentTab = $this->currentTab;
+                            $j->tabSize = $this->tabSize;
                             $j->add($keys[$x], $valueAtKey);
                             $arr .= $j.$comma;
                         }
@@ -689,13 +815,17 @@ class JsonX {
                 }
             }
         }
-
-        if ($asObject === true) {
-            $arr .= '}';
-        } else {
-            $arr .= ']';
+        if($keysCount > 0){
+            $this->_reduceTab();
         }
-
+        if ($asObject === true) {
+            $arr .= $this->_getTab().'}';
+        } else {
+            $arr .= $this->_getTab().']';
+        }
+        if(!$isSubArray){
+            $this->_reduceTab();
+        }
         return $arr;
     }
     /**
