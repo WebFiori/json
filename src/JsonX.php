@@ -76,6 +76,7 @@ class JsonX {
      * <li>string</li>
      * <li>double</li>
      * <li>boolean</li>
+     * <li>array</li>
      * <li>NULL</li>
      * <li>object</li>
      * </ul>
@@ -83,8 +84,13 @@ class JsonX {
      * @since 1.0
      */
     const TYPES = [
-        'integer','string','double',
-        'boolean','array','NULL','object'
+        'integer',
+        'string',
+        'double',
+        'boolean',
+        'array',
+        'NULL',
+        'object'
     ];
     /**
      * An array that contains JSON data.
@@ -159,9 +165,8 @@ class JsonX {
             $index++;
         }
         $this->_reduceTab();
-        $retVal .= $this->_getTab().'}';
-
-        return $retVal;
+        
+        return $retVal . $this->_getTab().'}';
     }
     /**
      * Adds a new value to the JSON string.
