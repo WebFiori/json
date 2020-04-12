@@ -124,13 +124,14 @@ class JsonX {
      * acting as properties and the value of each key will be the value of 
      * the property.
      * @param boolean $isFormatted If this attribute is set to true, the generated 
-     * JSON will be indented and have new lines (readable).
+     * JSON will be indented and have new lines (readable). Note that the parameter 
+     * will be ignored if the constant 'DEBUG' is defined and is set to true.
      * @since 1.2.2
      */
     public function __construct($initialData = [],$isFormatted = false) {
         $this->currentTab = 0;
 
-        if ($isFormatted === true) {
+        if ($isFormatted === true || (defined('DEBUG') && DEBUG === true)) {
             $this->tabSize = 4;
             $this->NL = "\n";
         } else {
