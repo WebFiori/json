@@ -10,9 +10,9 @@ before_script:
     - composer install --prefer-source --no-interaction --dev
 addons:
     sonarcloud:
-    organization: "usernane"
-    token:
-      secure: IfuFmGMCCQn6vGiol1A2KdYKn/bX6p9Db76E0gPbTJpqpKUujMgkikrh+2mP/iCk4yGq+T0oBehyqDlsxAXBCQ92qZOsTqSKLYEtfLJSuL4OFdgt0Bkm3hDOdM74+WgVeORcsquxjPvlOXqMmkv6gZEIrXsXn34h2AlrXghdbckorn70ZXaqEgTJ6x41hrc7hvmaNYhZYVhl2bS3RhA40Y7TkDa/CGP2/F0/CYd8Jx54ieOEywTTWZGpEhaGOOnjkuPr6aXXPlMXUt+t3wAHkMC4em5PBA8bEoZ3KGxLRcnidTRc2NqNK8RsflbsWG+45nRpin/cDdJ9igG5I6iJYRkxeEM2yReaCM8pumH5schmg41Cn5zkI6YP8HNBI+gnsTmfE99TfInx3v0MvH0OKudxUC4Ium8hxdCg961G1/2N0Fc8ovgE1nkVMiM6FAxPC9WQaVqQJ1Pj28U0STBBWO8aXRlhXdOnOLx+cnv2D9tbGD8Ghshp27490gr8tLtq/q1XDRGl/A2jRC2v9Lw0znIyrmEKjM0wxyNReTPMYrUIlvdJB+VNigxH5AK6P8EQKURSr2CGAt7StaNAi7Xf94/jQZ2QNrylqUEY8E4NmNLAxVJL73Eh8kBrOQgHDZXH4nftkcpXJuKXM+gF70w/juTXV/alxi5M49fuNkASj1U=
+        organization: "usernane"
+        token:
+          secure: IfuFmGMCCQn6vGiol1A2KdYKn/bX6p9Db76E0gPbTJpqpKUujMgkikrh+2mP/iCk4yGq+T0oBehyqDlsxAXBCQ92qZOsTqSKLYEtfLJSuL4OFdgt0Bkm3hDOdM74+WgVeORcsquxjPvlOXqMmkv6gZEIrXsXn34h2AlrXghdbckorn70ZXaqEgTJ6x41hrc7hvmaNYhZYVhl2bS3RhA40Y7TkDa/CGP2/F0/CYd8Jx54ieOEywTTWZGpEhaGOOnjkuPr6aXXPlMXUt+t3wAHkMC4em5PBA8bEoZ3KGxLRcnidTRc2NqNK8RsflbsWG+45nRpin/cDdJ9igG5I6iJYRkxeEM2yReaCM8pumH5schmg41Cn5zkI6YP8HNBI+gnsTmfE99TfInx3v0MvH0OKudxUC4Ium8hxdCg961G1/2N0Fc8ovgE1nkVMiM6FAxPC9WQaVqQJ1Pj28U0STBBWO8aXRlhXdOnOLx+cnv2D9tbGD8Ghshp27490gr8tLtq/q1XDRGl/A2jRC2v9Lw0znIyrmEKjM0wxyNReTPMYrUIlvdJB+VNigxH5AK6P8EQKURSr2CGAt7StaNAi7Xf94/jQZ2QNrylqUEY8E4NmNLAxVJL73Eh8kBrOQgHDZXH4nftkcpXJuKXM+gF70w/juTXV/alxi5M49fuNkASj1U=
       
 script:
     - phpunit --configuration phpunit.xml
