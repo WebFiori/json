@@ -249,12 +249,10 @@ class JsonX {
     public function addArray($key, $value,$asObject = false) {
         $keyValidated = JsonX::_isValidKey($key);
 
-        if ($keyValidated !== false) {
-            if (gettype($value) == self::TYPES[4]) {
-                $this->attributes[$keyValidated] = $this->_arrayToJSONString($value,$asObject);
+        if ($keyValidated !== false && gettype($value) == self::TYPES[4]) {
+            $this->attributes[$keyValidated] = $this->_arrayToJSONString($value,$asObject);
 
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -272,16 +270,14 @@ class JsonX {
     public function addBoolean($key,$val = true) {
         $keyValidated = JsonX::_isValidKey($key);
 
-        if ($keyValidated !== false) {
-            if (gettype($val) == self::TYPES[3]) {
-                if ($val == true) {
-                    $this->attributes[$keyValidated] = 'true';
-                } else {
-                    $this->attributes[$keyValidated] = 'false';
-                }
-
-                return true;
+        if ($keyValidated !== false && gettype($val) == self::TYPES[3]) {
+            if ($val == true) {
+                $this->attributes[$keyValidated] = 'true';
+            } else {
+                $this->attributes[$keyValidated] = 'false';
             }
+
+            return true;
         }
 
         return false;
@@ -302,19 +298,17 @@ class JsonX {
         $val_type = gettype($value);
         $keyValidated = self::_isValidKey($key);
 
-        if ($keyValidated !== false) {
-            if ($val_type == self::TYPES[0] || $val_type == self::TYPES[2]) {
-                if (is_nan($value)) {
-                    return $this->addString($keyValidated, 'NAN');
-                } else {
-                    if ($value == INF) {
-                        return $this->addString($keyValidated, 'INF');
-                    }
+        if ($keyValidated !== false && ($val_type == self::TYPES[0] || $val_type == self::TYPES[2])) {
+            if (is_nan($value)) {
+                return $this->addString($keyValidated, 'NAN');
+            } else {
+                if ($value == INF) {
+                    return $this->addString($keyValidated, 'INF');
                 }
-                $this->attributes[$keyValidated] = $value;
-
-                return true;
             }
+            $this->attributes[$keyValidated] = $value;
+
+            return true;
         }
 
         return false;
@@ -415,19 +409,17 @@ class JsonX {
     public function addString($key, $val,$toBool = false) {
         $keyValidated = JsonX::_isValidKey($key);
 
-        if ($keyValidated !== false) {
-            if (gettype($val) == self::TYPES[1]) {
-                if ($toBool === true) {
-                    $boolVal = $this->_stringAsBoolean($val);
+        if ($keyValidated !== false && gettype($val) == self::TYPES[1]) {
+            if ($toBool) {
+                $boolVal = $this->_stringAsBoolean($val);
 
-                    if ($boolVal === true || $boolVal === false) {
-                        return $this->addBoolean($keyValidated, $boolVal);
-                    }
-                } else {
-                    $this->attributes[$keyValidated] = '"'.JsonX::escapeJSONSpecialChars($val).'"';
-
-                    return true;
+                if ($boolVal === true || $boolVal === false) {
+                    return $this->addBoolean($keyValidated, $boolVal);
                 }
+            } else {
+                $this->attributes[$keyValidated] = '"'.JsonX::escapeJSONSpecialChars($val).'"';
+
+                return true;
             }
         }
 
