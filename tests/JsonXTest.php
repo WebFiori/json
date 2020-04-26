@@ -6,6 +6,16 @@ use jsonx\tests\Obj1;
 use PHPUnit\Framework\TestCase;
 
 class JsonXTest extends TestCase {
+    public function testAddMultiple00() {
+        $j = new JsonX();
+        $j->addMultiple([
+            'user-id'=>5,
+            'an-array'=>[1,2,3],
+            'float'=>1.6,
+            'bool'=>true
+        ]);
+        $this->assertEquals('{"user-id":5, "an-array":[1, 2, 3], "float":1.6, "bool":true}',$j.'');
+    }
     /**
      * @test
      */
