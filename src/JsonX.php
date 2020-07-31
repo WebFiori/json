@@ -26,8 +26,10 @@ namespace jsonx;
 
 /**
  * A class that can be used to create well formatted JSON strings. 
- * The class follows the specifications found at https://www.json.org/index.html.
  * 
+ * The class follows the specifications found at https://www.json.org/index.html.
+ * This class is useful in collecting server variables and sends them back as 
+ * JSON object to the clients that supports JSON.
  * The process of creating JSON strings using this class is as follows:
  * <ul>
  * <li>Create new instance of the class.</li>
@@ -61,6 +63,7 @@ class JsonX {
     ];
     /**
      * An array that contains JSON special characters.
+     * 
      * The array contains the following characters:
      * <ul>
      * <li>\</li>
@@ -71,7 +74,9 @@ class JsonX {
      * <li>\n</li>
      * <li>\f</li>
      * </ul>
+     * 
      * @var array JSON special characters.
+     * 
      * @since 1.0
      */
     const SPECIAL_CHARS = [
@@ -81,7 +86,9 @@ class JsonX {
     ];
     /**
      * An array that contains escaped JSON special characters.
+     * 
      * @var array escaped JSON special characters.
+     * 
      * @since 1.0
      */
     const SPECIAL_CHARS_ESC = [
@@ -89,6 +96,7 @@ class JsonX {
     ];
     /**
      * An array of supported JOSN data types. 
+     * 
      * The array has the following strings:
      * <ul>
      * <li>integer</li>
@@ -99,7 +107,9 @@ class JsonX {
      * <li>NULL</li>
      * <li>object</li>
      * </ul>
+     * 
      * @var array An array of supported JOSN data types.
+     * 
      * @since 1.0
      */
     const TYPES = [
@@ -113,9 +123,12 @@ class JsonX {
     ];
     /**
      * An array that contains JSON data.
+     * 
      * This array will store the keys as indices and every value will be at 
      * each index.
+     * 
      * @var array 
+     * 
      * @since 1.0
      */
     private $attributes = [];
@@ -128,7 +141,9 @@ class JsonX {
     ];
     /**
      * The number of tabs that have been pressed.
+     * 
      * @var int
+     * 
      * @since 1.2.2 
      */
     private $currentTab;
@@ -138,7 +153,9 @@ class JsonX {
     private $NL = "\n";
     /**
      * A number that represents the number of spaces in a tab.
+     * 
      * @var int
+     * 
      * @since 1.2.2 
      */
     private $tabSize;
@@ -195,7 +212,8 @@ class JsonX {
      * Another way to set the style that will be used by the instance is to 
      * define the global constant 'JSONX_PROP_STYLE' and set its value to 
      * the desired style. Note that the method will change already added properties 
-     * to the new style.
+     * to the new style. Also, it will override the style which is set using 
+     * the constant 'JSONX_PROP_STYLE'.
      * 
      * @param string $style The style that will be used. It can be one of the 
      * following values:
@@ -220,6 +238,7 @@ class JsonX {
     }
     /**
      * Returns the data on the object as a JSON string.
+     * 
      * @return string
      */
     public function __toString() {
@@ -242,12 +261,16 @@ class JsonX {
     }
     /**
      * Adds a new value to the JSON string.
+     * 
      * This method can be used to add an integer, a double, 
      * a string, an array or an object. If null is given, the method will 
      * set the value at the given key to null. If the given value or key is 
      * invalid, the method will not add the value and will return false.
+     * 
      * @param string $key The value of the key.
+     * 
      * @param mixed $value The value of the key.
+     * 
      * @param array $options An associative array of options. Currently, the 
      * array has the following options: 
      * <ul>
@@ -270,8 +293,10 @@ class JsonX {
      * <li><b>array-as-object</b>: A boolean value. If set to true, 
      * the array will be added as an object. Default is false.</li>
      * </ul>
+     * 
      * @return boolean The method will return true if the value is set. 
      * If the given value or key is invalid, the method will return false.
+     * 
      * @since 1.1
      */
     public function add($key, $value, $options = [
@@ -310,11 +335,15 @@ class JsonX {
     }
     /**
      * Adds an array to the JSON.
+     * 
      * @param string $key The name of the key.
+     * 
      * @param array $value The array that will be added.
+     * 
      * @param boolean $asObject If this parameter is set to true, 
      * the array will be added as an object in JSON string. Note that if the 
      * array is associative, each index will be added as an object. Default is false.
+     * 
      * @return boolean The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
@@ -331,12 +360,16 @@ class JsonX {
     }
     /**
      * Adds a boolean value (true or false) to the JSON data.
+     * 
      * @param string $key The name of the key.
+     * 
      * @param boolean $val true or false. If not specified, 
      * The default will be true.
+     * 
      * @return boolean The method will return true in case the value is set. 
      * If the given value is not a boolean or the key value is invalid string, 
      * the method will return false.
+     * 
      * @since 1.0
      */
     public function addBoolean($key,$val = true) {
@@ -356,8 +389,10 @@ class JsonX {
     }
     /**
      * Adds multiple values to the object.
+     * 
      * @param array $arr An associative array. The keys will act as object keys 
      * in JSON and the values of the keys will be the values in JSON.
+     * 
      * @since 1.2.3
      */
     public function addMultiple($arr) {
@@ -369,14 +404,19 @@ class JsonX {
     }
     /**
      * Adds a number to the JSON data.
+     * 
      * Note that if the given number is the constant <b>INF</b> or the constant 
      * <b>NAN</b>, The method will add them as a string.
+     * 
      * @param string $key The name of the key.
+     * 
      * @param int|double $value The value of the key.
+     * 
      * @return boolean The method will return true in case the number is 
      * added. If the given value is not a number or the key value is invalid 
      * string, the method 
      * will return false. 
+     * 
      * @since 1.0
      */
     public function addNumber($key,$value) {
@@ -398,6 +438,7 @@ class JsonX {
     }
     /**
      * Adds an object to the JSON string.
+     * 
      * The object that will be added can implement the interface JsonI to make 
      * the generated JSON string customizable. Also, the object can be of 
      * type JsonX. If the given value is an object that does not implement the 
@@ -405,10 +446,14 @@ class JsonX {
      * The method will try to extract object information based on its "getXxxxx()" public 
      * methods. In that case, the generated JSON will be on the formate 
      * <b>{"prop-0":"prop-1","prop-n":""}</b>.
+     * 
      * @param string $key The key value.
+     * 
      * @param JsonI|JsonX|object $val The object that will be added.
+     * 
      * @return boolean The method will return true if the object is added. 
      * If the key value is invalid string, the method will return false.
+     * 
      * @since 1.0
      */
     public function addObject($key, $val) {
@@ -441,7 +486,9 @@ class JsonX {
     }
     /**
      * Adds a new key to the JSON data with its value as string.
+     * 
      * @param string $key The name of the key. Must be non empty string.
+     * 
      * @param string $val The value of the string. Note that if the given string 
      * is one of the following and the parameter <b>$toBool</b> is set to true, 
      * it will be converted into boolean (case insensitive).
@@ -458,12 +505,15 @@ class JsonX {
      * <li>off => <b>false</b></li>
      * <li>ok => <b>true</b></li>
      * </ul>
+     * 
      * @param boolean $toBool If set to true and the string represents a boolean 
      * value, then the string will be added as a boolean. Default is false.
+     * 
      * @return boolean The method will return true in case the string is added. 
      * If the given value is not a string or the given key is invalid or the 
      * parameter <b>$toBool</b> is set to true and given string is not a boolean, the 
      * method will return false.
+     * 
      * @since 1.0
      */
     public function addString($key, $val,$toBool = false) {
@@ -488,8 +538,11 @@ class JsonX {
     /**
      * Escape JSON special characters from string.
      * If the given string is null,the method will return empty string.
+     * 
      * @param string $string A value of one of JSON object properties. 
+     * 
      * @return string An escaped version of the string.
+     * 
      * @since 1.0
      */
     public static function escapeJSONSpecialChars($string) {
@@ -512,10 +565,13 @@ class JsonX {
     }
     /**
      * Returns a string that represents the value at the given key.
+     * 
      * @param string $key The value of the key.
+     * 
      * @return string|null The method will return a string that 
      * represents the value. If the key does not exists,  the method will 
      * return null.
+     * 
      * @since 1.2
      */
     public function get($key) {
@@ -529,9 +585,12 @@ class JsonX {
     }
     /**
      * Checks if JsonX instance has the given key or not.
+     * 
      * @param string $key The name of the key.
+     * 
      * @return boolean The method will return true if the 
      * key exists. false if not.
+     * 
      * @since 1.2
      */
     public function hasKey($key) {
@@ -546,9 +605,9 @@ class JsonX {
     /**
      * Creates and returns a well formatted JSON string that will be created using 
      * provided data.
+     * 
      * @return string A well formatted JSON string that will be created using 
      * provided data.
-     * 
      */
     public function toJSONString() {
         return $this.'';
@@ -561,8 +620,11 @@ class JsonX {
     }
     /**
      * A helper method used to parse arrays.
+     * 
      * @param array $value
+     * 
      * @return string A JSON string that represents the array.
+     * 
      * @since 1.0
      */
     private function _arrayToJSONString($value,$asObject = false,$isSubArray = false) {
@@ -767,7 +829,9 @@ class JsonX {
     }
     /**
      * 
+     * 
      * @return string
+     * 
      * @since 1.2.2
      */
     private function _getTab() {
@@ -797,10 +861,14 @@ class JsonX {
     }
     /**
      * Checks if the key is a valid key string.
+     * 
      * The key is invalid if its an empty string.
+     * 
      * @param string $key The key that will be validated.
+     * 
      * @return boolean|string If the key is valid, it will be returned 
      * after trimmed. If not valid, false is returned.
+     * 
      * @since 1.0
      */
     private static function _isValidKey($key, $style='kebab') {
@@ -815,6 +883,7 @@ class JsonX {
     /**
      * 
      * @param type $valueAtKey
+     * 
      * @return \jsonx\JsonX
      */
     private function _objectToJson($valueAtKey) {
@@ -889,7 +958,9 @@ class JsonX {
     }
     /**
      * Convert the name of the prop name to the correct case.
+     * 
      * @param type $attr
+     * 
      * @return type
      */
     private static function _getAttrName($attr, $style) {

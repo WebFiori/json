@@ -36,7 +36,9 @@ interface JsonI {
      * This method can be implemented by any class that will be added  
      * to any JsonX instance. It is used to customize the generated 
      * JSON string.
+     * 
      * @return JsonX An instance of JsonX.
+     * 
      * @since 1.0
      */
     public function toJSON();
