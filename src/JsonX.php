@@ -424,6 +424,7 @@ class JsonX {
 
                 return true;
             } else if ($val instanceof JsonX) {
+                    $val->setPropsStyle($this->getPropStyle());
                     $val->currentTab = $this->currentTab + 1;
                     $val->tabSize = $this->tabSize;
                     $val->NL = $this->NL;
@@ -604,6 +605,7 @@ class JsonX {
                     $arr .= $this->_getTab().trim($jsonXObj).$comma;
                 }
             } else if ($valueAtKey instanceof JsonX) {
+                    $valueAtKey->setPropsStyle($this->getPropStyle());
                     $valueAtKey->tabSize = $this->tabSize;
                     $valueAtKey->currentTab = $this->currentTab;
                     $valueAtKey->NL = $this->NL;
@@ -681,6 +683,7 @@ class JsonX {
                 } else if ($valueType == self::TYPES[6]) {
                     if ($asObject) {
                         if ($valueAtKey instanceof JsonX) {
+                            $valueAtKey->setPropsStyle($this->getPropStyle());
                             $valueAtKey->currentTab = $this->currentTab;
                             $valueAtKey->tabSize = $this->tabSize;
                             $valueAtKey->NL = $this->NL;
@@ -690,6 +693,7 @@ class JsonX {
                             $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json).$comma;
                         }
                     } else if ($valueAtKey instanceof JsonX) {
+                        $valueAtKey->setPropsStyle($this->getPropStyle());
                         $valueAtKey->tabSize = $this->tabSize;
                         $valueAtKey->currentTab = $this->currentTab;
                         $valueAtKey->NL = $this->NL;
@@ -723,6 +727,7 @@ class JsonX {
                     $arr .= $result.$comma;
                 } else if ($type == self::TYPES[6]) {
                     if ($valueAtKey instanceof JsonX) {
+                        $valueAtKey->setPropsStyle($this->getPropStyle());
                         $valueAtKey->currentTab = $this->currentTab;
                         $valueAtKey->tabSize = $this->tabSize;
                         $valueAtKey->NL = $this->NL;
@@ -736,6 +741,7 @@ class JsonX {
                 }
             } else {
                 $j = new JsonX();
+                $j->setPropsStyle($this->getPropStyle());
                 $j->currentTab = $this->currentTab;
                 $j->tabSize = $this->tabSize;
                 $j->add($keys[$x], $valueAtKey);
@@ -815,6 +821,7 @@ class JsonX {
         $methods = get_class_methods($valueAtKey);
         $count = count($methods);
         $json = new JsonX();
+        $json->setPropsStyle($this->getPropStyle());
         $json->currentTab = $this->currentTab;
         $json->tabSize = $this->tabSize;
         $json->NL = $this->NL;
