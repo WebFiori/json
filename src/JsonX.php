@@ -36,10 +36,29 @@ namespace jsonx;
  * <li>To see the generated JSON, simply use the command 'echo' 
  * against the created instance.</li>
  * </ul>
+ * 
  * @author Ibrahim
- * @since 1.2.3
+ * 
+ * @since 1.2.4
  */
 class JsonX {
+    /**
+     * An array of supported property styles.
+     * 
+     * This array holds the following values:
+     * <ul>
+     * <li>camel</li>
+     * <li>kebab</li>
+     * <li>snake</li>
+     * </ul>
+     * 
+     * @since 1.2.4
+     */
+    const PROP_NAME_STYLES = [
+        'camel',
+        'kebab',
+        'snake'
+    ];
     /**
      * An array that contains JSON special characters.
      * The array contains the following characters:
@@ -130,28 +149,74 @@ class JsonX {
      */
     private $tabStr;
     /**
+     * The style of attribute name.
+     * 
+     * @var string 
+     * 
+     * @since 1.2.4
+     */
+    private $attrNameStyle;
+    /**
      * Creates new instance of the class.
+     * 
      * @param array|string $initialData Initial data which is used to initialize 
      * the object. It can be a string which looks like JSON or it can be an 
      * associative array. If it is an associative array, then the keys will be 
      * acting as properties and the value of each key will be the value of 
      * the property.
+     * 
      * @param boolean $isFormatted If this attribute is set to true, the generated 
      * JSON will be indented and have new lines (readable). Note that the parameter 
-     * will be ignored if the constant 'DEBUG' is defined and is set to true.
+     * will be ignored if the constant 'VERBOSE' is defined and is set to true.
+     * 
      * @since 1.2.2
      */
     public function __construct($initialData = [],$isFormatted = false) {
         $this->currentTab = 0;
 
-        if ($isFormatted === true || (defined('DEBUG') && DEBUG === true)) {
+        if ($isFormatted === true || (defined('VERBOSE') && VERBOSE === true)) {
             $this->tabSize = 4;
             $this->NL = "\n";
         } else {
             $this->tabSize = 0;
             $this->NL = '';
         }
+        $this->setPropsStyle('kebab');
+        
+        if (defined('JSONX_PROP_STYLE')) {
+            $this->setPropsStyle(JSONX_PROP_STYLE);
+        }
+        
         $this->_initData($initialData);
+    }
+    /**
+     * Sets the style at which the names of the properties will use.
+     * 
+     * Another way to set the style that will be used by the instance is to 
+     * define the global constant 'JSONX_PROP_STYLE' and set its value to 
+     * the desired style. Note that the method will change already added properties 
+     * to the new style.
+     * 
+     * @param string $style The style that will be used. It can be one of the 
+     * following values:
+     * <ul>
+     * <li>camel</li>
+     * <li>kebab</li>
+     * <li>snake</li>
+     * </ul>
+     * 
+     * @since 1.2.4
+     */
+    public function setPropsStyle($style) {
+        $trimmed = strtolower(trim($style));
+        
+        if (in_array($trimmed, self::PROP_NAME_STYLES)) {
+            $this->attrNameStyle = $trimmed;
+            foreach ($this->attributes as $key => $value) {
+                unset($this->attributes[$key]);
+                $this->attributes[self::_getAttrName($key, $trimmed)] = $value;
+            }
+        }
     }
     /**
      * Returns the data on the object as a JSON string.
@@ -232,7 +297,7 @@ class JsonX {
             $this->addNumber($key, $value) || 
             $this->addObject($key, $value);
         } else {
-            $keyValidated = JsonX::_isValidKey($key);
+            $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
             if ($keyValidated !== false) {
                 $this->attributes[$keyValidated] = 'null';
@@ -254,7 +319,7 @@ class JsonX {
      * or the given value is not an array.
      */
     public function addArray($key, $value,$asObject = false) {
-        $keyValidated = JsonX::_isValidKey($key);
+        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($value) == self::TYPES[4]) {
             $this->attributes[$keyValidated] = $this->_arrayToJSONString($value,$asObject);
@@ -275,7 +340,7 @@ class JsonX {
      * @since 1.0
      */
     public function addBoolean($key,$val = true) {
-        $keyValidated = JsonX::_isValidKey($key);
+        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[3]) {
             if ($val) {
@@ -316,7 +381,7 @@ class JsonX {
      */
     public function addNumber($key,$value) {
         $val_type = gettype($value);
-        $keyValidated = self::_isValidKey($key);
+        $keyValidated = self::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && ($val_type == self::TYPES[0] || $val_type == self::TYPES[2])) {
             if (is_nan($value)) {
@@ -347,7 +412,7 @@ class JsonX {
      * @since 1.0
      */
     public function addObject($key, $val) {
-        $keyValidated = self::_isValidKey($key);
+        $keyValidated = self::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[6]) {
             if (is_subclass_of($val, 'jsonx\JsonI')) {
@@ -401,7 +466,7 @@ class JsonX {
      * @since 1.0
      */
     public function addString($key, $val,$toBool = false) {
-        $keyValidated = JsonX::_isValidKey($key);
+        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[1]) {
             if ($toBool) {
@@ -732,11 +797,11 @@ class JsonX {
      * after trimmed. If not valid, false is returned.
      * @since 1.0
      */
-    private static function _isValidKey($key) {
+    private static function _isValidKey($key, $style='kebab') {
         $trimmedKey = trim($key);
 
         if (strlen($trimmedKey) != 0) {
-            return $trimmedKey;
+            return self::_getAttrName($trimmedKey, $style);
         }
 
         return false;
@@ -799,5 +864,75 @@ class JsonX {
         }
 
         return 'INV';
+    }
+    /**
+     * Returns the style at which the names of the properties will use.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>snake</li>
+     * <li>kebab</li>
+     * <li>camel</li>
+     * </ul>
+     * 
+     * @since 1.2.4
+     */
+    public function getPropStyle() {
+        return $this->attrNameStyle;
+    }
+    /**
+     * Convert the name of the prop name to the correct case.
+     * @param type $attr
+     * @return type
+     */
+    private static function _getAttrName($attr, $style) {
+        if ($style == 'snake') {
+            return self::_toSnackCase($attr);
+        } else if ($style == 'kebab') {
+            return self::_toKebabCase($attr);
+        } else {
+            return self::_toCamelCase($attr);
+        }
+    }
+    private static function _toCamelCase($attr) {
+        $retVal = '';
+        $changeNextCharCase = false;
+        for ($x = 0 ; $x < strlen($attr) ; $x++) {
+            if (($attr[$x] == '-' || $attr[$x] == '_') && $x != 0) {
+                $changeNextCharCase = true;
+                continue;
+            }
+            if ($changeNextCharCase) {
+                $retVal .= strtoupper($attr[$x]);
+                $changeNextCharCase = false;
+            } else {
+                $retVal .= $attr[$x];
+            }
+        }
+        return $retVal;
+    }
+    private static function _toKebabCase($attr) {
+        $attr1 = str_replace('_', '-', $attr);
+        $retVal = '';
+        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
+            if ($attr1[$x] >= 'A' && $attr1[$x] <= 'Z' && $x != 0) {
+                $retVal .= '-'.strtolower($attr1[$x]);
+            } else {
+                $retVal .= $attr1[$x];
+            }
+        }
+        return $retVal;
+    }
+    private static function _toSnackCase($attr) {
+        $attr1 = str_replace('-', '_', $attr);
+        $retVal = '';
+        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
+            if ($attr1[$x] >= 'A' && $attr1[$x] <= 'Z' && $x != 0) {
+                $retVal .= '_'.strtolower($attr1[$x]);
+            } else {
+                $retVal .= $attr1[$x];
+            }
+        }
+        return $retVal;
     }
 }

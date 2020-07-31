@@ -614,4 +614,79 @@ class JsonXTest extends TestCase {
         $this->assertEquals('true',$j->get('bool'));
         $this->assertEquals('667',$j->get('number'));
     }
+    /**
+     * @test
+     */
+    public function testPropCase00() {
+        $j = new JsonX();
+        $j->setPropsStyle('camel');
+        $j->add('hello', 'world');
+        $this->assertTrue($j->hasKey('hello'));
+        $j->add('user-id', 1);
+        $this->assertTrue($j->hasKey('userId'));
+        $j->add('user_email', 1);
+        $this->assertTrue($j->hasKey('userEmail'));
+        $j->add('user-Display-Name', 1);
+        $this->assertTrue($j->hasKey('userDisplayName'));
+        
+        $j->setPropsStyle('snake');
+        $this->assertTrue($j->hasKey('user_display_name'));
+        $this->assertTrue($j->hasKey('user_email'));
+        $this->assertTrue($j->hasKey('user_id'));
+        
+        $j->setPropsStyle('kebab');
+        $this->assertTrue($j->hasKey('user-display-name'));
+        $this->assertTrue($j->hasKey('user-email'));
+        $this->assertTrue($j->hasKey('user-id'));
+    }
+    /**
+     * @test
+     */
+    public function testPropCase01() {
+        $j = new JsonX();
+        $j->setPropsStyle('snake');
+        $j->add('hello', 'world');
+        $this->assertTrue($j->hasKey('hello'));
+        $j->add('user-id', 1);
+        $this->assertTrue($j->hasKey('user_id'));
+        $j->add('user_email', 1);
+        $this->assertTrue($j->hasKey('user_email'));
+        $j->add('userDisplayName', 1);
+        $this->assertTrue($j->hasKey('user_display_name'));
+        
+        $j->setPropsStyle('camel');
+        $this->assertTrue($j->hasKey('userDisplayName'));
+        $this->assertTrue($j->hasKey('userEmail'));
+        $this->assertTrue($j->hasKey('userId'));
+        
+        $j->setPropsStyle('kebab');
+        $this->assertTrue($j->hasKey('user-display-name'));
+        $this->assertTrue($j->hasKey('user-email'));
+        $this->assertTrue($j->hasKey('user-id'));
+    }
+    /**
+     * @test
+     */
+    public function testPropCase02() {
+        $j = new JsonX();
+        $j->setPropsStyle('kebab');
+        $j->add('hello', 'world');
+        $this->assertTrue($j->hasKey('hello'));
+        $j->add('user-id', 1);
+        $this->assertTrue($j->hasKey('user-id'));
+        $j->add('user_email', 1);
+        $this->assertTrue($j->hasKey('user-email'));
+        $j->add('userDisplayName', 1);
+        $this->assertTrue($j->hasKey('user-display-name'));
+        
+        $j->setPropsStyle('camel');
+        $this->assertTrue($j->hasKey('userDisplayName'));
+        $this->assertTrue($j->hasKey('userEmail'));
+        $this->assertTrue($j->hasKey('userId'));
+        
+        $j->setPropsStyle('snake');
+        $this->assertTrue($j->hasKey('user_display_name'));
+        $this->assertTrue($j->hasKey('user_email'));
+        $this->assertTrue($j->hasKey('user_id'));
+    }
 }
