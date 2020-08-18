@@ -59,7 +59,8 @@ class JsonX {
     const PROP_NAME_STYLES = [
         'camel',
         'kebab',
-        'snake'
+        'snake',
+        'none'
     ];
     /**
      * An array that contains JSON special characters.
@@ -968,8 +969,10 @@ class JsonX {
             return self::_toSnackCase($attr);
         } else if ($style == 'kebab') {
             return self::_toKebabCase($attr);
-        } else {
+        } else if ($style == 'camel') {
             return self::_toCamelCase($attr);
+        } else {
+            return $attr;
         }
     }
     private static function _toCamelCase($attr) {
