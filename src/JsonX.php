@@ -238,6 +238,19 @@ class JsonX {
         }
     }
     /**
+     * 
+     * @param type $jsonStr
+     * @return boolean|JsonX
+     */
+    public static function decode($jsonStr) {
+        $decoded = json_decode($jsonStr, true);
+        if (gettype($decoded) == 'array') {
+            $jsonXObj = new JsonX($decoded);
+            return $jsonXObj;
+        }
+        return false;
+    }
+    /**
      * Returns the data on the object as a JSON string.
      * 
      * @return string

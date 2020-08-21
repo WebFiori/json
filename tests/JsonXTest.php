@@ -6,6 +6,15 @@ use jsonx\tests\Obj1;
 use PHPUnit\Framework\TestCase;
 
 class JsonXTest extends TestCase {
+    /**
+     * @test
+     */
+    public function testDecode00() {
+        $jsonStr = '{"Hello":"world"}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        //$this->assertEquals("world",$decoded->get('Hello'));
+    }
     public function testAddMultiple00() {
         $j = new JsonX();
         $j->addMultiple([
