@@ -9,11 +9,100 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testToJsonString00() {
+        $j = new JsonX(['hello'=>'world']);
+        $this->assertEquals('{"hello":"world"}', $j->toJSONString());
+        $this->assertEquals('world', $j->getVal('hello'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString01() {
+        $j = new JsonX(['number'=>100]);
+        $this->assertEquals('{"number":100}', $j->toJSONString());
+        $this->assertSame(100, $j->getVal('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString02() {
+        $j = new JsonX(['number'=>20.2235]);
+        $this->assertEquals('{"number":20.2235}', $j->toJSONString());
+        $this->assertSame(20.2235, $j->getVal('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString03() {
+        $j = new JsonX(['number'=>NAN]);
+        $this->assertEquals('{"number":"NAN"}', $j->toJSONString());
+        $this->assertTrue(is_nan($j->getVal('number')));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString04() {
+        $j = new JsonX(['number'=>INF]);
+        $this->assertEquals('{"number":"INF"}', $j->toJSONString());
+        $this->assertSame(INF, $j->getVal('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString05() {
+        $j = new JsonX(['bool-true'=>true,'bool-false'=>false]);
+        $this->assertEquals('{"bool-true":true, "bool-false":false}', $j->toJSONString());
+        $this->assertSame(true, $j->getVal('bool-true'));
+        $this->assertSame(false, $j->getVal('bool-false'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString06() {
+        $j = new JsonX(['null'=>null]);
+        $this->assertEquals('{"null":null}', $j->toJSONString());
+        $this->assertNull($j->getVal('null'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString07() {
+        $j = new JsonX(['array'=>['one',1]]);
+        $this->assertEquals('{"array":["one", 1]}', $j->toJSONString());
+        $this->assertEquals(['one', 1],$j->getVal('array'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString08() {
+        $jx = new JsonX(['hello'=>'world']);
+        $arr = ['one',1,null,1.8,true,false,NAN,INF,$jx,['two','good']];
+        $j = new JsonX([
+            'array'=>$arr
+            ]);
+        $this->assertEquals('{"array":["one", 1, null, 1.8, true, false, "NAN", "INF", {"hello":"world"}, ["two", "good"]]}', $j->toJSONString());
+        $this->assertEquals($arr,$j->getVal('array'));
+    }
+    /**
+     * @test
+     */
     public function testDecode00() {
         $jsonStr = '{"Hello":"world"}';
         $decoded = JsonX::decode($jsonStr);
         $this->assertTrue($decoded instanceof JsonX);
-        //$this->assertEquals("world",$decoded->get('Hello'));
+        $this->assertEquals("world",$decoded->getVal('Hello'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode02() {
+        $jsonStr = '{"Hello":"world","one":1,"two":2.4,"null":null}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals("world",$decoded->getVal('Hello'));
+        $this->assertEquals(1,$decoded->get('one'));
+        $this->assertEquals(2.4,$decoded->get('two'));
+        $this->assertNull($decoded->getVal('null'));
     }
     public function testAddMultiple00() {
         $j = new JsonX();
