@@ -95,6 +95,17 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testDecode01() {
+        $jsonStr = '{"Hello":"world","true":true,"false":false}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals("world",$decoded->get('Hello'));
+        $this->assertTrue($decoded->get('true'));
+        $this->assertFalse($decoded->get('false'));
+    }
+    /**
+     * @test
+     */
     public function testDecode02() {
         $jsonStr = '{"Hello":"world","one":1,"two":2.4,"null":null}';
         $decoded = JsonX::decode($jsonStr);
@@ -103,6 +114,76 @@ class JsonXTest extends TestCase {
         $this->assertEquals(1,$decoded->get('one'));
         $this->assertEquals(2.4,$decoded->get('two'));
         $this->assertNull($decoded->get('null'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode03() {
+        $jsonStr = '{"array":["world","one",1,"two",2.4,"null",null,true,false]}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $arr = $decoded->get('array');
+        $this->assertTrue(gettype($arr) == 'array');
+        $this->assertEquals('world', $arr[0]);
+        $this->assertEquals('one', $arr[1]);
+        $this->assertEquals(1, $arr[2]);
+        $this->assertEquals('two', $arr[3]);
+        $this->assertEquals(2.4, $arr[4]);
+        $this->assertEquals('null', $arr[5]);
+        $this->assertNull( $arr[6]);
+        $this->assertTrue($arr[7]);
+        $this->assertFalse($arr[8]);
+    }
+    /**
+     * @test
+     */
+    public function testDecode04() {
+        $jsonStr = '{"object":{"true":true,"false":false,"null":null,"str":"A string", "number":33, "array":["Hello"]}}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $jObj = $decoded->get('object');
+        $this->assertTrue($jObj instanceof JsonX);
+        $this->assertTrue($jObj->get('true'));
+        $this->assertFalse($jObj->get('false'));
+        $this->assertNull($jObj->get('null'));
+        $this->assertEquals('A string',$jObj->get('str'));
+        $this->assertEquals(33,$jObj->get('number'));
+        $arr = $jObj->get('array');
+        $this->assertTrue(gettype($arr) == 'array');
+        $this->assertEquals("Hello", $arr[0]);
+    }
+    /**
+     * @test
+     */
+    public function testDecode05() {
+        $jsonStr = '{'
+                . '"obj":{'
+                . '    "array":['
+                . '        "world",'
+                . '        {"hell":"no"},'
+                . '        ["one",1]]},'
+                . '"outer-arr":[{"hello":"world","deep-arr":["deep"]}]}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        
+        $jObj = $decoded->get('obj');
+        $this->assertTrue($jObj instanceof JsonX);
+        $objArr = $jObj->get('array');
+        $this->assertTrue(gettype($objArr) == 'array');
+        $this->assertEquals("world", $objArr[0]);
+        $this->assertTrue($objArr[1] instanceof JsonX);
+        $this->assertEquals("no", $objArr[1]->get('hell'));
+        $this->assertTrue(gettype($objArr[2]) == 'array');
+        $this->assertEquals("one",$objArr[2][0]);
+        $this->assertEquals(1,$objArr[2][1]);
+        
+        $outerArr = $decoded->get('outer-arr');
+        $this->assertTrue(gettype($outerArr) == 'array');
+        $this->assertTrue($outerArr[0] instanceof JsonX);
+        $this->assertEquals("world",$outerArr[0]->get('hello'));
+        $this->assertTrue(gettype($outerArr[0]->get('deep-arr')) == 'array');
+        
+        
     }
     public function testAddMultiple00() {
         $j = new JsonX();
