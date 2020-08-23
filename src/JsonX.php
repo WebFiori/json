@@ -278,13 +278,48 @@ class JsonX {
             'error-message' => json_last_error_msg()
         ];
     }
+    private static function _arrayToObj($subVal) {
+        $subObj = new JsonX();
+        foreach ($subVal as $key => $val) {
+            self::_fixParsed($subObj, $key, $val);
+        }
+        return $subObj;
+    }
+    private static function _checkArr($subVal, &$parentArr) {
+        $isIndexed = self::_isIndexedArr($subVal);
+        if ($isIndexed) {
+            $subArr = [];
+            // A sub array. Can have sub arrays. Sub arrays can have objects.
+            for($x = 0 ; $x < count($subVal) ; $x++) {
+                $subArrVal = $subVal[$x];
+                if (gettype($subArrVal) == 'array') {
+                    self::_checkArr($subArrVal, $subArr);
+                } else {
+                    //Normal value inside array.
+                    $subArr[] = $subArrVal;
+                }
+            }
+            $parentArr[] = $subArr;
+        } else {
+            // Object inside array
+            $parentArr[] = self::_arrayToObj($subVal);
+        }
+    }
     /**
      * 
      * @param JsonX $jsonx
      * @param type $xVal
      */
     private static function _fixParsed($jsonx, $xKey, $xVal) {
-        $jsonx->add($xKey, $xVal);
+        if (gettype($xVal) == 'array') {
+            // An array inside object.
+            $arr = [];
+            self::_checkArr($xVal, $arr);
+            $jsonx->add($xKey, $arr);
+        } else {
+            //A simple value. Just add it
+            $jsonx->add($xKey, $xVal);
+        }
         return $jsonx;
     }
     private static function _isIndexedArr($arr) {
