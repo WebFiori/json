@@ -625,7 +625,7 @@ class JsonX {
      * 
      * @since 1.2
      */
-    public function get($key) {
+    public function &get($key) {
         $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
 
         foreach ($this->originals as $key => $val) {
