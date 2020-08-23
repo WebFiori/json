@@ -155,6 +155,17 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testDecode06() {
+        $jsonStr = '{"prop-1":1,"prop-2":"hello","prop-3":true}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals(1, $decoded->get('prop-1'));
+        $this->assertEquals('hello', $decoded->get('prop-2'));
+        $this->assertTrue($decoded->get('prop-3'));
+    }
+    /**
+     * @test
+     */
     public function testDecode05() {
         $jsonStr = '{'
                 . '"obj":{'
