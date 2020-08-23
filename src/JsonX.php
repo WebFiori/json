@@ -284,28 +284,7 @@ class JsonX {
      * @param type $xVal
      */
     private static function _fixParsed($jsonx, $xKey, $xVal) {
-        $xValType = gettype($xVal);
-        if ($xValType == 'array') {
-            $isIndexed = self::_isIndexedArr($xVal);
-            if ($isIndexed) {
-                $jsonx->add($xKey, $xVal);
-            } else {
-                foreach ($xVal as $key => $val) {
-                    $valType = gettype($val);
-                    if ($valType == 'array') {
-                        $jsonx->add($key, self::_fixParsed(new JsonX(), $val));
-                    } else if ($valType == 'string') {
-                        $jsonx->add($key, trim($val,'"'));
-                    } else {
-                        $jsonx->add($key, $val);
-                    }
-                }
-            }
-        } else if ($xValType == 'string') {
-            $jsonx->add($xKey, trim($xVal,'"'));
-        } else {
-            $jsonx->add($xKey, $xVal);
-        }
+        $jsonx->add($xKey, $xVal);
         return $jsonx;
     }
     private static function _isIndexedArr($arr) {
@@ -627,14 +606,15 @@ class JsonX {
      */
     public function &get($key) {
         $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
-
+        $retVal = null;
         foreach ($this->originals as $key => $val) {
             if (self::_isValidKey($key, $this->getPropStyle()) == $keyTrimmed) {
-                return $val['val'];
+                $retVal = $val['val'];
+                break;
             }
         }
-
-        return null;
+        
+        return $retVal;
     }
     /**
      * Checks if JsonX instance has the given key or not.
