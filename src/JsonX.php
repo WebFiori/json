@@ -41,7 +41,7 @@ namespace jsonx;
  * 
  * @author Ibrahim
  * 
- * @since 1.2.4
+ * @version 1.2.5
  */
 class JsonX {
     /**
@@ -52,6 +52,7 @@ class JsonX {
      * <li>camel</li>
      * <li>kebab</li>
      * <li>snake</li>
+     * <li>none</li>
      * </ul>
      * 
      * @since 1.2.4
@@ -59,7 +60,8 @@ class JsonX {
     const PROP_NAME_STYLES = [
         'camel',
         'kebab',
-        'snake'
+        'snake',
+        'none'
     ];
     /**
      * An array that contains JSON special characters.
@@ -131,7 +133,7 @@ class JsonX {
      * 
      * @since 1.0
      */
-    private $attributes = [];
+    private $originals = [];
     /**
      * @var array array of boolean types.
      */
@@ -198,13 +200,27 @@ class JsonX {
             $this->tabSize = 0;
             $this->NL = '';
         }
-        $this->setPropsStyle('kebab');
+        $this->setPropsStyle('none');
         
         if (defined('JSONX_PROP_STYLE')) {
             $this->setPropsStyle(JSONX_PROP_STYLE);
         }
         
         $this->_initData($initialData);
+    }
+    /**
+     * 
+     * @param type $key
+     * @param type $value
+     * @param type $type
+     * @param type $options
+     */
+    private function _addToOriginals($key, $value, $type, $options = []) {
+        $this->originals[$key] = [
+            'type' => $type,
+            'val' => $value,
+            'options' => $options
+        ];
     }
     /**
      * Sets the style at which the names of the properties will use.
@@ -230,11 +246,88 @@ class JsonX {
         
         if (in_array($trimmed, self::PROP_NAME_STYLES)) {
             $this->attrNameStyle = $trimmed;
-            foreach ($this->attributes as $key => $value) {
-                unset($this->attributes[$key]);
-                $this->attributes[self::_getAttrName($key, $trimmed)] = $value;
-            }
         }
+    }
+    /**
+     * Converts a JSON-like string to JSON object.
+     * 
+     * Note that this method uses the function 'json_decode()' to parse the 
+     * given JSON string. This means same rules which applies to 'json_decode()'
+     * applies here.
+     * 
+     * @param string $jsonStr A string which looks like JSON object.
+     * 
+     * @return array|JsonX If the given string represents A valid JSON, it 
+     * will be converted to JsonX object and returned. Other than that, the 
+     * method will return an array that contains information about parsing error. 
+     * The array will have two indices, 'last-error' and 'error-message'.
+     * 
+     * @since 1.2.5
+     */
+    public static function decode($jsonStr) {
+        $decoded = json_decode(utf8_encode($jsonStr), true);
+        if (gettype($decoded) == 'array') {
+            $jsonXObj = new JsonX();
+            foreach ($decoded as $key => $val) {
+                self::_fixParsed($jsonXObj, $key, $val);
+            }
+            return $jsonXObj;
+        }
+        return [
+            'last-error' => json_last_error(),
+            'error-message' => json_last_error_msg()
+        ];
+    }
+    private static function _arrayToObj($subVal) {
+        $subObj = new JsonX();
+        foreach ($subVal as $key => $val) {
+            self::_fixParsed($subObj, $key, $val);
+        }
+        return $subObj;
+    }
+    private static function _checkArr($subVal, &$parentArr) {
+        $isIndexed = self::_isIndexedArr($subVal);
+        if ($isIndexed) {
+            $subArr = [];
+            // A sub array. Can have sub arrays. Sub arrays can have objects.
+            for($x = 0 ; $x < count($subVal) ; $x++) {
+                $subArrVal = $subVal[$x];
+                if (gettype($subArrVal) == 'array') {
+                    self::_checkArr($subArrVal, $subArr);
+                } else {
+                    //Normal value inside array.
+                    $subArr[] = $subArrVal;
+                }
+            }
+            $parentArr[] = $subArr;
+        } else {
+            // Object inside array
+            $parentArr[] = self::_arrayToObj($subVal);
+        }
+    }
+    /**
+     * 
+     * @param JsonX $jsonx
+     * @param type $xVal
+     */
+    private static function _fixParsed($jsonx, $xKey, $xVal) {
+        if (gettype($xVal) == 'array') {
+            // An array inside object.
+            $arr = [];
+            self::_checkArr($xVal, $arr);
+            $jsonx->add($xKey, $arr[0]);
+        } else {
+            //A simple value. Just add it
+            $jsonx->add($xKey, $xVal);
+        }
+        return $jsonx;
+    }
+    private static function _isIndexedArr($arr) {
+        $isIndexed = true;
+        foreach ($arr as $index => $val) {
+            $isIndexed = $isIndexed && gettype($index) == 'integer';
+        }
+        return $isIndexed;
     }
     /**
      * Returns the data on the object as a JSON string.
@@ -242,22 +335,7 @@ class JsonX {
      * @return string
      */
     public function __toString() {
-        $retVal = $this->_getTab().'{'.$this->NL;
-        $this->_addTab();
-        $count = count($this->attributes);
-        $index = 0;
-
-        foreach ($this->attributes as $key => $val) {
-            if ($index + 1 == $count) {
-                $retVal .= $this->_getTab().'"'.$key.'":'.trim($val).$this->NL;
-            } else {
-                $retVal .= $this->_getTab().'"'.$key.'":'.trim($val).', '.$this->NL;
-            }
-            $index++;
-        }
-        $this->_reduceTab();
-
-        return $retVal.$this->_getTab().'}';
+        return $this->toJSONString();
     }
     /**
      * Adds a new value to the JSON string.
@@ -325,8 +403,7 @@ class JsonX {
             $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
             if ($keyValidated !== false) {
-                $this->attributes[$keyValidated] = 'null';
-
+                $this->_addToOriginals($keyValidated, null, 'null');
                 return true;
             }
         }
@@ -351,8 +428,8 @@ class JsonX {
         $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($value) == self::TYPES[4]) {
-            $this->attributes[$keyValidated] = $this->_arrayToJSONString($value,$asObject);
-
+            
+            $this->_addToOriginals($keyValidated, $value, 'array', ['array-as-object'=>$asObject === true]);
             return true;
         }
 
@@ -376,12 +453,7 @@ class JsonX {
         $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[3]) {
-            if ($val) {
-                $this->attributes[$keyValidated] = self::$BoolTypes[0];
-            } else {
-                $this->attributes[$keyValidated] = self::$BoolTypes[1];
-            }
-
+            $this->_addToOriginals($keyValidated, $val, 'boolean');
             return true;
         }
 
@@ -422,19 +494,22 @@ class JsonX {
     public function addNumber($key,$value) {
         $val_type = gettype($value);
         $keyValidated = self::_isValidKey($key, $this->getPropStyle());
-
+        $retVal = false;
         if ($keyValidated !== false && ($val_type == self::TYPES[0] || $val_type == self::TYPES[2])) {
             if (is_nan($value)) {
-                return $this->addString($keyValidated, 'NAN');
+                $retVal = $this->addString($keyValidated, 'NAN');
             } else if ($value == INF) {
-                return $this->addString($keyValidated, 'INF');
+                $retVal = $this->addString($keyValidated, 'INF');
+            } else {
+                $retVal = true;
             }
-            $this->attributes[$keyValidated] = $value;
-
-            return true;
+            
+            if ($retVal) {
+                $this->_addToOriginals($keyValidated, $value, 'number');
+            }
         }
 
-        return false;
+        return $retVal;
     }
     /**
      * Adds an object to the JSON string.
@@ -461,26 +536,16 @@ class JsonX {
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[6]) {
             if (is_subclass_of($val, 'jsonx\JsonI')) {
-                $jsonXObj = $val->toJSON();
-                $jsonXObj->currentTab = $this->currentTab + 1;
-                $jsonXObj->tabSize = $this->tabSize;
-                $jsonXObj->NL = $this->NL;
-                $this->attributes[$keyValidated] = ''.$jsonXObj;
-
+                $this->_addToOriginals($keyValidated, $val, 'jsoni');
                 return true;
             } else if ($val instanceof JsonX) {
-                    $val->setPropsStyle($this->getPropStyle());
-                    $val->currentTab = $this->currentTab + 1;
-                    $val->tabSize = $this->tabSize;
-                    $val->NL = $this->NL;
-                    $this->attributes[$keyValidated] = $val;
-                } else {
-                    $json = $this->_objectToJson($val);
-                    $this->add($keyValidated, $json);
-
-                    return true;
-                }
+                $this->_addToOriginals($keyValidated, $val, 'jsonx');
+                return true;
+            } else if (gettype($val) == 'object') {
+                $this->_addToOriginals($keyValidated, $val, 'object');
+                return true;
             }
+        }
 
         return false;
     }
@@ -527,8 +592,7 @@ class JsonX {
                     return $this->addBoolean($keyValidated, $boolVal);
                 }
             } else {
-                $this->attributes[$keyValidated] = '"'.JsonX::escapeJSONSpecialChars($val).'"';
-
+                $this->_addToOriginals($keyValidated, $val, 'string');
                 return true;
             }
         }
@@ -564,24 +628,28 @@ class JsonX {
         return $escapedJson;
     }
     /**
-     * Returns a string that represents the value at the given key.
+     * Returns the value at the given key.
      * 
-     * @param string $key The value of the key.
+     * @param string $key The value of the key. Note that the style of the key 
+     * does not matter.
      * 
-     * @return string|null The method will return a string that 
-     * represents the value. If the key does not exists,  the method will 
-     * return null.
+     * @return JsonX|mixed|null The return type will depends on the value which 
+     * was set by any method which can be used to add props. It can be a number, 
+     * a boolean, string, an object or null if does not exist.
      * 
      * @since 1.2
      */
-    public function get($key) {
-        $keyTrimmed = trim($key);
-
-        if ($this->hasKey($keyTrimmed)) {
-            return $this->attributes[$keyTrimmed];
+    public function &get($key) {
+        $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
+        $retVal = null;
+        foreach ($this->originals as $key => $val) {
+            if (self::_isValidKey($key, $this->getPropStyle()) == $keyTrimmed) {
+                $retVal = $val['val'];
+                break;
+            }
         }
-
-        return null;
+        
+        return $retVal;
     }
     /**
      * Checks if JsonX instance has the given key or not.
@@ -594,10 +662,13 @@ class JsonX {
      * @since 1.2
      */
     public function hasKey($key) {
-        $keyTrimmed = trim($key);
-
-        if (strlen($keyTrimmed) != 0 && isset($this->attributes[$keyTrimmed])) {
-            return true;
+        $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
+        $keys = array_keys($this->originals);
+        
+        foreach ($keys as $propKey) {
+            if (self::_isValidKey($propKey, $this->getPropStyle()) == $keyTrimmed) {
+                return true;
+            }
         }
 
         return false;
@@ -610,7 +681,86 @@ class JsonX {
      * provided data.
      */
     public function toJSONString() {
-        return $this.'';
+        $jsonStr = '{';
+        $this->_addTab();
+        $propsTab = $this->_getTab();
+        $comma = $this->NL;
+        $dataType = null;
+        foreach ($this->originals as $key => $val) {
+            $dataType = $val['type'];
+            $keyPropStyle = self::_isValidKey($key, $this->getPropStyle());
+            $jsonStr .= $comma;
+            if ($dataType == 'string') {
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.JsonX::escapeJSONSpecialChars($val['val']).'"';
+            } else if ($dataType == 'number') {
+                $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'boolean') {
+                $this->_appendBool($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'jsonx') {
+                $this->_appendJsonX($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'jsoni') {
+                $this->_appendJsonI($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'object') {
+                $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'array') {
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object'], true);
+            } else if ($dataType == 'null') {
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":null';
+            }
+            $comma = ', '.$this->NL;
+        }
+        if ($this->currentTab > 1) {
+            $this->currentTab--;
+            $jsonStr .= $this->NL.$this->_getTab().'}';
+        } else {
+            $jsonStr .= $this->NL.'}';
+        }
+        return $jsonStr;
+    }
+    private function _appendObj(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        $jsonXObj = $this->_objectToJson($val);
+        if ($this->tabSize != 0) {
+            $jsonXObj->tabSize = $this->tabSize;
+            $jsonXObj->currentTab = $this->currentTab;
+        }
+        $jsonXObj->NL = $this->NL;
+        $jsonXObj->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
+    }
+    private function _appendJsonI(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        $jsonXObj = $val->toJSON();
+        if ($this->tabSize != 0) {
+            $jsonXObj->tabSize = $this->tabSize;
+            $jsonXObj->currentTab = $this->currentTab;
+        }
+        $jsonXObj->NL = $this->NL;
+        $jsonXObj->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
+    }
+    private function _appendJsonX(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        if ($this->tabSize != 0) {
+            $val->tabSize = $this->tabSize;
+            $val->currentTab = $this->currentTab;
+        }
+        $val->NL = $this->NL;
+        $val->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val->toJSONString();
+    }
+    private function _appendBool(&$jsonStr, $val,$propsTab, $keyPropStyle) {
+        if ($val === true) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":true';
+        } else {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":false';
+        }
+    }
+    private function _appendNum(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        if (is_nan($val)) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"NAN"';
+        } else if ($val == INF) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
+        } else {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val;
+        }
     }
     /**
      * @since 1.2.2
@@ -949,6 +1099,7 @@ class JsonX {
      * <li>snake</li>
      * <li>kebab</li>
      * <li>camel</li>
+     * <li>none</li>
      * </ul>
      * 
      * @since 1.2.4
@@ -968,8 +1119,10 @@ class JsonX {
             return self::_toSnackCase($attr);
         } else if ($style == 'kebab') {
             return self::_toKebabCase($attr);
-        } else {
+        } else if ($style == 'camel') {
             return self::_toCamelCase($attr);
+        } else {
+            return $attr;
         }
     }
     private static function _toCamelCase($attr) {

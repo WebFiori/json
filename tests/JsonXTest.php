@@ -6,6 +6,195 @@ use jsonx\tests\Obj1;
 use PHPUnit\Framework\TestCase;
 
 class JsonXTest extends TestCase {
+    /**
+     * @test
+     */
+    public function testToJsonString00() {
+        $j = new JsonX(['hello'=>'world']);
+        $this->assertEquals('{"hello":"world"}', $j->toJSONString());
+        $this->assertEquals('world', $j->get('hello'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString01() {
+        $j = new JsonX(['number'=>100]);
+        $this->assertEquals('{"number":100}', $j->toJSONString());
+        $this->assertSame(100, $j->get('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString02() {
+        $j = new JsonX(['number'=>20.2235]);
+        $this->assertEquals('{"number":20.2235}', $j->toJSONString());
+        $this->assertSame(20.2235, $j->get('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString03() {
+        $j = new JsonX(['number'=>NAN]);
+        $this->assertEquals('{"number":"NAN"}', $j->toJSONString());
+        $this->assertTrue(is_nan($j->get('number')));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString04() {
+        $j = new JsonX(['number'=>INF]);
+        $this->assertEquals('{"number":"INF"}', $j->toJSONString());
+        $this->assertSame(INF, $j->get('number'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString05() {
+        $j = new JsonX(['bool-true'=>true,'bool-false'=>false]);
+        $this->assertEquals('{"bool-true":true, "bool-false":false}', $j->toJSONString());
+        $this->assertSame(true, $j->get('bool-true'));
+        $this->assertSame(false, $j->get('bool-false'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString06() {
+        $j = new JsonX(['null'=>null]);
+        $this->assertEquals('{"null":null}', $j->toJSONString());
+        $this->assertNull($j->get('null'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString07() {
+        $j = new JsonX(['array'=>['one',1]]);
+        $this->assertEquals('{"array":["one", 1]}', $j->toJSONString());
+        $this->assertEquals(['one', 1],$j->get('array'));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString08() {
+        $jx = new JsonX(['hello'=>'world']);
+        $arr = ['one',1,null,1.8,true,false,NAN,INF,$jx,['two','good']];
+        $j = new JsonX([
+            'array'=>$arr
+            ]);
+        $this->assertEquals('{"array":["one", 1, null, 1.8, true, false, "NAN", "INF", {"hello":"world"}, ["two", "good"]]}', $j->toJSONString());
+    }
+    /**
+     * @test
+     */
+    public function testDecode00() {
+        $jsonStr = '{"Hello":"world"}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals("world",$decoded->get('Hello'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode01() {
+        $jsonStr = '{"Hello":"world","true":true,"false":false}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals("world",$decoded->get('Hello'));
+        $this->assertTrue($decoded->get('true'));
+        $this->assertFalse($decoded->get('false'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode02() {
+        $jsonStr = '{"Hello":"world","one":1,"two":2.4,"null":null}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals("world",$decoded->get('Hello'));
+        $this->assertEquals(1,$decoded->get('one'));
+        $this->assertEquals(2.4,$decoded->get('two'));
+        $this->assertNull($decoded->get('null'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode03() {
+        $jsonStr = '{"array":["world","one",1,"two",2.4,"null",null,true,false]}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $arr = $decoded->get('array');
+        $this->assertTrue(gettype($arr) == 'array');
+        $this->assertEquals('world', $arr[0]);
+        $this->assertEquals('one', $arr[1]);
+        $this->assertEquals(1, $arr[2]);
+        $this->assertEquals('two', $arr[3]);
+        $this->assertEquals(2.4, $arr[4]);
+        $this->assertEquals('null', $arr[5]);
+        $this->assertNull( $arr[6]);
+        $this->assertTrue($arr[7]);
+        $this->assertFalse($arr[8]);
+    }
+    /**
+     * @test
+     */
+    public function testDecode04() {
+        $jsonStr = '{"object":{"true":true,"false":false,"null":null,"str":"A string", "number":33, "array":["Hello"]}}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $jObj = $decoded->get('object');
+        $this->assertTrue($jObj instanceof JsonX);
+        $this->assertTrue($jObj->get('true'));
+        $this->assertFalse($jObj->get('false'));
+        $this->assertNull($jObj->get('null'));
+        $this->assertEquals('A string',$jObj->get('str'));
+        $this->assertEquals(33,$jObj->get('number'));
+        $arr = $jObj->get('array');
+        $this->assertTrue(gettype($arr) == 'array');
+        $this->assertEquals("Hello", $arr[0]);
+    }
+    /**
+     * @test
+     */
+    public function testDecode06() {
+        $jsonStr = '{"prop-1":1,"prop-2":"hello","prop-3":true}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        $this->assertEquals(1, $decoded->get('prop-1'));
+        $this->assertEquals('hello', $decoded->get('prop-2'));
+        $this->assertTrue($decoded->get('prop-3'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode05() {
+        $jsonStr = '{'
+                . '"obj":{'
+                . '    "array":['
+                . '        "world",'
+                . '        {"hell":"no"},'
+                . '        ["one",1]]},'
+                . '"outer-arr":[{"hello":"world","deep-arr":["deep"]}]}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue($decoded instanceof JsonX);
+        
+        $jObj = $decoded->get('obj');
+        $this->assertTrue($jObj instanceof JsonX);
+        $objArr = $jObj->get('array');
+        $this->assertTrue(gettype($objArr) == 'array');
+        $this->assertEquals("world", $objArr[0]);
+        $this->assertTrue($objArr[1] instanceof JsonX);
+        $this->assertEquals("no", $objArr[1]->get('hell'));
+        $this->assertTrue(gettype($objArr[2]) == 'array');
+        $this->assertEquals("one",$objArr[2][0]);
+        $this->assertEquals(1,$objArr[2][1]);
+        
+        $outerArr = $decoded->get('outer-arr');
+        $this->assertTrue(gettype($outerArr) == 'array');
+        $this->assertTrue($outerArr[0] instanceof JsonX);
+        $this->assertEquals("world",$outerArr[0]->get('hello'));
+        $this->assertTrue(gettype($outerArr[0]->get('deep-arr')) == 'array');
+        
+        
+    }
     public function testAddMultiple00() {
         $j = new JsonX();
         $j->addMultiple([
@@ -556,7 +745,8 @@ class JsonXTest extends TestCase {
                 .'    "bool":true, '."\n"
                 .'    "number":667, '."\n"
                 .'    "jsonx":{'."\n"
-                .'        "sub-json-x":{}'."\n"
+                .'        "sub-json-x":{'."\n"
+                .'        }'."\n"
                 .'    }'."\n"
                 .'}'
                 .'',$j.'');
@@ -600,19 +790,18 @@ class JsonXTest extends TestCase {
         $j = new JsonX();
         $this->assertNull($j->get('not-exist'));
         $j->add('hello', 'world');
-        $j->add('object', new Obj0('8', 7, '6', '5', 4));
+        $obj = new Obj0('8', 7, '6', '5', 4);
+        $j->add('object', $obj);
         $j->add('null', null);
         $j->add('nan', NAN);
         $j->add('inf', INF);
         $j->add('bool', true);
         $j->add('number', 667);
-        $this->assertEquals('"world"',$j->get('  hello  '));
-        $this->assertEquals('{"prop-0":"8", "prop-1":7, "prop-2":"6", "prop-3":4}',$j->get('  object  '));
-        $this->assertEquals('null',$j->get('null'));
-        $this->assertEquals('"NAN"',$j->get('nan'));
-        $this->assertEquals('"INF"',$j->get('inf'));
-        $this->assertEquals('true',$j->get('bool'));
-        $this->assertEquals('667',$j->get('number'));
+        $this->assertEquals('world',$j->get('  hello  '));
+        $this->assertEquals($obj,$j->get('  object  '));
+        $this->assertNull($j->get('null'));
+        $this->assertTrue($j->get('bool'));
+        $this->assertEquals(667,$j->get('number'));
     }
     /**
      * @test
@@ -631,6 +820,7 @@ class JsonXTest extends TestCase {
         
         $j->setPropsStyle('snake');
         $this->assertTrue($j->hasKey('user_display_name'));
+        $this->assertTrue($j->hasKey('user-display-name'));
         $this->assertTrue($j->hasKey('user_email'));
         $this->assertTrue($j->hasKey('user_id'));
         
