@@ -315,7 +315,7 @@ class JsonX {
             // An array inside object.
             $arr = [];
             self::_checkArr($xVal, $arr);
-            $jsonx->add($xKey, $arr);
+            $jsonx->add($xKey, $arr[0]);
         } else {
             //A simple value. Just add it
             $jsonx->add($xKey, $xVal);
@@ -504,7 +504,7 @@ class JsonX {
                 $retVal = true;
             }
             
-            if ($retVal == true) {
+            if ($retVal) {
                 $this->_addToOriginals($keyValidated, $value, 'number');
             }
         }
@@ -693,45 +693,15 @@ class JsonX {
             if ($dataType == 'string') {
                 $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.JsonX::escapeJSONSpecialChars($val['val']).'"';
             } else if ($dataType == 'number') {
-                if (is_nan($val['val'])) {
-                    $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"NAN"';
-                } else if ($val['val'] == INF) {
-                    $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
-                } else {
-                    $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val['val'];
-                }
+                $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'boolean') {
-                if ($val['val'] === true) {
-                    $jsonStr .= $propsTab.'"'.$keyPropStyle.'":true';
-                } else {
-                    $jsonStr .= $propsTab.'"'.$keyPropStyle.'":false';
-                }
+                $this->_appendBool($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'jsonx') {
-                if ($this->tabSize != 0) {
-                    $val['val']->tabSize = $this->tabSize;
-                    $val['val']->currentTab = $this->currentTab;
-                }
-                $val['val']->NL = $this->NL;
-                $val['val']->setPropsStyle($this->getPropStyle());
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val['val']->toJSONString();
+                $this->_appendJsonX($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'jsoni') {
-                $jsonXObj = $val['val']->toJSON();
-                if ($this->tabSize != 0) {
-                    $jsonXObj->tabSize = $this->tabSize;
-                    $jsonXObj->currentTab = $this->currentTab;
-                }
-                $jsonXObj->NL = $this->NL;
-                $jsonXObj->setPropsStyle($this->getPropStyle());
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
-            }  else if ($dataType == 'object') {
-                $jsonXObj = $this->_objectToJson($val['val']);
-                if ($this->tabSize != 0) {
-                    $jsonXObj->tabSize = $this->tabSize;
-                    $jsonXObj->currentTab = $this->currentTab;
-                }
-                $jsonXObj->NL = $this->NL;
-                $jsonXObj->setPropsStyle($this->getPropStyle());
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
+                $this->_appendJsonI($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'object') {
+                $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'array') {
                 $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object'], true);
             } else if ($dataType == 'null') {
@@ -746,6 +716,51 @@ class JsonX {
             $jsonStr .= $this->NL.'}';
         }
         return $jsonStr;
+    }
+    private function _appendObj(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        $jsonXObj = $this->_objectToJson($val);
+        if ($this->tabSize != 0) {
+            $jsonXObj->tabSize = $this->tabSize;
+            $jsonXObj->currentTab = $this->currentTab;
+        }
+        $jsonXObj->NL = $this->NL;
+        $jsonXObj->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
+    }
+    private function _appendJsonI(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        $jsonXObj = $val->toJSON();
+        if ($this->tabSize != 0) {
+            $jsonXObj->tabSize = $this->tabSize;
+            $jsonXObj->currentTab = $this->currentTab;
+        }
+        $jsonXObj->NL = $this->NL;
+        $jsonXObj->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->toJSONString();
+    }
+    private function _appendJsonX(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        if ($this->tabSize != 0) {
+            $val->tabSize = $this->tabSize;
+            $val->currentTab = $this->currentTab;
+        }
+        $val->NL = $this->NL;
+        $val->setPropsStyle($this->getPropStyle());
+        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val->toJSONString();
+    }
+    private function _appendBool(&$jsonStr, $val,$propsTab, $keyPropStyle) {
+        if ($val === true) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":true';
+        } else {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":false';
+        }
+    }
+    private function _appendNum(&$jsonStr, $val, $propsTab, $keyPropStyle) {
+        if (is_nan($val)) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"NAN"';
+        } else if ($val == INF) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
+        } else {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val;
+        }
     }
     /**
      * @since 1.2.2
