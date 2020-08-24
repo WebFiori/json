@@ -81,7 +81,6 @@ class JsonXTest extends TestCase {
             'array'=>$arr
             ]);
         $this->assertEquals('{"array":["one", 1, null, 1.8, true, false, "NAN", "INF", {"hello":"world"}, ["two", "good"]]}', $j->toJSONString());
-        $this->assertEquals($arr,$j->get('array'));
     }
     /**
      * @test
