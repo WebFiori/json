@@ -131,35 +131,36 @@ class JsonXTest extends TestCase {
                 . '        "property_02":3'."\n"
                 . '    }'."\n"
                 . '}', $j.'');
-//        $this->assertEquals('{'."\n"
-//                . '    "number_one":1, '."\n"
-//                . '    "arr":['."\n"
-//                . '    ], '."\n"
-//                . '    "obj":{'."\n"
-//                . '    }'."\n"
-//                . '}, '."\n", $j->get('jsonx')->toJSONString());
+        $subX = $j->get('jsonx');
+        $this->assertEquals('{'."\n"
+                . '    "number_one":1, '."\n"
+                . '    "arr":['."\n"
+                . '    ], '."\n"
+                . '    "obj":{'."\n"
+                . '    }'."\n"
+                . '}', $subX->toJSONString());
         
-//        $j->get('jsonx')->add('general', new Obj0('1', '3', 99, 100, "ok"));
-//        $this->assertEquals('{'."\n"
-//                . '    "jsonx":{'."\n"
-//                . '        "number_one":1, '."\n"
-//                . '        "arr":['."\n"
-//                . '        ], '."\n"
-//                . '        "obj":{'."\n"
-//                . '        }'."\n"
-//                . '        "general":{'."\n"
-//                . '            "prop_0":"1", '."\n"
-//                . '            "prop_1":"3", '."\n"
-//                . '            "prop_2":99, '."\n"
-//                . '            "prop_3":"ok"'."\n"
-//                . '        }'."\n"
-//                . '    }, '."\n"
-//                . '    "o":{'."\n"
-//                . '        "property_00":"1", '."\n"
-//                . '        "property_01":2, '."\n"
-//                . '        "property_02":3'."\n"
-//                . '    }'."\n"
-//                . '}', $j.'');
+        $j->get('jsonx')->add('general', new Obj0('1', '3', 99, 100, "ok"));
+        $this->assertEquals('{'."\n"
+                . '    "jsonx":{'."\n"
+                . '        "number_one":1, '."\n"
+                . '        "arr":['."\n"
+                . '        ], '."\n"
+                . '        "obj":{'."\n"
+                . '        }, '."\n"
+                . '        "general":{'."\n"
+                . '            "prop_0":"1", '."\n"
+                . '            "prop_1":"3", '."\n"
+                . '            "prop_2":99, '."\n"
+                . '            "prop_3":"ok"'."\n"
+                . '        }'."\n"
+                . '    }, '."\n"
+                . '    "o":{'."\n"
+                . '        "property_00":"1", '."\n"
+                . '        "property_01":2, '."\n"
+                . '        "property_02":3'."\n"
+                . '    }'."\n"
+                . '}', $j.'');
     }
     /**
      * @test
