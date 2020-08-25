@@ -209,6 +209,30 @@ class JsonX {
         $this->_initData($initialData);
     }
     /**
+     * Makes the JSON output appears readable or not.
+     * 
+     * If the output is formatted, the generated output will look like 
+     * a tree. If not formatted, the output string will be generated as one line. 
+     * 
+     * 
+     * @param boolean $bool True to make the output formatted and false to make 
+     * it not.
+     * 
+     * @since 1.2.5
+     */
+    public function setIsFormatted($bool) {
+        $formatted = $bool === true;
+        
+        if ($formatted) {
+            $this->tabSize = 4;
+            $this->NL = "\n";
+            $this->currentTab = 0;
+        } else {
+            $this->tabSize = 0;
+            $this->NL = '';
+        }
+    }
+    /**
      * 
      * @param type $key
      * @param type $value
@@ -260,7 +284,7 @@ class JsonX {
      * @return array|JsonX If the given string represents A valid JSON, it 
      * will be converted to JsonX object and returned. Other than that, the 
      * method will return an array that contains information about parsing error. 
-     * The array will have two indices, 'last-error' and 'error-message'.
+     * The array will have two indices, 'error-code' and 'error-message'.
      * 
      * @since 1.2.5
      */
@@ -274,7 +298,7 @@ class JsonX {
             return $jsonXObj;
         }
         return [
-            'last-error' => json_last_error(),
+            'error-code' => json_last_error(),
             'error-message' => json_last_error_msg()
         ];
     }
@@ -654,7 +678,12 @@ class JsonX {
     /**
      * Checks if JsonX instance has the given key or not.
      * 
-     * @param string $key The name of the key.
+     * Note that if properties style is set to 'none', the value of the key 
+     * must be exactly the same as when the property was added or the method 
+     * will consider the key as does not exist. For other styles, the method will 
+     * convert the key to selected style and check for its existence. 
+     * 
+     * @param string $key The name of the key. 
      * 
      * @return boolean The method will return true if the 
      * key exists. false if not.
@@ -1101,6 +1130,7 @@ class JsonX {
      * <li>camel</li>
      * <li>none</li>
      * </ul>
+     * The default value is 'none'.
      * 
      * @since 1.2.4
      */
