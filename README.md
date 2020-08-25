@@ -8,9 +8,6 @@ A helper library for creating JSON strings in PHP. It can be used to create well
     <img src="https://codecov.io/gh/usernane/jsonx/branch/master/graph/badge.svg" />
   </a>
   <img src="https://img.shields.io/packagist/dt/webfiori/jsonx?color=light-green">
-  <a href="https://paypal.me/IbrahimBinAlshikh">
-    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fprogrammingacademia.com%2Fwebfiori%2Fapis%2Fshields-get-dontate-badget">
-  </a>
 </p>
 
 ## API Docs
