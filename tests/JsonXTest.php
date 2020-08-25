@@ -85,6 +85,86 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testToJsonString09() {
+        $arr = [NAN,INF];
+        $j = new JsonX();
+        $j->addArray('arr', $arr, true);
+        $this->assertEquals('{"arr":{"0":"NAN", "1":"INF"}}', $j->toJSONString());
+        $j->setIsFormatted(true);
+        $this->assertEquals('{'."\n"
+                . '    "arr":{'."\n"
+                . '        "0":"NAN", '."\n"
+                . '        "1":"INF"'."\n"
+                . '    }'."\n"
+                . '}', $j->toJSONString());
+        
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString10() {
+        $j = new JsonX();
+        $subJ = new JsonX([
+            'number-one' => 1,
+            'arr' => [],
+            'obj' => new JsonX()
+        ]);
+        $j->add('jsonx', $subJ);
+        $j->add('o', new Obj1('1', 2, 3, 4, '5'));
+        $this->assertEquals('{"jsonx":{"number-one":1, "arr":[], "obj":{}}, '
+                . '"o":{"property-00":"1", "property-01":2, "property-02":3}}', $j.'');
+        $j->setPropsStyle('snake');
+        $this->assertEquals('{"jsonx":{"number_one":1, "arr":[], "obj":{}}, '
+                . '"o":{"property_00":"1", "property_01":2, "property_02":3}}', $j.'');
+        $j->setIsFormatted(true);
+        $this->assertEquals('{'."\n"
+                . '    "jsonx":{'."\n"
+                . '        "number_one":1, '."\n"
+                . '        "arr":['."\n"
+                . '        ], '."\n"
+                . '        "obj":{'."\n"
+                . '        }'."\n"
+                . '    }, '."\n"
+                . '    "o":{'."\n"
+                . '        "property_00":"1", '."\n"
+                . '        "property_01":2, '."\n"
+                . '        "property_02":3'."\n"
+                . '    }'."\n"
+                . '}', $j.'');
+        $subX = $j->get('jsonx');
+        $this->assertEquals('{'."\n"
+                . '    "number_one":1, '."\n"
+                . '    "arr":['."\n"
+                . '    ], '."\n"
+                . '    "obj":{'."\n"
+                . '    }'."\n"
+                . '}', $subX->toJSONString());
+        
+        $j->get('jsonx')->add('general', new Obj0('1', '3', 99, 100, "ok"));
+        $this->assertEquals('{'."\n"
+                . '    "jsonx":{'."\n"
+                . '        "number_one":1, '."\n"
+                . '        "arr":['."\n"
+                . '        ], '."\n"
+                . '        "obj":{'."\n"
+                . '        }, '."\n"
+                . '        "general":{'."\n"
+                . '            "prop_0":"1", '."\n"
+                . '            "prop_1":"3", '."\n"
+                . '            "prop_2":99, '."\n"
+                . '            "prop_3":"ok"'."\n"
+                . '        }'."\n"
+                . '    }, '."\n"
+                . '    "o":{'."\n"
+                . '        "property_00":"1", '."\n"
+                . '        "property_01":2, '."\n"
+                . '        "property_02":3'."\n"
+                . '    }'."\n"
+                . '}', $j.'');
+    }
+    /**
+     * @test
+     */
     public function testDecode00() {
         $jsonStr = '{"Hello":"world"}';
         $decoded = JsonX::decode($jsonStr);
@@ -161,6 +241,16 @@ class JsonXTest extends TestCase {
         $this->assertEquals(1, $decoded->get('prop-1'));
         $this->assertEquals('hello', $decoded->get('prop-2'));
         $this->assertTrue($decoded->get('prop-3'));
+    }
+    /**
+     * @test
+     */
+    public function testDecode07() {
+        $jsonStr = '{prop-1:1}';
+        $decoded = JsonX::decode($jsonStr);
+        $this->assertTrue(gettype($decoded) == 'array');
+        $this->assertEquals(4, $decoded['error-code']);
+        $this->assertEquals('Syntax error', $decoded['error-message']);
     }
     /**
      * @test
@@ -806,6 +896,44 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testHasKeyValue00() {
+        $j = new JsonX();
+        $j->setPropsStyle('snake');
+        
+        $j->add('hello-hero', 'world');
+        $obj = new Obj0('8', 7, '6', '5', 4);
+        $j->add('object_1', $obj);
+        $j->add('nullVal', null);
+        
+        $this->assertTrue($j->hasKey('helloHero'));
+        $this->assertTrue($j->hasKey('hello-hero'));
+        $this->assertTrue($j->hasKey('hello_hero'));
+        
+        $j->setPropsStyle('kebab');
+        $this->assertTrue($j->hasKey(' null-val '));
+        $this->assertTrue($j->hasKey(' nullVal'));
+        $this->assertTrue($j->hasKey(' null_val        '));
+    }
+    /**
+     * @test
+     */
+    public function testHasKeyValue01() {
+        $j = new JsonX();
+        $j->setPropsStyle('none');
+        
+        $j->add('hello-hero', 'world');
+        $obj = new Obj0('8', 7, '6', '5', 4);
+        $j->add('object_1', $obj);
+        $j->add('nullVal', null);
+        
+        $this->assertFalse($j->hasKey('helloHero'));
+        $this->assertTrue($j->hasKey('hello-hero'));
+        $this->assertFalse($j->hasKey('hello_hero'));
+        
+    }
+    /**
+     * @test
+     */
     public function testPropCase00() {
         $j = new JsonX();
         $j->setPropsStyle('camel');
@@ -878,5 +1006,13 @@ class JsonXTest extends TestCase {
         $this->assertTrue($j->hasKey('user_display_name'));
         $this->assertTrue($j->hasKey('user_email'));
         $this->assertTrue($j->hasKey('user_id'));
+    }
+    /**
+     * @test
+     */
+    public function testStyle() {
+        define('JSONX_PROP_STYLE', 'snake');
+        $json = new JsonX();
+        $this->assertEquals('snake', $json->getPropStyle());
     }
 }
