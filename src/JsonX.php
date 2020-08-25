@@ -651,6 +651,7 @@ class JsonX {
      * <li>camel</li>
      * <li>kebab</li>
      * <li>snake</li>
+     * <li>none</li>
      * </ul>
      * 
      * @since 1.2.4
@@ -721,12 +722,10 @@ class JsonX {
     private function _appendNum(&$jsonStr, $val, $propsTab, $keyPropStyle) {
         if (is_nan($val)) {
             $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"NAN"';
+        } else if ($val == INF) {
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
         } else {
-            if ($val == INF) {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
-            } else {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val;
-            }
+            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val;
         }
     }
     private function _appendObj(&$jsonStr, $val, $propsTab, $keyPropStyle) {
@@ -804,12 +803,10 @@ class JsonX {
                     if ($asObject === true) {
                         if (is_nan($valueAtKey)) {
                             $arr .= $this->_getTab().'"'.$keys[$x].'":"NAN"'.$comma;
+                        } else if ($valueAtKey == INF) {
+                            $arr .= $this->_getTab().'"'.$keys[$x].'":"INF"'.$comma;
                         } else {
-                            if ($valueAtKey == INF) {
-                                $arr .= $this->_getTab().'"'.$keys[$x].'":"INF"'.$comma;
-                            } else {
-                                $arr .= $this->_getTab().'"'.$keys[$x].'":'.$valueAtKey.$comma;
-                            }
+                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.$valueAtKey.$comma;
                         }
                     } else if (is_nan($valueAtKey)) {
                                     $arr .= $this->_getTab().'"NAN"'.$comma;
@@ -845,12 +842,10 @@ class JsonX {
                         } else {
                             $arr .= $this->_getTab().'"'.$keys[$x].'":false'.$comma;
                         }
+                    } else if ($valueAtKey) {
+                        $arr .= $this->_getTab().self::$BoolTypes[0].$comma;
                     } else {
-                        if ($valueAtKey) {
-                            $arr .= $this->_getTab().self::$BoolTypes[0].$comma;
-                        } else {
-                            $arr .= $this->_getTab().self::$BoolTypes[1].$comma;
-                        }
+                        $arr .= $this->_getTab().self::$BoolTypes[1].$comma;
                     }
                 } else if ($valueType == self::TYPES[4]) {
                     if ($asObject) {
@@ -1008,16 +1003,12 @@ class JsonX {
     private static function _getAttrName($attr, $style) {
         if ($style == 'snake') {
             return self::_toSnackCase($attr);
+        } else if ($style == 'kebab') {
+            return self::_toKebabCase($attr);
+        } else if ($style == 'camel') {
+            return self::_toCamelCase($attr);
         } else {
-            if ($style == 'kebab') {
-                return self::_toKebabCase($attr);
-            } else {
-                if ($style == 'camel') {
-                    return self::_toCamelCase($attr);
-                } else {
-                    return $attr;
-                }
-            }
+            return $attr;
         }
     }
     /**
@@ -1179,34 +1170,20 @@ class JsonX {
 
             if ($dataType == 'string') {
                 $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.JsonX::escapeJSONSpecialChars($val['val']).'"';
-            } else {
-                if ($dataType == 'number') {
-                    $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-                } else {
-                    if ($dataType == 'boolean') {
-                        $this->_appendBool($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-                    } else {
-                        if ($dataType == 'jsonx') {
-                            $this->_appendJsonX($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-                        } else {
-                            if ($dataType == 'jsoni') {
-                                $this->_appendJsonI($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-                            } else {
-                                if ($dataType == 'object') {
-                                    $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-                                } else {
-                                    if ($dataType == 'array') {
-                                        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object'], true);
-                                    } else {
-                                        if ($dataType == 'null') {
-                                            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":null';
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            } else if ($dataType == 'number') {
+                $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'boolean') {
+                $this->_appendBool($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'jsonx') {
+                $this->_appendJsonX($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'jsoni') {
+                $this->_appendJsonI($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'object') {
+                $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
+            } else if ($dataType == 'array') {
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object'], true);
+            } else if ($dataType == 'null') {
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":null';
             }
             $comma = ', '.$this->NL;
         }
