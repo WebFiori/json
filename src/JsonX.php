@@ -525,12 +525,13 @@ class JsonX {
      * @since 1.2.5
      */
     public static function decode($jsonStr) {
-        $decoded = json_decode(utf8_encode($jsonStr), true);
-
-        if (gettype($decoded) == 'array') {
+        $decodedStd = json_decode($jsonStr);
+        
+        if (gettype($decodedStd) == 'object') {
             $jsonXObj = new JsonX();
-
-            foreach ($decoded as $key => $val) {
+            $objProps = get_object_vars($decodedStd);
+            
+            foreach ($objProps as $key => $val) {
                 self::_fixParsed($jsonXObj, $key, $val);
             }
 
@@ -586,6 +587,27 @@ class JsonX {
      */
     public function getPropStyle() {
         return $this->attrNameStyle;
+    }
+    /**
+     * Reads JSON data from a file and convert it to an object of type 'JsonX'.
+     * 
+     * @param string $pathToJsonFile The full path to a file that contains 
+     * JSON data.
+     * 
+     * @return JsonX|null|array If the method was able to read the whole data 
+     * and convert it to <code>JsonX</code> instance, the method will return 
+     * an object of type <code>JsonX</code>. If the method was unable to convert 
+     * file data to an object of type <code>JsonX</code>, it will return an 
+     * array that contains error information. The array will have two indices, 
+     * 'error-code' and 'error-message' Other than that, it will return null.
+     * 
+     * @since 1.2.5
+     */
+    public static function fromFile($pathToJsonFile) {
+        $fileContent = file_get_contents($pathToJsonFile);
+        if ($fileContent !== false) {
+            return self::decode($fileContent);
+        }
     }
     /**
      * Checks if JsonX instance has the given key or not.
@@ -959,12 +981,21 @@ class JsonX {
 
         if ($isIndexed) {
             $subArr = [];
-            // A sub array. Can have sub arrays. Sub arrays can have objects.
+            // A sub array. Can have sub arrays. 
+            // Sub arrays can have objects.
             for ($x = 0 ; $x < count($subVal) ; $x++) {
                 $subArrVal = $subVal[$x];
 
                 if (gettype($subArrVal) == 'array') {
                     self::_checkArr($subArrVal, $subArr);
+                } else if (gettype($subArrVal) == 'object') {
+                    // Object inside array.
+                    $subObj = new JsonX();
+                    $props = get_object_vars($subArrVal);
+                    foreach ($props as $propName => $propVal) {
+                        self::_fixParsed($subObj, $propName, $propVal);
+                    }
+                    $subArr[] = $subObj;
                 } else {
                     //Normal value inside array.
                     $subArr[] = $subArrVal;
@@ -987,6 +1018,14 @@ class JsonX {
             $arr = [];
             self::_checkArr($xVal, $arr);
             $jsonx->add($xKey, $arr[0]);
+        } else if (gettype($xVal) == 'object') {
+            //An object
+            $xJsonX = new JsonX();
+            $xProps = get_object_vars($xVal);
+            foreach ($xProps as $prop => $val) {
+                self::_fixParsed($xJsonX, $prop, $val);
+            }
+            $jsonx->add($xKey, $xJsonX);
         } else {
             //A simple value. Just add it
             $jsonx->add($xKey, $xVal);
@@ -1055,6 +1094,9 @@ class JsonX {
         }
 
         return $isIndexed;
+    }
+    private static function _isUpper($char) {
+        return $char >= 'A' && $char <= 'Z';
     }
     /**
      * Checks if the key is a valid key string.
@@ -1143,13 +1185,15 @@ class JsonX {
         $changeNextCharCase = false;
 
         for ($x = 0 ; $x < strlen($attr) ; $x++) {
-            if (($attr[$x] == '-' || $attr[$x] == '_') && $x != 0) {
+            $char = $attr[$x];
+            
+            if (($char == '-' || $char == '_') && $x != 0) {
                 $changeNextCharCase = true;
                 continue;
             }
 
             if ($changeNextCharCase) {
-                $retVal .= strtoupper($attr[$x]);
+                $retVal .= strtoupper($char);
                 $changeNextCharCase = false;
             } else {
                 $retVal .= $attr[$x];
@@ -1206,10 +1250,14 @@ class JsonX {
         $retVal = '';
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
-            if ($attr1[$x] >= 'A' && $attr1[$x] <= 'Z' && $x != 0) {
-                $retVal .= '-'.strtolower($attr1[$x]);
+            $char = $attr1[$x];
+            
+            if (self::_isUpper($char) && $x != 0) {
+                $retVal .= '-'.strtolower($char);
+            }  else if (self::_isUpper($char) && $x == 0) {
+                $retVal .= strtolower($char);
             } else {
-                $retVal .= $attr1[$x];
+                $retVal .= $char;
             }
         }
 
@@ -1220,10 +1268,14 @@ class JsonX {
         $retVal = '';
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
-            if ($attr1[$x] >= 'A' && $attr1[$x] <= 'Z' && $x != 0) {
-                $retVal .= '_'.strtolower($attr1[$x]);
+            $char = $attr1[$x];
+            
+            if (self::_isUpper($char) && $x != 0) {
+                $retVal .= '_'.strtolower($char);
+            } else if (self::_isUpper($char) && $x == 0) {
+                $retVal .= strtolower($char);
             } else {
-                $retVal .= $attr1[$x];
+                $retVal .= $char;
             }
         }
 

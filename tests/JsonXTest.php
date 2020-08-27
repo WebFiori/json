@@ -284,6 +284,13 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testDecod08() {
+        $jsonxObj =JsonX::decode('{"hello":"world", "sub-obj":{}, "an-array":[]}');
+        $this->assertEquals('{"hello":"world", "sub-obj":{}, "an-array":[]}', $jsonxObj.'');
+    }
+    /**
+     * @test
+     */
     public function testDecode05() {
         $jsonStr = '{'
                 . '"obj":{'
@@ -294,7 +301,9 @@ class JsonXTest extends TestCase {
                 . '"outer-arr":[{"hello":"world","deep-arr":["deep"]}]}';
         $decoded = JsonX::decode($jsonStr);
         $this->assertTrue($decoded instanceof JsonX);
-        
+        $this->assertEquals('{'
+                . '"obj":{"array":["world", {"hell":"no"}, ["one", 1]]},'
+                . ' "outer-arr":[{"hello":"world", "deep-arr":["deep"]}]}', $decoded.'');
         $jObj = $decoded->get('obj');
         $this->assertTrue($jObj instanceof JsonX);
         $objArr = $jObj->get('array');
@@ -313,6 +322,28 @@ class JsonXTest extends TestCase {
         $this->assertTrue(gettype($outerArr[0]->get('deep-arr')) == 'array');
         
         
+    }
+    /**
+     * @test
+     */
+    public function testFromFile00() {
+        $this->assertNull(JsonX::fromFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
+        $arr = JsonX::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
+        $this->assertTrue(gettype($arr) == 'array');
+        $jsonx = JsonX::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
+        $this->assertTrue($jsonx instanceof JsonX);
+        $packagesArr = $jsonx->get('packages');
+        $this->assertEquals(5, count($packagesArr));
+        $package5 = $packagesArr[4];
+        $this->assertTrue($package5 instanceof JsonX);
+        $this->assertEquals('webfiori/rest-easy', $package5->get('name'));
+        $this->assertEquals([
+                "Web APIs",
+                "api",
+                "json",
+                "library",
+                "php"
+            ], $package5->get('keywords'));
     }
     public function testAddMultiple00() {
         $j = new JsonX();
