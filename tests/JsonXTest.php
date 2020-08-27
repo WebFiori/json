@@ -150,10 +150,10 @@ class JsonXTest extends TestCase {
                 . '        "obj":{'."\n"
                 . '        }, '."\n"
                 . '        "general":{'."\n"
-                . '            "Property00":"1", '."\n"
-                . '            "Property01":"3", '."\n"
-                . '            "Property02":99, '."\n"
-                . '            "Property04":"ok"'."\n"
+                . '            "property00":"1", '."\n"
+                . '            "property01":"3", '."\n"
+                . '            "property02":99, '."\n"
+                . '            "property04":"ok"'."\n"
                 . '        }'."\n"
                 . '    }, '."\n"
                 . '    "o":{'."\n"
@@ -163,7 +163,7 @@ class JsonXTest extends TestCase {
                 . '    }'."\n"
                 . '}', $j.'');
         $j->setIsFormatted(false);
-        $this->assertEquals('{"jsonx":{"number_one":1, "arr":[], "obj":{}, "general":{"Property00":"1", "Property01":"3", "Property02":99, "Property04":"ok"}}, "o":{"property_00":"1", "property_01":2, "property_02":3}}', $j.'');
+        $this->assertEquals('{"jsonx":{"number_one":1, "arr":[], "obj":{}, "general":{"property00":"1", "property01":"3", "property02":99, "property04":"ok"}}, "o":{"property_00":"1", "property_01":2, "property_02":3}}', $j.'');
     }
     /**
      * @test
