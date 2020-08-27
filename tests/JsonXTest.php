@@ -150,10 +150,10 @@ class JsonXTest extends TestCase {
                 . '        "obj":{'."\n"
                 . '        }, '."\n"
                 . '        "general":{'."\n"
-                . '            "prop_0":"1", '."\n"
-                . '            "prop_1":"3", '."\n"
-                . '            "prop_2":99, '."\n"
-                . '            "prop_3":"ok"'."\n"
+                . '            "Property00":"1", '."\n"
+                . '            "Property01":"3", '."\n"
+                . '            "Property02":99, '."\n"
+                . '            "Property04":"ok"'."\n"
                 . '        }'."\n"
                 . '    }, '."\n"
                 . '    "o":{'."\n"
@@ -163,23 +163,33 @@ class JsonXTest extends TestCase {
                 . '    }'."\n"
                 . '}', $j.'');
         $j->setIsFormatted(false);
-        $this->assertEquals('{"jsonx":{"number_one":1, "arr":[], "obj":{}, "general":{"prop_0":"1", "prop_1":"3", "prop_2":99, "prop_3":"ok"}}, "o":{"property_00":"1", "property_01":2, "property_02":3}}', $j.'');
+        $this->assertEquals('{"jsonx":{"number_one":1, "arr":[], "obj":{}, "general":{"Property00":"1", "Property01":"3", "Property02":99, "Property04":"ok"}}, "o":{"property_00":"1", "property_01":2, "property_02":3}}', $j.'');
     }
     /**
      * @test
      */
     public function testToJsonString11() {
-        $arr = [["sub-arr",1,2,"hello"=>"world",new Obj0('1', 2, 3, 4, 5), new JsonX(['good'=>true])], new JsonX(['bad'=>false])];
+        $arr = [
+            [
+                "sub-arr",
+                1,
+                2,
+                "hello"=>"world",
+                new Obj0('1', 2, 3, 4, 5), 
+                new JsonX(['good'=>true])
+            ], 
+            new JsonX(['bad'=>false])
+        ];
         $json = new JsonX();
         $json->addArray('array', $arr);
         $this->assertEquals('{"array":[['
-                . '"sub-arr", 1, 2, {"hello":"world"}, {"prop-0":"1", "prop-1":2, "prop-2":3, "prop-3":5}, '
+                . '"sub-arr", 1, 2, {"hello":"world"}, {"Property00":"1", "Property01":2, "Property02":3, "Property04":5}, '
                 . '{"good":true}'
                 . '], {"bad":false}]}', $json.'');
         $json->remove('array');
         $json->addArray('x-array', $arr, true);
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr", "1":1, "2":2, "hello":"world", '
-                . '"3":{"prop-0":"1", "prop-1":2, "prop-2":3, "prop-3":5}, "4":{"good":true}}, "1":{"bad":false}}}', $json.'');
+                . '"3":{"Property00":"1", "Property01":2, "Property02":3, "Property04":5}, "4":{"good":true}}, "1":{"bad":false}}}', $json.'');
     }
     /**
      * @test
@@ -376,11 +386,11 @@ class JsonXTest extends TestCase {
         $j->add('big-array', $arr);
         $this->assertEquals('{'
                 .'"big-array":[{"hello":"world"}, '
-                .'{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                .'{"Property00":"Nice", "Property01":"To", "Property02":99, "Property04":"NAN"}, '
                 .'[4, 1.7, true, null], '
                 .'{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
                 .'{"test":true}, '
-                .'[[{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                .'[[{"Property00":"p0", "Property01":"p1", "Property02":"p2", "Property04":"p4"}, '
                 .'{"test":true}, '
                 .'{"property-00":"p0", "property-01":"p1", "property-02":"p2"}]]]'
                 .'}',$j->toJSONString());
@@ -402,11 +412,11 @@ class JsonXTest extends TestCase {
         $j->add('big-array', $arr,['array-as-object' => true]);
         $this->assertEquals('{'
                 .'"big-array":{"hello":"world", '
-                .'"0":{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                .'"0":{"Property00":"Nice", "Property01":"To", "Property02":99, "Property04":"NAN"}, '
                 .'"1":{"0":4, "1":1.7, "2":true, "3":null}, '
                 .'"2":{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
                 .'"3":{"test":true}, '
-                .'"4":{"0":{"0":{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                .'"4":{"0":{"0":{"Property00":"p0", "Property01":"p1", "Property02":"p2", "Property04":"p4"}, '
                 .'"1":{"test":true}, '
                 .'"2":{"property-00":"p0", "property-01":"p1", "property-02":"p2"}}}}'
                 .'}',$j->toJSONString());
@@ -452,11 +462,11 @@ class JsonXTest extends TestCase {
                 .'"boolean":true, '
                 .'"number":665, '
                 .'"str-as-bool":false, '
-                .'"object-0":{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                .'"object-0":{"Property00":"Nice", "Property01":"To", "Property02":99, "Property04":"NAN"}, '
                 .'"array-0":{"0":4, "1":1.7, "2":true, "3":null, "4":true, "5":false}, '
                 .'"object-1":{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
                 .'"jsonx-obj":{"test":true}, '
-                .'"array-1":{"0":{"0":{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                .'"array-1":{"0":{"0":{"Property00":"p0", "Property01":"p1", "Property02":"p2", "Property04":"p4"}, '
                 .'"1":{"test":true}, '
                 .'"2":{"property-00":"p0", "property-01":"p1", "property-02":"p2"}}}}'
                 .'}',$j->toJSONString());
@@ -478,11 +488,11 @@ class JsonXTest extends TestCase {
         $j->add('big-array', $arr);
         $this->assertEquals('{'
                 .'"big-array":[{"hello":"world"}, '
-                .'{"prop-0":"Nice", "prop-1":"To", "prop-2":99, "prop-3":"NAN"}, '
+                .'{"Property00":"Nice", "Property01":"To", "Property02":99, "Property04":"NAN"}, '
                 .'[4, 1.7, true, null, true, false], '
                 .'{"property-00":"1", "property-01":"Hello", "property-02":"No"}, '
                 .'{"test":true}, '
-                .'[[{"prop-0":"p0", "prop-1":"p1", "prop-2":"p2", "prop-3":"p4"}, '
+                .'[[{"Property00":"p0", "Property01":"p1", "Property02":"p2", "Property04":"p4"}, '
                 .'{"test":true}, '
                 .'{"property-00":"p0", "property-01":"p1", "property-02":"p2"}]]]'
                 .'}',$j->toJSONString());
@@ -546,7 +556,7 @@ class JsonXTest extends TestCase {
         $j = new JsonX();
         $obj = new Obj0('Hello', 0, true, null, 'he');
         $j->addObject('object', $obj);
-        $this->assertEquals('{"object":{"prop-0":"Hello", "prop-1":0, "prop-2":true, "prop-3":"he"}}',$j.'');
+        $this->assertEquals('{"object":{"Property00":"Hello", "Property01":0, "Property02":true, "Property04":"he"}}',$j.'');
     }
 
     /**
@@ -843,10 +853,10 @@ class JsonXTest extends TestCase {
                 .'{'."\n"
                 .'    "hello":"world", '."\n"
                 .'    "object":{'."\n"
-                .'        "prop-0":"8", '."\n"
-                .'        "prop-1":7, '."\n"
-                .'        "prop-2":"6", '."\n"
-                .'        "prop-3":4'."\n"
+                .'        "Property00":"8", '."\n"
+                .'        "Property01":7, '."\n"
+                .'        "Property02":"6", '."\n"
+                .'        "Property04":4'."\n"
                 .'    }, '."\n"
                 .'    "null":null, '."\n"
                 .'    "nan":"NAN", '."\n"

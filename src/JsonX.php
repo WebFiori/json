@@ -426,8 +426,10 @@ class JsonX {
      * type JsonX. If the given value is an object that does not implement the 
      * interface JsonI or it is not of type JsonX, 
      * The method will try to extract object information based on its "getXxxxx()" public 
-     * methods. In that case, the generated JSON will be on the formate 
-     * <b>{"prop-0":"prop-1","prop-n":""}</b>.
+     * methods. Assuming that the object has 2 public methods with names 
+     * <code>getFirstProp()</code> and <code>getSecondProp()</code>. 
+     * In that case, the generated JSON will be on the formate 
+     * <b>{"FirstProp":"prop-1","SecondProp":""}</b>.
      * 
      * @param string $key The key value.
      * 
@@ -1101,7 +1103,7 @@ class JsonX {
                 $propVal = call_user_func([$valueAtKey, $methods[$y]]);
 
                 if ($propVal !== false && $propVal !== null) {
-                    $json->add('prop-'.$propNum, $propVal);
+                    $json->add(substr($methods[$y], 3), $propVal);
                     $propNum++;
                 }
             }
