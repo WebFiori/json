@@ -770,7 +770,7 @@ class JsonX {
      * 
      * @since 1.0
      */
-    private function _arrayToJSONString($value,$asObject = false,$isSubArray = false) {
+    private function _arrayToJSONString($value,$asObject = false) {
         $keys = array_keys($value);
         $keysCount = count($keys);
 
@@ -778,10 +778,6 @@ class JsonX {
             $arr = '{'.$this->NL;
         } else {
             $arr = '['.$this->NL;
-        }
-
-        if (!$isSubArray) {
-            $this->_addTab();
         }
 
         if ($keysCount > 0) {
@@ -821,7 +817,9 @@ class JsonX {
                         $arr .= $this->_getTab().trim($valueAtKey->_toJson()).$comma;
                     }
             } else if ($keyType == self::TYPES[0]) {
+                //Key type = integer
                 if ($valueType == self::TYPES[0] || $valueType == self::TYPES[2]) {
+                    //Value type = numeric
                     if ($asObject === true) {
                         if (is_nan($valueAtKey)) {
                             $arr .= $this->_getTab().'"'.$keys[$x].'":"NAN"'.$comma;
@@ -838,6 +836,7 @@ class JsonX {
                         $arr .= $this->_getTab().$valueAtKey.$comma;
                     }
                 } else if ($valueType == self::TYPES[1]) {
+                    //Value type = string
                     if ($asObject === true) {
                         $asBool = $this->_stringAsBoolean($valueAtKey);
 
@@ -858,6 +857,7 @@ class JsonX {
                         }
                     }
                 } else if ($valueType == self::TYPES[3]) {
+                    //Value type = bool
                     if ($asObject) {
                         if ($valueAtKey) {
                             $arr .= $this->_getTab().'"'.$keys[$x].'":true'.$comma;
@@ -870,35 +870,24 @@ class JsonX {
                         $arr .= $this->_getTab().self::$BoolTypes[1].$comma;
                     }
                 } else if ($valueType == self::TYPES[4]) {
+                    //Value type = array
                     if ($asObject) {
-                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject,true).$comma;
+                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                     } else {
-                        $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject, true).$comma;
+                        $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                     }
                 } else if ($valueType == self::TYPES[5]) {
+                    //Value type = null
                     if ($asObject) {
                         $arr .= $this->_getTab().'"'.$keys[$x].'":'.'null'.$comma;
                     } else {
                         $arr .= $this->_getTab().'null'.$comma;
                     }
                 } else if ($valueType == self::TYPES[6]) {
+                    // Value type = object (not JsonX or JsonI)
                     if ($asObject) {
-                        if ($valueAtKey instanceof JsonX) {
-                            $valueAtKey->setPropsStyle($this->getPropStyle());
-                            $valueAtKey->currentTab = $this->currentTab;
-                            $valueAtKey->tabSize = $this->tabSize;
-                            $valueAtKey->NL = $this->NL;
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey->_toJson()).$comma;
-                        } else {
-                            $json = $this->_objectToJson($valueAtKey);
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
-                        }
-                    } else if ($valueAtKey instanceof JsonX) {
-                        $valueAtKey->setPropsStyle($this->getPropStyle());
-                        $valueAtKey->tabSize = $this->tabSize;
-                        $valueAtKey->currentTab = $this->currentTab;
-                        $valueAtKey->NL = $this->NL;
-                        $arr .= $this->_getTab().$valueAtKey->_toJson().$comma;
+                        $json = $this->_objectToJson($valueAtKey);
+                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
                     } else {
                         $json = $this->_objectToJson($valueAtKey);
                         $arr .= $this->_getTab().trim($json).$comma;
@@ -924,7 +913,7 @@ class JsonX {
                 } else if ($type == self::TYPES[5]) {
                     $arr .= 'null'.$comma;
                 } else if ($type == self::TYPES[4]) {
-                    $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
+                    $result = $this->_arrayToJSONString($valueAtKey, $asObject);
                     $arr .= $result.$comma;
                 } else if ($type == self::TYPES[6]) {
                     if ($valueAtKey instanceof JsonX) {
@@ -958,10 +947,6 @@ class JsonX {
             $arr .= $this->_getTab().'}';
         } else {
             $arr .= $this->_getTab().']';
-        }
-
-        if (!$isSubArray) {
-            $this->_reduceTab();
         }
 
         return $arr;
@@ -1206,7 +1191,7 @@ class JsonX {
             } else if ($dataType == 'object') {
                 $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'array') {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object'], true);
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object']);
             } else if ($dataType == 'null') {
                 $jsonStr .= $propsTab.'"'.$keyPropStyle.'":null';
             }
