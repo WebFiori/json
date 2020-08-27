@@ -922,13 +922,23 @@ class JsonXTest extends TestCase {
      */
     public function testFormat17() {
         $j = new JsonX([],true);
-        $j->addArray('hello-arr',["my-j" => new JsonX(),new JsonX(['hello' => "world"])],true);
+        $j->addArray('Hello_arr',["my-j" => new JsonX(),new JsonX(['Hello_x' => "world"])],true);
+        $this->assertEquals("{\n"
+                .'    "Hello_arr":{'."\n"
+                .'        "my-j":{'."\n"
+                .'        }, '."\n"
+                .'        "0":{'."\n"
+                .'            "Hello_x":"world"'."\n"
+                .'        }'."\n"
+                .'    }'."\n"
+                ."}",$j.'');
+        $j->setPropsStyle('kebab');
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
                 .'        "my-j":{'."\n"
                 .'        }, '."\n"
                 .'        "0":{'."\n"
-                .'            "hello":"world"'."\n"
+                .'            "hello-x":"world"'."\n"
                 .'        }'."\n"
                 .'    }'."\n"
                 ."}",$j.'');
