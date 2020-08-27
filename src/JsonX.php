@@ -916,16 +916,8 @@ class JsonX {
                     $result = $this->_arrayToJSONString($valueAtKey, $asObject);
                     $arr .= $result.$comma;
                 } else if ($type == self::TYPES[6]) {
-                    if ($valueAtKey instanceof JsonX) {
-                        $valueAtKey->setPropsStyle($this->getPropStyle());
-                        $valueAtKey->currentTab = $this->currentTab;
-                        $valueAtKey->tabSize = $this->tabSize;
-                        $valueAtKey->NL = $this->NL;
-                        $arr .= trim($valueAtKey->_toJson()).$comma;
-                    } else {
-                        $json = $this->_objectToJson($valueAtKey);
-                        $arr .= trim($json->_toJson()).$comma;
-                    }
+                    $json = $this->_objectToJson($valueAtKey);
+                    $arr .= trim($json->_toJson()).$comma;
                 } else {
                     $arr .= 'null'.$comma;
                 }
