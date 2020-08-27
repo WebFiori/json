@@ -613,6 +613,26 @@ class JsonX {
         return false;
     }
     /**
+     * Removes a property from the instance.
+     * 
+     * @param string $keyName The name of the property.
+     * 
+     * @return mixed|null The method will return the value of the property if 
+     * removed. Other than that, the method will return null.
+     * 
+     * @since 1.2.5
+     */
+    public function remove($keyName) {
+        $keyValidated = self::_isValidKey($keyName, $this->getPropStyle());
+        
+        if ($this->hasKey($keyValidated)) {
+            $retVal = $this->get($keyValidated);
+            unset($this->originals[$keyValidated]);
+            return $retVal;
+        }
+        
+    }
+    /**
      * Makes the JSON output appears readable or not.
      * 
      * If the output is formatted, the generated output will look like 
@@ -677,7 +697,9 @@ class JsonX {
      * @since 1.2.2
      */
     private function _addTab() {
-        $this->currentTab++;
+        if ($this->_isFormatted()) {
+            $this->currentTab++;
+        }
     }
     /**
      * 
@@ -713,8 +735,8 @@ class JsonX {
     private function _appendJsonX(&$jsonStr, $val, $propsTab, $keyPropStyle) {
         if ($this->tabSize != 0) {
             $val->tabSize = $this->tabSize;
-            $val->currentTab = $this->currentTab;
         }
+        $val->currentTab = $this->currentTab;
         $val->NL = $this->NL;
         $val->setPropsStyle($this->getPropStyle());
         $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val->_toJson();
@@ -1042,6 +1064,9 @@ class JsonX {
                 $this->add($key, $value);
             }
         }
+    }
+    private function _isFormatted() {
+        return $this->NL == "\n" && $this->tabSize != 0;
     }
     private static function _isIndexedArr($arr) {
         $isIndexed = true;
