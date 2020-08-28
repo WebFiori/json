@@ -110,6 +110,11 @@ class JsonXTest extends TestCase {
             'arr' => [],
             'obj' => new JsonX()
         ]);
+        $this->assertEquals([
+            'number-one',
+            'arr',
+            'obj'
+        ], $subJ->getPropsNames());
         $j->add('jsonx', $subJ);
         $j->add('o', new Obj1('1', 2, 3, 4, '5'));
         $this->assertEquals('{"jsonx":{"number-one":1, "arr":[], "obj":{}}, '
@@ -932,7 +937,9 @@ class JsonXTest extends TestCase {
                 .'        }'."\n"
                 .'    }'."\n"
                 ."}",$j.'');
+        $this->assertEquals(['Hello_arr'],$j->getPropsNames());
         $j->setPropsStyle('kebab');
+        $this->assertEquals(['Hello_arr'],$j->getPropsNames());
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
                 .'        "my-j":{'."\n"

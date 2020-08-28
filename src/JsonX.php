@@ -572,6 +572,19 @@ class JsonX {
         return $escapedJson;
     }
     /**
+     * Returns an array that contains the names of all added properties.
+     * 
+     * Note that the names will be returned same as when added without changing 
+     * the style.
+     * 
+     * @return array An array that contains the names of all added properties.
+     * 
+     * @since 1.2.5
+     */
+    public function getPropsNames() {
+        return array_keys($this->originals);
+    }
+    /**
      * Returns the style at which the names of the properties will use.
      * 
      * @return string The method will return one of the following values:
