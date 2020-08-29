@@ -371,13 +371,17 @@ class JsonX {
      * @param array $arr An associative array. The keys will act as object keys 
      * in JSON and the values of the keys will be the values in JSON.
      * 
+     * @throws InvalidArgumentException If the given parameter is not an array.
+     * 
      * @since 1.2.3
      */
     public function addMultiple($arr) {
-        if (gettype($arr) == 'array') {
-            foreach ($arr as $key => $value) {
-                $this->add($key, $value);
-            }
+        $paramType = gettype($arr);
+        if ($paramType != 'array') {
+            throw new \InvalidArgumentException('Was expecting an array. '.$paramType.' is given.');
+        }
+        foreach ($arr as $key => $value) {
+            $this->add($key, $value);
         }
     }
     /**

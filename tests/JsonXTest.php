@@ -360,6 +360,13 @@ class JsonXTest extends TestCase {
         ]);
         $this->assertEquals('{"user-id":5, "an-array":[1, 2, 3], "float":1.6, "bool":true}',$j.'');
     }
+    public function testAddMultiple01() {
+        $j = new JsonX();
+        $this->expectException('Exception');
+        $this->expectExceptionMessage('Was expecting an array. integer is given.');
+        $j->addMultiple(55);
+        $this->assertEquals('{"user-id":5, "an-array":[1, 2, 3], "float":1.6, "bool":true}',$j.'');
+    }
     /**
      * @test
      */
