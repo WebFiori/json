@@ -1084,7 +1084,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testStyle() {
-        define('JSONX_PROP_STYLE', 'snake');
+        define('JSON_PROP_STYLE', 'snake');
         $json = new Json();
         $this->assertEquals('snake', $json->getPropStyle());
     }

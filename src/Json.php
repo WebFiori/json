@@ -175,8 +175,8 @@ class Json {
         }
         $this->setPropsStyle('none');
 
-        if (defined('JSONX_PROP_STYLE')) {
-            $this->setPropsStyle(JSONX_PROP_STYLE);
+        if (defined('JSON_PROP_STYLE')) {
+            $this->setPropsStyle(JSON_PROP_STYLE);
         }
 
         $this->_initData($initialData);
@@ -784,7 +784,7 @@ class Json {
      * 
      * @since 1.0
      */
-    private function _arrayToJSONString(array $value,$asObject = false,$isSubArray = false) {
+    private function _arrayToJSONString(array $value,$asObject = false) {
         $keys = array_keys($value);
         $keysCount = count($keys);
 
@@ -893,22 +893,8 @@ class Json {
                     }
                 } else if ($valueType == JsonTypes::OBJ) {
                     if ($asObject) {
-                        if ($valueAtKey instanceof Json) {
-                            $valueAtKey->setPropsStyle($this->getPropStyle());
-                            $valueAtKey->currentTab = $this->currentTab;
-                            $valueAtKey->tabSize = $this->tabSize;
-                            $valueAtKey->NL = $this->NL;
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey->_toJson()).$comma;
-                        } else {
-                            $json = $this->_objectToJson($valueAtKey);
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
-                        }
-                    } else if ($valueAtKey instanceof Json) {
-                        $valueAtKey->setPropsStyle($this->getPropStyle());
-                        $valueAtKey->tabSize = $this->tabSize;
-                        $valueAtKey->currentTab = $this->currentTab;
-                        $valueAtKey->NL = $this->NL;
-                        $arr .= $this->_getTab().$valueAtKey->_toJson().$comma;
+                        $json = $this->_objectToJson($valueAtKey);
+                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
                     } else {
                         $json = $this->_objectToJson($valueAtKey);
                         $arr .= $this->_getTab().trim($json).$comma;
@@ -937,16 +923,8 @@ class Json {
                     $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
                     $arr .= $result.$comma;
                 } else if ($type == JsonTypes::OBJ) {
-                    if ($valueAtKey instanceof Json) {
-                        $valueAtKey->setPropsStyle($this->getPropStyle());
-                        $valueAtKey->currentTab = $this->currentTab;
-                        $valueAtKey->tabSize = $this->tabSize;
-                        $valueAtKey->NL = $this->NL;
-                        $arr .= trim($valueAtKey->_toJson()).$comma;
-                    } else {
-                        $json = $this->_objectToJson($valueAtKey);
-                        $arr .= trim($json->_toJson()).$comma;
-                    }
+                    $json = $this->_objectToJson($valueAtKey);
+                    $arr .= trim($json->_toJson()).$comma;
                 } else {
                     $arr .= 'null'.$comma;
                 }
