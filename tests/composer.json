@@ -1,0 +1,201 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "bc4f29587e3968fdb30d4ff6fffdc3b8",
+    "packages": [
+        {
+            "name": "erusev/parsedown",
+            "version": "1.7.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
+                "reference": "cb17b6477dfff935958ba01325f2e8a2bfa6dab3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Parsedown": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2019-12-30T22:54:17+00:00"
+        },
+        {
+            "name": "webfiori/jsonx",
+            "version": "v1.4.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/usernane/jsonx.git",
+                "reference": "34d7dd7148135ee97073c852231e4bc985a1b7bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/usernane/jsonx/zipball/34d7dd7148135ee97073c852231e4bc985a1b7bf",
+                "reference": "34d7dd7148135ee97073c852231e4bc985a1b7bf",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP library for creating well-formatted JSON strings.",
+            "keywords": [
+                "json",
+                "php"
+            ],
+            "time": "2020-07-31T19:05:04+00:00"
+        },
+        {
+            "name": "webfiori/ph-mysql",
+            "version": "1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/usernane/phMysql.git",
+                "reference": "4f42e3c0b55db423d4b92f6a6f0a6176e1d3b9bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/usernane/phMysql/zipball/4f42e3c0b55db423d4b92f6a6f0a6176e1d3b9bd",
+                "reference": "4f42e3c0b55db423d4b92f6a6f0a6176e1d3b9bd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP library for constructing MySQL database quires.",
+            "keywords": [
+                "database",
+                "mysql",
+                "php"
+            ],
+            "time": "2020-06-24T15:15:51+00:00"
+        },
+        {
+            "name": "webfiori/php-structs",
+            "version": "v1.9.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/usernane/phpStructs.git",
+                "reference": "fc1f43b1192d86e7a76ddd882c7df88efde45a52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/usernane/phpStructs/zipball/fc1f43b1192d86e7a76ddd882c7df88efde45a52",
+                "reference": "fc1f43b1192d86e7a76ddd882c7df88efde45a52",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A library that provide basic data structures for PHP in addition to creating well-formatted HTML documents.",
+            "keywords": [
+                "code",
+                "html",
+                "library",
+                "webfiori"
+            ],
+            "time": "2020-08-07T23:22:00+00:00"
+        },
+        {
+            "name": "webfiori/rest-easy",
+            "version": "v1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/usernane/restEasy.git",
+                "reference": "22af695e5722c41ea968c8872c3e642687bffc5b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/usernane/restEasy/zipball/22af695e5722c41ea968c8872c3e642687bffc5b",
+                "reference": "22af695e5722c41ea968c8872c3e642687bffc5b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6",
+                "webfiori/jsonx": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Basic library that can help in creating RESTful APIs using PHP.",
+            "keywords": [
+                "Web APIs",
+                "api",
+                "json",
+                "library",
+                "php"
+            ],
+            "time": "2020-07-31T19:31:29+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=5.6"
+    },
+    "platform-dev": []
+}

@@ -8,13 +8,11 @@ A helper library for creating JSON strings in PHP. It can be used to create well
     <img src="https://codecov.io/gh/usernane/jsonx/branch/master/graph/badge.svg" />
   </a>
   <img src="https://img.shields.io/packagist/dt/webfiori/jsonx?color=light-green">
-  <a href="https://paypal.me/IbrahimBinAlshikh">
-    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fprogrammingacademia.com%2Fwebfiori%2Fapis%2Fshields-get-dontate-badget">
-  </a>
 </p>
 
 ## API Docs
-This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://programmingacademia.com/webfiori/docs/jsonx.
+This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/jsonx.
+
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
@@ -22,7 +20,9 @@ The process of using the classes is very simple. What you have to do is the foll
   * Create an instance of the class.
   * Add JSON data as needed.
   * Output the object using `echo` command or any similar one.
-  
+
+For more information and advanced use cases, check [here](https://webfiori.com/learn/jsonx).
+
 ## Simple Example
 The following code shows a very simple usage example.
 
@@ -55,3 +55,5 @@ The output of the code will be like that:
 */
 echo $j;
 ```
+
+
