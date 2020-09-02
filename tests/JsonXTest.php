@@ -326,6 +326,24 @@ class JsonXTest extends TestCase {
         
         
     }
+    public function testDecode08() {
+        $jsonStr = '{"arr":['
+                . '["hello", {"one":1}, [{"sub-arr":["one", {"hello":"world"}]}]'
+                . ']'
+                . ']}';
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
+        $this->assertEquals($jsonStr, $decoded->toJSONString());
+        $arr = $decoded->get('arr');
+        $this->assertTrue(gettype($arr) == 'array');
+        $this->assertEquals(1, count($arr));
+        $this->assertEquals('hello',$arr[0][0]);
+        $subObj = $arr[0][1];
+        $this->assertTrue($subObj instanceof Json);
+        $this->assertTrue($subObj->hasKey('one'));
+        $subArr = $arr[0][2];
+        $this->assertTrue(gettype($subArr) == 'array');
+    }
     /**
      * @test
      */

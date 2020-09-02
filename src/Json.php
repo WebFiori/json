@@ -954,15 +954,6 @@ class Json {
 
         return $arr;
     }
-    private static function _arrayToObj($subVal) {
-        $subObj = new Json();
-
-        foreach ($subVal as $key => $val) {
-            self::_fixParsed($subObj, $key, $val);
-        }
-
-        return $subObj;
-    }
     private static function _checkArr($subVal, &$parentArr) {
         $isIndexed = self::_isIndexedArr($subVal);
 
@@ -989,9 +980,6 @@ class Json {
                 }
             }
             $parentArr[] = $subArr;
-        } else {
-            // Object inside array
-            $parentArr[] = self::_arrayToObj($subVal);
         }
     }
     /**
@@ -1171,7 +1159,7 @@ class Json {
 
         for ($x = 0 ; $x < strlen($attr) ; $x++) {
             $char = $attr[$x];
-            
+
             if (($char == '-' || $char == '_') && $x != 0) {
                 $changeNextCharCase = true;
                 continue;
