@@ -27,7 +27,7 @@ For more information and advanced use cases, check [here](https://webfiori.com/l
 The following code shows a very simple usage example.
 
 ```php
-//load the class JsonX
+//load the class "Json"
 require_once 'Json.php';
 use webfiori\json\Json;
 
