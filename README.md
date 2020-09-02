@@ -1,4 +1,4 @@
-# JsonX
+# Webfiori Json
 
 A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
 
@@ -11,28 +11,28 @@ A helper library for creating JSON strings in PHP. It can be used to create well
 </p>
 
 ## API Docs
-This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/jsonx.
+This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/webfiori/json.
 
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
-  * Import the class `JsonX`.
+  * Import the class `Json`.
   * Create an instance of the class.
   * Add JSON data as needed.
   * Output the object using `echo` command or any similar one.
 
-For more information and advanced use cases, check [here](https://webfiori.com/learn/jsonx).
+For more information and advanced use cases, check [here](https://webfiori.com/learn/webfiori-json).
 
 ## Simple Example
 The following code shows a very simple usage example.
 
 ```php
 //load the class JsonX
-require_once 'JsonX.php';
-use jsonx\JsonX;
+require_once 'Json.php';
+use webfiori\json\Json;
 
-//initialize an object of the class JsonX
-$j = new JsonX();
+//initialize an object of the class Json
+$j = new Json();
 
 //add a number attribute
 $j->addNumber('my-number', 34);
@@ -41,7 +41,7 @@ $j->addNumber('my-number', 34);
 $j->addBoolean('my-boolean', false);
 
 //add a string
-$j->addString('a-string', 'Hello, I\'m JsonX! I like "JSON". ');
+$j->addString('a-string', 'Hello, I\'m Json! I like "JSON". ');
 
 header('content-type:application/json');
 /*
@@ -50,7 +50,7 @@ The output of the code will be like that:
 {
     "my-number":34,
     "my-boolean":false,
-    "my-number":"Hello, I'm JsonX! I like \"json\". ",
+    "my-number":"Hello, I'm Json! I like \"json\". ",
 }
 */
 echo $j;
