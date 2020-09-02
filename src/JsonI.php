@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace jsonx;
+namespace webfiori\json;
 
 /**
  * An interface for the objects that can be added to an instance of JsonX.
@@ -37,7 +37,7 @@ interface JsonI {
      * to any JsonX instance. It is used to customize the generated 
      * JSON string.
      * 
-     * @return JsonX An instance of JsonX.
+     * @return Json An instance of JsonX.
      * 
      * @since 1.0
      */
