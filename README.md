@@ -1,4 +1,4 @@
-# Webfiori Json
+# WebFiori Json
 
 A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
 
