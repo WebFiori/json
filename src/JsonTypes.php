@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -22,24 +23,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 namespace webfiori\json;
 
 /**
- * An interface for the objects that can be added to an instance of JsonX.
- * @author Ibrahim 
+ * A class that contains constants which represents supported JSON datatypes. 
+ *
+ * @author Ibrahim
+ * 
  * @version 1.0
- * @see JsonX
  */
-interface JsonI {
+abstract class JsonTypes {
     /**
-     * Returns an object of type JsonX.
-     * This method can be implemented by any class that will be added  
-     * to any JsonX instance. It is used to customize the generated 
-     * JSON string.
-     * 
-     * @return Json An instance of JsonX.
+     * A constant that indicates that given datatype is of type integer.
      * 
      * @since 1.0
      */
-    public function toJSON();
+    const INT = 'integer';
+    /**
+     * A constant that indicates that given datatype is of type string.
+     * 
+     * @since 1.0
+     */
+    const STRING = 'string';
+    /**
+     * A constant that indicates that given datatype is of type double (or float).
+     * 
+     * @since 1.0
+     */
+    const DOUBLE = 'double';
+    /**
+     * A constant that indicates that given datatype is of type boolean.
+     * 
+     * @since 1.0
+     */
+    const BOOL = 'boolean';
+    /**
+     * A constant that indicates that given datatype is of type array.
+     * 
+     * @since 1.0
+     */
+    const ARR = 'array';
+    /**
+     * A constant that indicates that given datatype is null.
+     * 
+     * @since 1.0
+     */
+    const NUL = 'NULL';
+    /**
+     * A constant that indicates that given datatype is an object.
+     * 
+     * @since 1.0
+     */
+    const OBJ = 'object';
 }
