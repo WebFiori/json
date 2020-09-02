@@ -23,7 +23,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 namespace webfiori\json;
 
 /**
@@ -35,23 +34,11 @@ namespace webfiori\json;
  */
 abstract class JsonTypes {
     /**
-     * A constant that indicates that given datatype is of type integer.
+     * A constant that indicates that given datatype is of type array.
      * 
      * @since 1.0
      */
-    const INT = 'integer';
-    /**
-     * A constant that indicates that given datatype is of type string.
-     * 
-     * @since 1.0
-     */
-    const STRING = 'string';
-    /**
-     * A constant that indicates that given datatype is of type double (or float).
-     * 
-     * @since 1.0
-     */
-    const DOUBLE = 'double';
+    const ARR = 'array';
     /**
      * A constant that indicates that given datatype is of type boolean.
      * 
@@ -59,11 +46,17 @@ abstract class JsonTypes {
      */
     const BOOL = 'boolean';
     /**
-     * A constant that indicates that given datatype is of type array.
+     * A constant that indicates that given datatype is of type double (or float).
      * 
      * @since 1.0
      */
-    const ARR = 'array';
+    const DOUBLE = 'double';
+    /**
+     * A constant that indicates that given datatype is of type integer.
+     * 
+     * @since 1.0
+     */
+    const INT = 'integer';
     /**
      * A constant that indicates that given datatype is null.
      * 
@@ -76,4 +69,10 @@ abstract class JsonTypes {
      * @since 1.0
      */
     const OBJ = 'object';
+    /**
+     * A constant that indicates that given datatype is of type string.
+     * 
+     * @since 1.0
+     */
+    const STRING = 'string';
 }

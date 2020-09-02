@@ -350,9 +350,11 @@ class Json {
      */
     public function addMultiple($arr) {
         $paramType = gettype($arr);
+
         if ($paramType != 'array') {
             throw new \InvalidArgumentException('Was expecting an array. '.$paramType.' is given.');
         }
+
         foreach ($arr as $key => $value) {
             $this->add($key, $value);
         }
@@ -503,11 +505,11 @@ class Json {
      */
     public static function decode($jsonStr) {
         $decodedStd = json_decode($jsonStr);
-        
+
         if (gettype($decodedStd) == 'object') {
             $jsonXObj = new Json();
             $objProps = get_object_vars($decodedStd);
-            
+
             foreach ($objProps as $key => $val) {
                 self::_fixParsed($jsonXObj, $key, $val);
             }
@@ -549,6 +551,28 @@ class Json {
         return $escapedJson;
     }
     /**
+     * Reads JSON data from a file and convert it to an object of type 'Json'.
+     * 
+     * @param string $pathToJsonFile The full path to a file that contains 
+     * JSON data.
+     * 
+     * @return Json|null|array If the method was able to read the whole data 
+     * and convert it to <code>Json</code> instance, the method will return 
+     * an object of type <code>Json</code>. If the method was unable to convert 
+     * file data to an object of type <code>Json</code>, it will return an 
+     * array that contains error information. The array will have two indices, 
+     * 'error-code' and 'error-message' Other than that, it will return null.
+     * 
+     * @since 1.2.5
+     */
+    public static function fromFile($pathToJsonFile) {
+        $fileContent = file_get_contents($pathToJsonFile);
+
+        if ($fileContent !== false) {
+            return self::decode($fileContent);
+        }
+    }
+    /**
      * Returns an array that contains the names of all added properties.
      * 
      * Note that the names will be returned same as when added without changing 
@@ -577,27 +601,6 @@ class Json {
      */
     public function getPropStyle() {
         return $this->attrNameStyle;
-    }
-    /**
-     * Reads JSON data from a file and convert it to an object of type 'Json'.
-     * 
-     * @param string $pathToJsonFile The full path to a file that contains 
-     * JSON data.
-     * 
-     * @return Json|null|array If the method was able to read the whole data 
-     * and convert it to <code>Json</code> instance, the method will return 
-     * an object of type <code>Json</code>. If the method was unable to convert 
-     * file data to an object of type <code>Json</code>, it will return an 
-     * array that contains error information. The array will have two indices, 
-     * 'error-code' and 'error-message' Other than that, it will return null.
-     * 
-     * @since 1.2.5
-     */
-    public static function fromFile($pathToJsonFile) {
-        $fileContent = file_get_contents($pathToJsonFile);
-        if ($fileContent !== false) {
-            return self::decode($fileContent);
-        }
     }
     /**
      * Checks if Json instance has the given key or not.
@@ -638,13 +641,13 @@ class Json {
      */
     public function remove($keyName) {
         $keyValidated = self::_isValidKey($keyName, $this->getPropStyle());
-        
+
         if ($this->hasKey($keyValidated)) {
             $retVal = $this->get($keyValidated);
             unset($this->originals[$keyValidated]);
+
             return $retVal;
         }
-        
     }
     /**
      * Makes the JSON output appears readable or not.
@@ -738,6 +741,7 @@ class Json {
     }
     private function _appendJsonI(&$jsonStr, $val, $propsTab, $keyPropStyle) {
         $jsonXObj = $val->toJSON();
+
         if ($this->tabSize != 0) {
             $jsonXObj->tabSize = $this->tabSize;
             $jsonXObj->currentTab = $this->currentTab;
@@ -1232,7 +1236,7 @@ class Json {
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
-            
+
             if (self::_isUpper($char) && $x != 0) {
                 $retVal .= '-'.strtolower($char);
             }  else if (self::_isUpper($char) && $x == 0) {
@@ -1250,7 +1254,7 @@ class Json {
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
-            
+
             if (self::_isUpper($char) && $x != 0) {
                 $retVal .= '_'.strtolower($char);
             } else if (self::_isUpper($char) && $x == 0) {
