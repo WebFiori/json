@@ -1,6 +1,6 @@
 <?php
 
-use jsonx\JsonX;
+use webfiori\json\Json;
 use jsonx\tests\Obj0;
 use jsonx\tests\Obj1;
 use PHPUnit\Framework\TestCase;
@@ -10,7 +10,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString00() {
-        $j = new JsonX(['hello'=>'world']);
+        $j = new Json(['hello'=>'world']);
         $this->assertEquals('{"hello":"world"}', $j->toJSONString());
         $this->assertEquals('world', $j->get('hello'));
     }
@@ -18,7 +18,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString01() {
-        $j = new JsonX(['number'=>100]);
+        $j = new Json(['number'=>100]);
         $this->assertEquals('{"number":100}', $j->toJSONString());
         $this->assertSame(100, $j->get('number'));
     }
@@ -26,7 +26,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString02() {
-        $j = new JsonX(['number'=>20.2235]);
+        $j = new Json(['number'=>20.2235]);
         $this->assertEquals('{"number":20.2235}', $j->toJSONString());
         $this->assertSame(20.2235, $j->get('number'));
     }
@@ -34,7 +34,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString03() {
-        $j = new JsonX(['number'=>NAN]);
+        $j = new Json(['number'=>NAN]);
         $this->assertEquals('{"number":"NAN"}', $j->toJSONString());
         $this->assertTrue(is_nan($j->get('number')));
     }
@@ -42,7 +42,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString04() {
-        $j = new JsonX(['number'=>INF]);
+        $j = new Json(['number'=>INF]);
         $this->assertEquals('{"number":"INF"}', $j->toJSONString());
         $this->assertSame(INF, $j->get('number'));
     }
@@ -50,7 +50,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString05() {
-        $j = new JsonX(['bool-true'=>true,'bool-false'=>false]);
+        $j = new Json(['bool-true'=>true,'bool-false'=>false]);
         $this->assertEquals('{"bool-true":true, "bool-false":false}', $j->toJSONString());
         $this->assertSame(true, $j->get('bool-true'));
         $this->assertSame(false, $j->get('bool-false'));
@@ -59,7 +59,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString06() {
-        $j = new JsonX(['null'=>null]);
+        $j = new Json(['null'=>null]);
         $this->assertEquals('{"null":null}', $j->toJSONString());
         $this->assertNull($j->get('null'));
     }
@@ -67,7 +67,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString07() {
-        $j = new JsonX(['array'=>['one',1]]);
+        $j = new Json(['array'=>['one',1]]);
         $this->assertEquals('{"array":["one", 1]}', $j->toJSONString());
         $this->assertEquals(['one', 1],$j->get('array'));
     }
@@ -75,9 +75,9 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString08() {
-        $jx = new JsonX(['hello'=>'world']);
+        $jx = new Json(['hello'=>'world']);
         $arr = ['one',1,null,1.8,true,false,NAN,INF,$jx,['two','good']];
-        $j = new JsonX([
+        $j = new Json([
             'array'=>$arr
             ]);
         $this->assertEquals('{"array":["one", 1, null, 1.8, true, false, "NAN", "INF", {"hello":"world"}, ["two", "good"]]}', $j->toJSONString());
@@ -87,7 +87,7 @@ class JsonXTest extends TestCase {
      */
     public function testToJsonString09() {
         $arr = [NAN,INF];
-        $j = new JsonX();
+        $j = new Json();
         $j->addArray('arr', $arr, true);
         $this->assertEquals('{"arr":{"0":"NAN", "1":"INF"}}', $j->toJSONString());
         $j->setIsFormatted(true);
@@ -103,11 +103,11 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testToJsonString10() {
-        $j = new JsonX();
-        $subJ = new JsonX([
+        $j = new Json();
+        $subJ = new Json([
             'number-one' => 1,
             'arr' => [],
-            'obj' => new JsonX()
+            'obj' => new Json()
         ]);
         $j->add('jsonx', $subJ);
         $j->add('o', new Obj1('1', 2, 3, 4, '5'));
@@ -167,8 +167,8 @@ class JsonXTest extends TestCase {
      */
     public function testDecode00() {
         $jsonStr = '{"Hello":"world"}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $this->assertEquals("world",$decoded->get('Hello'));
     }
     /**
@@ -176,8 +176,8 @@ class JsonXTest extends TestCase {
      */
     public function testDecode01() {
         $jsonStr = '{"Hello":"world","true":true,"false":false}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $this->assertEquals("world",$decoded->get('Hello'));
         $this->assertTrue($decoded->get('true'));
         $this->assertFalse($decoded->get('false'));
@@ -187,8 +187,8 @@ class JsonXTest extends TestCase {
      */
     public function testDecode02() {
         $jsonStr = '{"Hello":"world","one":1,"two":2.4,"null":null}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $this->assertEquals("world",$decoded->get('Hello'));
         $this->assertEquals(1,$decoded->get('one'));
         $this->assertEquals(2.4,$decoded->get('two'));
@@ -199,8 +199,8 @@ class JsonXTest extends TestCase {
      */
     public function testDecode03() {
         $jsonStr = '{"array":["world","one",1,"two",2.4,"null",null,true,false]}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $arr = $decoded->get('array');
         $this->assertTrue(gettype($arr) == 'array');
         $this->assertEquals('world', $arr[0]);
@@ -218,10 +218,10 @@ class JsonXTest extends TestCase {
      */
     public function testDecode04() {
         $jsonStr = '{"object":{"true":true,"false":false,"null":null,"str":"A string", "number":33, "array":["Hello"]}}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $jObj = $decoded->get('object');
-        $this->assertTrue($jObj instanceof JsonX);
+        $this->assertTrue($jObj instanceof Json);
         $this->assertTrue($jObj->get('true'));
         $this->assertFalse($jObj->get('false'));
         $this->assertNull($jObj->get('null'));
@@ -236,8 +236,8 @@ class JsonXTest extends TestCase {
      */
     public function testDecode06() {
         $jsonStr = '{"prop-1":1,"prop-2":"hello","prop-3":true}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         $this->assertEquals(1, $decoded->get('prop-1'));
         $this->assertEquals('hello', $decoded->get('prop-2'));
         $this->assertTrue($decoded->get('prop-3'));
@@ -247,7 +247,7 @@ class JsonXTest extends TestCase {
      */
     public function testDecode07() {
         $jsonStr = '{prop-1:1}';
-        $decoded = JsonX::decode($jsonStr);
+        $decoded = Json::decode($jsonStr);
         $this->assertTrue(gettype($decoded) == 'array');
         $this->assertEquals(4, $decoded['error-code']);
         $this->assertEquals('Syntax error', $decoded['error-message']);
@@ -263,15 +263,15 @@ class JsonXTest extends TestCase {
                 . '        {"hell":"no"},'
                 . '        ["one",1]]},'
                 . '"outer-arr":[{"hello":"world","deep-arr":["deep"]}]}';
-        $decoded = JsonX::decode($jsonStr);
-        $this->assertTrue($decoded instanceof JsonX);
+        $decoded = Json::decode($jsonStr);
+        $this->assertTrue($decoded instanceof Json);
         
         $jObj = $decoded->get('obj');
-        $this->assertTrue($jObj instanceof JsonX);
+        $this->assertTrue($jObj instanceof Json);
         $objArr = $jObj->get('array');
         $this->assertTrue(gettype($objArr) == 'array');
         $this->assertEquals("world", $objArr[0]);
-        $this->assertTrue($objArr[1] instanceof JsonX);
+        $this->assertTrue($objArr[1] instanceof Json);
         $this->assertEquals("no", $objArr[1]->get('hell'));
         $this->assertTrue(gettype($objArr[2]) == 'array');
         $this->assertEquals("one",$objArr[2][0]);
@@ -279,14 +279,14 @@ class JsonXTest extends TestCase {
         
         $outerArr = $decoded->get('outer-arr');
         $this->assertTrue(gettype($outerArr) == 'array');
-        $this->assertTrue($outerArr[0] instanceof JsonX);
+        $this->assertTrue($outerArr[0] instanceof Json);
         $this->assertEquals("world",$outerArr[0]->get('hello'));
         $this->assertTrue(gettype($outerArr[0]->get('deep-arr')) == 'array');
         
         
     }
     public function testAddMultiple00() {
-        $j = new JsonX();
+        $j = new Json();
         $j->addMultiple([
             'user-id'=>5,
             'an-array'=>[1,2,3],
@@ -299,7 +299,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd00() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertTrue($j->add('a-string', 'This is a string.'));
         $this->assertTrue($j->add('string-as-bool-1', 'NO',['string-as-boolean' => true]));
         $this->assertTrue($j->add('string-as-bool-2', -1,['string-as-boolean' => true]));
@@ -316,7 +316,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd01() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertTrue($j->add('string-as-bool-1', 'NO',['string-as-boolean' => true]));
         $this->assertTrue($j->add('string-as-bool-2', 'No',['string-as-boolean' => true]));
         $this->assertTrue($j->add('string-as-bool-3', 'false',['string-as-boolean' => true]));
@@ -344,8 +344,8 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd03() {
-        $j = new JsonX();
-        $subJ = new JsonX();
+        $j = new Json();
+        $subJ = new Json();
         $subJ->add('test', true);
         $arr = [
             'hello' => 'world',
@@ -370,8 +370,8 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd04() {
-        $j = new JsonX();
-        $subJ = new JsonX();
+        $j = new Json();
+        $subJ = new Json();
         $subJ->add('test', true);
         $arr = [
             'hello' => 'world',
@@ -396,7 +396,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd05() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertFalse($j->add('  ',null));
         $this->assertTrue($j->add('null-value',null));
         $this->assertEquals('{"null-value":null}',$j->toJSONString());
@@ -405,15 +405,15 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd06() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertFalse($j->add('boolean','null',['string-as-boolean' => true]));
     }
     /**
      * @test
      */
     public function testAdd07() {
-        $j = new JsonX();
-        $subJ = new JsonX();
+        $j = new Json();
+        $subJ = new Json();
         $subJ->add('test', true);
         $arr = [
             'hello' => 'world',
@@ -446,8 +446,8 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAdd08() {
-        $j = new JsonX();
-        $subJ = new JsonX();
+        $j = new Json();
+        $subJ = new Json();
         $subJ->add('test', true);
         $arr = [
             'hello' => 'world',
@@ -472,7 +472,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddArray00() {
-        $j = new JsonX();
+        $j = new Json();
         $arr = [];
         $j->addArray('arr', $arr);
         $this->assertEquals('{"arr":[]}',$j.'');
@@ -481,7 +481,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddArray01() {
-        $j = new JsonX();
+        $j = new Json();
         $arr = [1,"Hello",true,NAN,null,99.8,INF];
         $j->addArray('arr', $arr);
         $this->assertEquals('{"arr":[1, "Hello", true, "NAN", null, 99.8, "INF"]}',$j.'');
@@ -490,7 +490,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddArray02() {
-        $j = new JsonX();
+        $j = new Json();
         $arr = [1,1.5,"Hello",true,NAN,null,INF];
         $j->addArray('arr', $arr,false);
         $this->assertEquals('{"arr":[1, 1.5, "Hello", true, "NAN", null, "INF"]}',$j.'');
@@ -499,7 +499,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddArray03() {
-        $j = new JsonX();
+        $j = new Json();
         $arr = ["number" => 1,"Hello" => "world!","boolean" => true,NAN,null];
         $j->addArray('arr', $arr);
         $this->assertEquals('{"arr":[{"number":1}, {"Hello":"world!"}, {"boolean":true}, "NAN", null]}',$j.'');
@@ -508,7 +508,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddBoolean00() {
-        $j = new JsonX();
+        $j = new Json();
         $j->addBoolean('bool ', true);
         $this->assertEquals('{"bool":true}',$j.'');
     }
@@ -516,7 +516,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddNumber00() {
-        $j = new JsonX();
+        $j = new Json();
         $j->addNumber('   number', 33);
         $this->assertEquals('{"number":33}',$j.'');
     }
@@ -524,7 +524,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddObj00() {
-        $j = new JsonX();
+        $j = new Json();
         $obj = new Obj0('Hello', 0, true, null, 'he');
         $j->addObject('object', $obj);
         $this->assertEquals('{"object":{"prop-0":"Hello", "prop-1":0, "prop-2":true, "prop-3":"he"}}',$j.'');
@@ -534,7 +534,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddObj01() {
-        $j = new JsonX();
+        $j = new Json();
         $obj = new Obj1('Hello', 0, true, null, 'he');
         $j->addObject('object', $obj);
         $this->assertEquals('{"object":{"property-00":"Hello", "property-01":0, "property-02":true}}',$j.'');
@@ -543,7 +543,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddStringTest00() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertFalse($j->addString('', 'Hello World!'));
         $this->assertFalse($j->addString('  ', 'Hello World!'));
         $this->assertFalse($j->addString("\n", 'Hello World!'));
@@ -553,7 +553,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddStringTest01() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertTrue($j->addString('hello', 'Hello World!'));
         $this->assertEquals('{"hello":"Hello World!"}',$j.'');
     }
@@ -561,7 +561,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testAddStringTest02() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertFalse($j->addString('invalid-boolean', 'falseX',true));
     }
     /**
@@ -569,7 +569,7 @@ class JsonXTest extends TestCase {
      */
     public function testEscJSonSpecialChars00() {
         $str = 'I\'m "Good".';
-        $result = JsonX::escapeJSONSpecialChars($str);
+        $result = Json::escapeJSONSpecialChars($str);
         $this->assertEquals('I\'m \"Good\".',$result);
     }
     /**
@@ -577,7 +577,7 @@ class JsonXTest extends TestCase {
      */
     public function testEscJSonSpecialChars01() {
         $str = 'Path: "C:/Windows/Media/onestop.midi"\n';
-        $result = JsonX::escapeJSONSpecialChars($str);
+        $result = Json::escapeJSONSpecialChars($str);
         $this->assertEquals('Path: \"C:\/Windows\/Media\/onestop.midi\"\\\\n',$result);
     }
     /**
@@ -586,7 +586,7 @@ class JsonXTest extends TestCase {
     public function testEscJSonSpecialChars02() {
         $str = '\tI\'m good. But "YOU" are "Better".\r\n'
                 .'\\An inline comment is good.';
-        $result = JsonX::escapeJSONSpecialChars($str);
+        $result = Json::escapeJSONSpecialChars($str);
         $this->assertEquals('\\\\tI\'m good. But \"YOU\" are \"Better\".\\\\r\\\\n'
                 .'\\\\An inline comment is good.',$result);
     }
@@ -594,14 +594,14 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat00() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $this->assertEquals("{\n}",$j.'');
     }
     /**
      * @test
      */
     public function testFormat01() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addBoolean('hello');
         $this->assertEquals("{\n"
                 .'    "hello":true'."\n"
@@ -611,7 +611,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat02() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addNumber('hello',66);
         $this->assertEquals("{\n"
                 .'    "hello":66'."\n"
@@ -621,7 +621,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat03() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addString('hello','world');
         $j->addString('hello2','another string');
         $this->assertEquals("{\n"
@@ -633,7 +633,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat04() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[]);
         $this->assertEquals("{\n"
                 .'    "hello-arr":['."\n"
@@ -644,7 +644,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat05() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[1,2,3,4]);
         $this->assertEquals("{\n"
                 .'    "hello-arr":['."\n"
@@ -659,7 +659,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat06() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[[],["hello world"]]);
         $this->assertEquals("{\n"
                 .'    "hello-arr":['."\n"
@@ -675,7 +675,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat07() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[[],["hello world",["another sub","with two elements"]]]);
         $this->assertEquals("{\n"
                 .'    "hello-arr":['."\n"
@@ -695,7 +695,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat08() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[], true);
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
@@ -706,7 +706,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat09() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',[1, 2, 3, "hello mr ali"], true);
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
@@ -721,7 +721,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat10() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $j->addArray('hello-arr',["is-good" => "You are good", 2, 3, "hello mr ali",[],["a sub with element","hello" => 'world']], true);
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
@@ -742,7 +742,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat11() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $obj = new Obj1('Hello', 0, true, null, 'he');
         $j->addObject('object', $obj);
         $this->assertEquals('{'."\n"
@@ -757,7 +757,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat12() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $obj = new Obj1('Hello', 0, true, null, 'he');
         $j->addArray('array', [$obj]);
         $this->assertEquals('{'."\n"
@@ -774,7 +774,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat13() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $obj = new Obj1('Hello', 0, true, null, 'he');
         $j->addArray('array', [$obj], true);
         $this->assertEquals('{'."\n"
@@ -791,7 +791,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat14() {
-        $j = new JsonX([],true);
+        $j = new Json([],true);
         $obj = new Obj1('Hello', 0, true, null, 'he');
         $j->addArray('array', ["my-obj" => $obj,"empty-arr" => []], true);
         $this->assertEquals('{'."\n"
@@ -810,7 +810,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat15() {
-        $j = new JsonX([
+        $j = new Json([
             "hello" => "world",
             'object' => new Obj0('8', 7, '6', '5', 4),
             'null' => null,
@@ -818,7 +818,7 @@ class JsonXTest extends TestCase {
             'inf' => INF,
             'bool' => true,
             'number' => 667,
-            'jsonx' => new JsonX(['sub-json-x' => new JsonX()])
+            'jsonx' => new Json(['sub-json-x' => new Json()])
         ], true);
         $this->assertEquals(''
                 .'{'."\n"
@@ -845,8 +845,8 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat16() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',[new JsonX(),new JsonX(['hello' => "world"])]);
+        $j = new Json([],true);
+        $j->addArray('hello-arr',[new Json(),new Json(['hello' => "world"])]);
         $this->assertEquals("{\n"
                 .'    "hello-arr":['."\n"
                 .'        {'."\n"
@@ -861,8 +861,8 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testFormat17() {
-        $j = new JsonX([],true);
-        $j->addArray('hello-arr',["my-j" => new JsonX(),new JsonX(['hello' => "world"])],true);
+        $j = new Json([],true);
+        $j->addArray('hello-arr',["my-j" => new Json(),new Json(['hello' => "world"])],true);
         $this->assertEquals("{\n"
                 .'    "hello-arr":{'."\n"
                 .'        "my-j":{'."\n"
@@ -877,7 +877,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testGetKeyValue00() {
-        $j = new JsonX();
+        $j = new Json();
         $this->assertNull($j->get('not-exist'));
         $j->add('hello', 'world');
         $obj = new Obj0('8', 7, '6', '5', 4);
@@ -897,7 +897,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testHasKeyValue00() {
-        $j = new JsonX();
+        $j = new Json();
         $j->setPropsStyle('snake');
         
         $j->add('hello-hero', 'world');
@@ -918,7 +918,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testHasKeyValue01() {
-        $j = new JsonX();
+        $j = new Json();
         $j->setPropsStyle('none');
         
         $j->add('hello-hero', 'world');
@@ -935,7 +935,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testPropCase00() {
-        $j = new JsonX();
+        $j = new Json();
         $j->setPropsStyle('camel');
         $j->add('hello', 'world');
         $this->assertTrue($j->hasKey('hello'));
@@ -961,7 +961,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testPropCase01() {
-        $j = new JsonX();
+        $j = new Json();
         $j->setPropsStyle('snake');
         $j->add('hello', 'world');
         $this->assertTrue($j->hasKey('hello'));
@@ -986,7 +986,7 @@ class JsonXTest extends TestCase {
      * @test
      */
     public function testPropCase02() {
-        $j = new JsonX();
+        $j = new Json();
         $j->setPropsStyle('kebab');
         $j->add('hello', 'world');
         $this->assertTrue($j->hasKey('hello'));
@@ -1012,7 +1012,7 @@ class JsonXTest extends TestCase {
      */
     public function testStyle() {
         define('JSONX_PROP_STYLE', 'snake');
-        $json = new JsonX();
+        $json = new Json();
         $this->assertEquals('snake', $json->getPropStyle());
     }
 }

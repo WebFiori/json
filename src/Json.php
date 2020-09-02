@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace jsonx;
+namespace webfiori\json;
 
 /**
  * A class that can be used to create well formatted JSON strings. 
@@ -43,7 +43,7 @@ namespace jsonx;
  * 
  * @version 1.2.5
  */
-class JsonX {
+class Json {
     /**
      * An array of supported property styles.
      * 
@@ -214,7 +214,7 @@ class JsonX {
      * @param string $key The value of the key. Note that the style of the key 
      * does not matter.
      * 
-     * @return JsonX|mixed|null The return type will depends on the value which 
+     * @return Json|mixed|null The return type will depends on the value which 
      * was set by any method which can be used to add props. It can be a number, 
      * a boolean, string, an object or null if does not exist.
      * 
@@ -304,7 +304,7 @@ class JsonX {
             $this->addNumber($key, $value) || 
             $this->addObject($key, $value);
         } else {
-            $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
+            $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
 
             if ($keyValidated !== false) {
                 $this->_addToOriginals($keyValidated, null, 'null');
@@ -330,7 +330,7 @@ class JsonX {
      * or the given value is not an array.
      */
     public function addArray($key, $value,$asObject = false) {
-        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
+        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($value) == self::TYPES[4]) {
             $this->_addToOriginals($keyValidated, $value, 'array', ['array-as-object' => $asObject === true]);
@@ -355,7 +355,7 @@ class JsonX {
      * @since 1.0
      */
     public function addBoolean($key,$val = true) {
-        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
+        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[3]) {
             $this->_addToOriginals($keyValidated, $val, 'boolean');
@@ -431,7 +431,7 @@ class JsonX {
      * 
      * @param string $key The key value.
      * 
-     * @param JsonI|JsonX|object $val The object that will be added.
+     * @param JsonI|Json|object $val The object that will be added.
      * 
      * @return boolean The method will return true if the object is added. 
      * If the key value is invalid string, the method will return false.
@@ -442,10 +442,10 @@ class JsonX {
         $keyValidated = self::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[6]) {
-            if (is_subclass_of($val, 'jsonx\JsonI')) {
+            if (is_subclass_of($val, 'webfiori\json\JsonI')) {
                 $this->_addToOriginals($keyValidated, $val, 'jsoni');
                 return true;
-            } else if ($val instanceof JsonX) {
+            } else if ($val instanceof Json) {
                 $this->_addToOriginals($keyValidated, $val, 'jsonx');
                 return true;
             } else if (gettype($val) == 'object') {
@@ -489,7 +489,7 @@ class JsonX {
      * @since 1.0
      */
     public function addString($key, $val,$toBool = false) {
-        $keyValidated = JsonX::_isValidKey($key, $this->getPropStyle());
+        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
 
         if ($keyValidated !== false && gettype($val) == self::TYPES[1]) {
             if ($toBool) {
@@ -515,7 +515,7 @@ class JsonX {
      * 
      * @param string $jsonStr A string which looks like JSON object.
      * 
-     * @return array|JsonX If the given string represents A valid JSON, it 
+     * @return array|Json If the given string represents A valid JSON, it 
      * will be converted to JsonX object and returned. Other than that, the 
      * method will return an array that contains information about parsing error. 
      * The array will have two indices, 'error-code' and 'error-message'.
@@ -526,7 +526,7 @@ class JsonX {
         $decoded = json_decode(utf8_encode($jsonStr), true);
 
         if (gettype($decoded) == 'array') {
-            $jsonXObj = new JsonX();
+            $jsonXObj = new Json();
 
             foreach ($decoded as $key => $val) {
                 self::_fixParsed($jsonXObj, $key, $val);
@@ -555,13 +555,13 @@ class JsonX {
         $string = ''.$string;
 
         if ($string) {
-            $count = count(JsonX::SPECIAL_CHARS);
+            $count = count(Json::SPECIAL_CHARS);
 
             for ($i = 0 ; $i < $count ; $i++) {
                 if ($i == 0) {
-                    $escapedJson = str_replace(JsonX::SPECIAL_CHARS[$i], JsonX::SPECIAL_CHARS_ESC[$i], $string);
+                    $escapedJson = str_replace(Json::SPECIAL_CHARS[$i], Json::SPECIAL_CHARS_ESC[$i], $string);
                 } else {
-                    $escapedJson = str_replace(JsonX::SPECIAL_CHARS[$i], JsonX::SPECIAL_CHARS_ESC[$i], $escapedJson);
+                    $escapedJson = str_replace(Json::SPECIAL_CHARS[$i], Json::SPECIAL_CHARS_ESC[$i], $escapedJson);
                 }
             }
         }
@@ -787,7 +787,7 @@ class JsonX {
                 } else {
                     $arr .= $this->_getTab().trim($jsonXObj->_toJson()).$comma;
                 }
-            } else if ($valueAtKey instanceof JsonX) {
+            } else if ($valueAtKey instanceof Json) {
                     $valueAtKey->setPropsStyle($this->getPropStyle());
                     $valueAtKey->tabSize = $this->tabSize;
                     $valueAtKey->currentTab = $this->currentTab;
@@ -823,7 +823,7 @@ class JsonX {
                             $toAdd = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
                             $arr .= $this->_getTab().'"'.$keys[$x].'":'.$toAdd;
                         } else {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
+                            $arr .= $this->_getTab().'"'.$keys[$x].'":"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                         }
                     } else {
                         $asBool = $this->_stringAsBoolean($valueAtKey);
@@ -832,7 +832,7 @@ class JsonX {
                             $toAdd = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
                             $arr .= $toAdd;
                         } else {
-                            $arr .= $this->_getTab().'"'.JsonX::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
+                            $arr .= $this->_getTab().'"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                         }
                     }
                 } else if ($valueType == self::TYPES[3]) {
@@ -861,7 +861,7 @@ class JsonX {
                     }
                 } else if ($valueType == self::TYPES[6]) {
                     if ($asObject) {
-                        if ($valueAtKey instanceof JsonX) {
+                        if ($valueAtKey instanceof Json) {
                             $valueAtKey->setPropsStyle($this->getPropStyle());
                             $valueAtKey->currentTab = $this->currentTab;
                             $valueAtKey->tabSize = $this->tabSize;
@@ -871,7 +871,7 @@ class JsonX {
                             $json = $this->_objectToJson($valueAtKey);
                             $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
                         }
-                    } else if ($valueAtKey instanceof JsonX) {
+                    } else if ($valueAtKey instanceof Json) {
                         $valueAtKey->setPropsStyle($this->getPropStyle());
                         $valueAtKey->tabSize = $this->tabSize;
                         $valueAtKey->currentTab = $this->currentTab;
@@ -905,7 +905,7 @@ class JsonX {
                     $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
                     $arr .= $result.$comma;
                 } else if ($type == self::TYPES[6]) {
-                    if ($valueAtKey instanceof JsonX) {
+                    if ($valueAtKey instanceof Json) {
                         $valueAtKey->setPropsStyle($this->getPropStyle());
                         $valueAtKey->currentTab = $this->currentTab;
                         $valueAtKey->tabSize = $this->tabSize;
@@ -919,7 +919,7 @@ class JsonX {
                     $arr .= 'null'.$comma;
                 }
             } else {
-                $j = new JsonX();
+                $j = new Json();
                 $j->setPropsStyle($this->getPropStyle());
                 $j->currentTab = $this->currentTab;
                 $j->tabSize = $this->tabSize;
@@ -945,7 +945,7 @@ class JsonX {
         return $arr;
     }
     private static function _arrayToObj($subVal) {
-        $subObj = new JsonX();
+        $subObj = new Json();
 
         foreach ($subVal as $key => $val) {
             self::_fixParsed($subObj, $key, $val);
@@ -977,7 +977,7 @@ class JsonX {
     }
     /**
      * 
-     * @param JsonX $jsonx
+     * @param Json $jsonx
      * @param type $xVal
      */
     private static function _fixParsed($jsonx, $xKey, $xVal) {
@@ -1082,7 +1082,7 @@ class JsonX {
     private function _objectToJson($valueAtKey) {
         $methods = get_class_methods($valueAtKey);
         $count = count($methods);
-        $json = new JsonX();
+        $json = new Json();
         $json->setPropsStyle($this->getPropStyle());
         $json->currentTab = $this->currentTab;
         $json->tabSize = $this->tabSize;
@@ -1169,7 +1169,7 @@ class JsonX {
             $jsonStr .= $comma;
 
             if ($dataType == 'string') {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.JsonX::escapeJSONSpecialChars($val['val']).'"';
+                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.Json::escapeJSONSpecialChars($val['val']).'"';
             } else if ($dataType == 'number') {
                 $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
             } else if ($dataType == 'boolean') {

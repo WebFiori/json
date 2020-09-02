@@ -40,7 +40,7 @@ if (explode($DS, $rootDirTrimmed)[0] == 'home') {
 }
 define('ROOT', $rootDir);
 echo 'Root Directory: \''.$rootDir.'\'.'."\n";
-require_once $rootDir.'src'.$DS.'JsonX.php';
+require_once $rootDir.'src'.$DS.'Json.php';
 require_once $rootDir.'src'.$DS.'JsonI.php';
 require_once $rootDir.'tests'.$DS.'Obj0.php';
 require_once $rootDir.'tests'.$DS.'Obj1.php';
