@@ -305,7 +305,7 @@ class Json {
     public function addArray($key, $value,$asObject = false) {
         $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
 
-        if ($keyValidated !== false && gettype($value) == JsonTypes::ARRAY) {
+        if ($keyValidated !== false && gettype($value) == JsonTypes::ARR) {
             $this->_addToOriginals($keyValidated, $value, 'array', ['array-as-object' => $asObject === true]);
 
             return true;
@@ -820,13 +820,13 @@ class Json {
                     } else {
                         $arr .= $this->_getTab().self::$BoolTypes[1].$comma;
                     }
-                } else if ($valueType == JsonTypes::ARRAY) {
+                } else if ($valueType == JsonTypes::ARR) {
                     if ($asObject) {
                         $arr .= $this->_getTab().'"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject,true).$comma;
                     } else {
                         $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject, true).$comma;
                     }
-                } else if ($valueType == JsonTypes::NULL) {
+                } else if ($valueType == JsonTypes::NUL) {
                     if ($asObject) {
                         $arr .= $this->_getTab().'"'.$keys[$x].'":'.'null'.$comma;
                     } else {
@@ -872,9 +872,9 @@ class Json {
                     $arr .= $valueAtKey.$comma;
                 } else if ($type == JsonTypes::BOOL) {
                     $arr .= $valueAtKey === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                } else if ($type == JsonTypes::NULL) {
+                } else if ($type == JsonTypes::NUL) {
                     $arr .= 'null'.$comma;
-                } else if ($type == JsonTypes::ARRAY) {
+                } else if ($type == JsonTypes::ARR) {
                     $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
                     $arr .= $result.$comma;
                 } else if ($type == JsonTypes::OBJ) {

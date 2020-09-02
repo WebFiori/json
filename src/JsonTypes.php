@@ -63,13 +63,13 @@ abstract class JsonTypes {
      * 
      * @since 1.0
      */
-    const ARRAY = 'array';
+    const ARR = 'array';
     /**
      * A constant that indicates that given datatype is null.
      * 
      * @since 1.0
      */
-    const NULL = 'NULL';
+    const NUL = 'NULL';
     /**
      * A constant that indicates that given datatype is an object.
      * 
