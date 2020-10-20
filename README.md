@@ -3,15 +3,17 @@
 A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
 
 <p align="center">
-  <a href="https://travis-ci.org/usernane/jsonx"><img src="https://travis-ci.org/usernane/jsonx.svg?branch=master"></a>
-  <a href="https://codecov.io/gh/usernane/jsonx">
-    <img src="https://codecov.io/gh/usernane/jsonx/branch/master/graph/badge.svg" />
+  <a href="https://travis-ci.com/WebFiori/json"><img src="https://travis-ci.com/WebFiori/json.svg?branch=master"></a>
+  <a href="https://codecov.io/gh/WebFiori/json">
+    <img src="https://codecov.io/gh/WebFiori/json/branch/master/graph/badge.svg" />
   </a>
-  <img src="https://img.shields.io/packagist/dt/webfiori/jsonx?color=light-green">
+  <a href="https://packagist.org/packages/webfiori/jsonx">
+    <img src="https://img.shields.io/packagist/dt/webfiori/jsonx?color=light-green">
+  </a>
 </p>
 
 ## API Docs
-This library is a part of <a href="https://github.com/usernane/webfiori">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/webfiori/json.
+This library is a part of <a href="https://github.com/WebFiori/framework">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/webfiori/json.
 
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
