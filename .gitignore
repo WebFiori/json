@@ -1,2 +1,5 @@
 /nbproject
 test.*
+.php_cs.cache
+.phpunit.result.cache
+clover.xml
