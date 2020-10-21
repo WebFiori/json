@@ -10,9 +10,9 @@ before_script:
     - composer install --prefer-source --no-interaction --dev
 addons:
     sonarcloud:
-        organization: "usernane"
+        organization: "webfiori"
         token:
-          secure: IfuFmGMCCQn6vGiol1A2KdYKn/bX6p9Db76E0gPbTJpqpKUujMgkikrh+2mP/iCk4yGq+T0oBehyqDlsxAXBCQ92qZOsTqSKLYEtfLJSuL4OFdgt0Bkm3hDOdM74+WgVeORcsquxjPvlOXqMmkv6gZEIrXsXn34h2AlrXghdbckorn70ZXaqEgTJ6x41hrc7hvmaNYhZYVhl2bS3RhA40Y7TkDa/CGP2/F0/CYd8Jx54ieOEywTTWZGpEhaGOOnjkuPr6aXXPlMXUt+t3wAHkMC4em5PBA8bEoZ3KGxLRcnidTRc2NqNK8RsflbsWG+45nRpin/cDdJ9igG5I6iJYRkxeEM2yReaCM8pumH5schmg41Cn5zkI6YP8HNBI+gnsTmfE99TfInx3v0MvH0OKudxUC4Ium8hxdCg961G1/2N0Fc8ovgE1nkVMiM6FAxPC9WQaVqQJ1Pj28U0STBBWO8aXRlhXdOnOLx+cnv2D9tbGD8Ghshp27490gr8tLtq/q1XDRGl/A2jRC2v9Lw0znIyrmEKjM0wxyNReTPMYrUIlvdJB+VNigxH5AK6P8EQKURSr2CGAt7StaNAi7Xf94/jQZ2QNrylqUEY8E4NmNLAxVJL73Eh8kBrOQgHDZXH4nftkcpXJuKXM+gF70w/juTXV/alxi5M49fuNkASj1U=
+          secure: bu5UjbUuzEZfEYMRznrjA5izOBwrrJGvN8e7fWYBDAkgcBRWkQwaD46MoqMKE4vOm45equmydTRwNOTYvfAs2pyIi8FRNM/kdhqtIFVDXvdh3FAyYX/9pzs5+qls1jH4N1OSbYErSosmN6zUZXLkEMdIkQM/cY8P8bFykWCSVsEShT8dtbWXMPr1IbEZ05wcnc6ivj4hGkp/LBnIPHVfVTannHxYWJnXhQDBLK4IRX5YnsirPrFawl9yCTeHWRN47Ke9xymsxOlW6k3rCvftoteciEG0tM/6oMNsNZ42fR+Bq17W4ONj/4kSgl1F61lb+Q94BBpCi1vsejvhlIc34YLW8l9p5z+W/ngcUUj2EzDxIB2SvemHhDcHlVRcmCs7zcXizn3TZsHtSJRX9azEFFyOIKzuZ9/L3ryge9xJ4xPZeJvUMwa4JHB/w/Jpab4kaWt4dbwBW7RE+8P+HkqKkBJsr8RwSB08moBgA2z1wQAEC9FQQTBCopZh/L/p7G7b5ohKHEFWLNRT9SCtSN/cxOEgH4wHjyhLaFib5w0rYumB59xgqF7AzClN5VFViEYiYnxPaIetcJ2ID9Hdjjqfp6fewPw5eIPmQwrSXQ5M6AdchYGjDev4Vo9wEFvp/ib2DS/Yfq8UDWNMXhtyOpnLRDjAeUZ4IgwoOvgkkyYei54=
       
 script:
     - phpunit --configuration phpunit.xml
