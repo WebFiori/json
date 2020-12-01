@@ -14,3 +14,12 @@ jobs:
     steps:
       - name : Check PHP Version
         run: php -v
+      - name: Setup MySQL Testing Database
+        run: mysql -e 'create database if not exists testing_db;'
+      - name: Set MySQL Root Password
+        run: sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('123456') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+      - name: Upgrade MySQL
+        run: sudo mysql_upgrade -u root -p123456
+      - name: Restart MySQL
+        run: sudo service mysql restart
+        
