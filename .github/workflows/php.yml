@@ -13,14 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
       
-    - name: PHP Unit
-      uses: php-actions/phpunit@v1
-      with:
-        configuration: phpunit.xml
+    
         
     - name: Cache Composer packages
       id: composer-cache
@@ -34,7 +28,11 @@ jobs:
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist --no-progress --no-suggest
-
+      
+    - name: PHP Unit Tests
+      uses: php-actions/phpunit@v1
+      with:
+        configuration: tests/phpunit.xml
     # Add a test script to composer.json, for instance: "test": "vendor/bin/phpunit"
     # Docs: https://getcomposer.org/doc/articles/scripts.md
 
