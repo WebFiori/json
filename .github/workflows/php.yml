@@ -16,7 +16,7 @@ jobs:
         php: [ 7.4 ]
         dependency-version: [prefer-stable]
             
-    name: PHP${{matrix.php}} - ${{matrix.dependency-version}} - ${{matrix.os}}
+    name: PHP${{matrix.php}} - ${{matrix.os}}
     
     steps: 
       - name: Clone Repo
@@ -29,7 +29,7 @@ jobs:
           extensions: mysqli, mbstring
 
       - name: Install Dependecies 
-        run: composer require ${{matrix.dependency-version}} --prefer-dist --no-interaction
+        run: composer require --prefer-dist --no-interaction
       
       - name: Execute Tests
         run: vendor/bin/phpunit
