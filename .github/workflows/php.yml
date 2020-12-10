@@ -10,11 +10,11 @@ jobs:
   test:
     runs-on: ${{ matrix.os }} 
     strategy: 
-        fail-fast: true
-        matrix: 
-            os: [ ubuntu-latest ]
-            php: [ 7.4 ]
-            dependency-version: [prefer-stable]
+      fail-fast: true
+      matrix: 
+        os: [ ubuntu-latest ]
+        php: [ 7.4 ]
+        dependency-version: [prefer-stable]
             
     name: PHP${{matrix.php}} - ${{matrix.dependency-version}} - ${{matrix.os}}
     
