@@ -29,7 +29,7 @@ jobs:
           extensions: mysqli, mbstring
 
       - name: Install Dependecies 
-        run: composer update ${{matrix.dependency-version}} --prefer-dist
+        run: composer install ${{matrix.dependency-version}} --prefer-dist --no-interaction
       
       - name: Execute Tests
         run: vendor/bin/phpunit
