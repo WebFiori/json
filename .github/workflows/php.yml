@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Run Tests
 
 on:
   push:
@@ -7,19 +7,28 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name : Check PHP Version
-        run: php -v
-      - name: Setup MySQL Testing Database
-        run: mysql -e 'create database if not exists testing_db;'
-      - name: Set MySQL Root Password
-        run: sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('123456') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
-      - name: Upgrade MySQL
-        run: sudo mysql_upgrade -u root -p123456
-      - name: Restart MySQL
-        run: sudo service mysql restart
+  test:
+    runs-on: ${{ matrix.os }} 
+    strategy: 
+        fail-fast: true
+        matrix: 
+            os: [ ubuntu-latest ]
+            php: [ 7.4 ]
+            dependency-version: [prefer-stable]
+    name: PHP${{matrix.php}} - ${{matrix.dependency-version}} - ${{matrix.os}}
+    steps: 
+      - name: Clone Repo
+      - uses: actions/checkout@v1
+      
+      - name: Setup PHP
+      - uses: shivammathur/setup-php@v2
+      - with:
+          php-versin: ${{ matrix.php }} 
+          extensions: mysqli, mbstring
+      - name: Install Dependecies 
+      - run: composer update ${{matrix.dependency-version}} --prefer-dist
+      
+      - name: Execute Tests
+      - run: vendor/bin/phpunit
+      
         
