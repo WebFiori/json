@@ -1,4 +1,4 @@
-name: Run Tests
+name: RunTests
 
 on:
   push:
@@ -15,7 +15,9 @@ jobs:
             os: [ ubuntu-latest ]
             php: [ 7.4 ]
             dependency-version: [prefer-stable]
+            
     name: PHP${{matrix.php}} - ${{matrix.dependency-version}} - ${{matrix.os}}
+    
     steps: 
       - name: Clone Repo
       - uses: actions/checkout@v1
@@ -25,6 +27,7 @@ jobs:
       - with:
           php-versin: ${{ matrix.php }} 
           extensions: mysqli, mbstring
+
       - name: Install Dependecies 
       - run: composer update ${{matrix.dependency-version}} --prefer-dist
       
