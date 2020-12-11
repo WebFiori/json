@@ -26,7 +26,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }} 
           extensions: mysqli, mbstring
-          tools: phpunit:9.0.0  
+          tools: phpunit  
       
       - name: Execute Tests
         run: phpunit
