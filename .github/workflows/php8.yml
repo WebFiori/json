@@ -13,7 +13,7 @@ jobs:
       fail-fast: true
       matrix: 
         os: [ ubuntu-latest ]
-        php: [ 8.0, 7.4, 7.3]
+        php: [ 8.0, 7.4, 7.3, 7.2]
             
     name: PHP${{matrix.php}} - ${{matrix.os}}
     
@@ -29,7 +29,7 @@ jobs:
           tools: phpunit  
       
       - name: Execute Tests
-        run: phpunit
+        run: phpunit:8.5.13
       
       - name: CodeCov
         uses: codecov/codecov-action@v1
