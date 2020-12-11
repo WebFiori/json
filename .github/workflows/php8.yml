@@ -26,10 +26,10 @@ jobs:
         with:
           php-version: ${{ matrix.php }} 
           extensions: mysqli, mbstring
-          tools: phpunit  
+          tools: phpunit:8.5.13
       
       - name: Execute Tests
-        run: phpunit:8.5.13
+        run: phpunit
       
       - name: CodeCov
         uses: codecov/codecov-action@v1
