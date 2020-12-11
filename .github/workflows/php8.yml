@@ -29,7 +29,7 @@ jobs:
           tools: phpunit  
       
       - name: Execute Tests
-        run: phpunit:9.5.0
+        run: phpunit
       
       - name: CodeCov
         uses: codecov/codecov-action@v1
