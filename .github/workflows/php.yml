@@ -29,6 +29,6 @@ jobs:
           tools: phpunit 
       
       - name: Execute Tests
-        run: vendor/bin/phpunit
+        run: phpunit
       
         
