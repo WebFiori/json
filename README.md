@@ -3,7 +3,7 @@
 A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
 
 <p align="center">
-  <img src="https://github.com/WebFiori/json/workflows/Run%20Tests/badge.svg?branch=master">
+  <img src="https://github.com/WebFiori/json/workflows/Build/badge.svg?branch=master">
   <a href="https://codecov.io/gh/WebFiori/json">
     <img src="https://codecov.io/gh/WebFiori/json/branch/master/graph/badge.svg" />
   </a>
