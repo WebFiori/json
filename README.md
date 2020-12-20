@@ -15,6 +15,9 @@ A helper library for creating JSON strings in PHP. It can be used to create well
 ## API Docs
 This library is a part of <a href="https://github.com/WebFiori/framework">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/webfiori/json.
 
+## Supported PHP Versions
+The library supports all versions from PHP 5.6 up to PHP 8.0.
+
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
