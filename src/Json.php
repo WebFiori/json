@@ -166,7 +166,7 @@ class Json {
     public function __construct(array $initialData = [],$isFormatted = false) {
         $this->currentTab = 0;
 
-        if ($isFormatted === true || (defined('VERBOSE') && VERBOSE === true)) {
+        if ($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true)) {
             $this->tabSize = 4;
             $this->NL = "\n";
         } else {
@@ -1011,11 +1011,21 @@ class Json {
     /**
      * Convert the name of the prop name to the correct case.
      * 
-     * @param type $attr
+     * @param string $attr The name of the attribute.
      * 
-     * @return type
+     * @param string $style The name of the style that the given string will be 
+     * converted to. It can be one of 3 values:
+     * <ul>
+     * <li>snake</li>
+     * <li>kebab</li>
+     * <li>camel</li>
+     * </ul>
+     * 
+     * @return string The same string converted to selected style.
+     * 
+     * @since 1.2.5
      */
-    private static function _getAttrName($attr, $style) {
+    public static function toStyle($attr, $style) {
         if ($style == 'snake') {
             return self::_toSnackCase($attr);
         } else if ($style == 'kebab') {
@@ -1087,7 +1097,7 @@ class Json {
         $trimmedKey = trim($key);
 
         if (strlen($trimmedKey) != 0) {
-            return self::_getAttrName($trimmedKey, $style);
+            return self::toStyle($trimmedKey, $style);
         }
 
         return false;
