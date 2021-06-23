@@ -6,11 +6,11 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 
 //load required files
-require_once '../src/JsonX.php';
-require_once '../src/JsonI.php';
+require_once '../webfiori/json/Json.php';
+require_once '../webfiori/json/JsonI.php';
 
-use jsonx\JsonI;
-use jsonx\JsonX;
+use webfiori\json\JsonI;
+use webfiori\json\Json;
 //defining a class user
 //in order for the class to be added in JsonX object,
 //it must implement the interface JsonI
@@ -32,7 +32,7 @@ class User implements JsonI {
     //this function is from the interface JsonI
     // it must return JsonX object
     public function toJSON() {
-        $retVal = new JsonX();
+        $retVal = new Json();
         $retVal->addString('username', $this->username);
         $retVal->addString('email', $this->email);
 

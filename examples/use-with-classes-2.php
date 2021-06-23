@@ -6,10 +6,10 @@ ini_set('display_errors', 1);
 error_reporting(-1);
 
 //load required files
-require_once '../src/JsonX.php';
-require_once '../src/JsonI.php';
+require_once '../webfiori/json/Json.php';
+require_once '../webfiori/json/JsonI.php';
 
-use jsonx\JsonX;
+use webfiori\json\Json;
 //defining a class user
 //In this example, the class does not 
 //implement the interface 'JsonI'.
@@ -37,7 +37,7 @@ class User {
 $user = new User();
 $user->setEmail('example@example.com');
 $user->setUsername('Warrior Vx');
-$json = new JsonX();
+$json = new Json();
 $json->addObject('user', $user);
 header('content-type:application/json');
 echo $json;

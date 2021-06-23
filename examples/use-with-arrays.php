@@ -7,11 +7,11 @@ error_reporting(-1);
 
 
 //load the class JsonX
-require_once '../src/JsonX.php';
-use jsonx\JsonX;
+require_once '../webfiori/json/Json.php';
+use webfiori\json\Json;
 
 //initialize an object of the class JsonX
-$j = new JsonX();
+$j = new Json();
 
 $arr = [1,'1','1.4',5.8,'hello'];
 $arr2 = [
