@@ -4,14 +4,14 @@
     </php>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>./src</directory>
+            <directory>./webfiori</directory>
         </whitelist>
     </filter>
     <logging>
         <log type="coverage-clover" target="clover.xml"/>
     </logging>
     <testsuites>
-        <testsuite name="JsonX Tests">
+        <testsuite name="Json Tests">
             <directory>./tests</directory>
         </testsuite>
     </testsuites>
