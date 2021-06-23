@@ -595,6 +595,28 @@ class JsonXTest extends TestCase {
     /**
      * @test
      */
+    public function testAddArray04() {
+        $j = new Json();
+        $arr = ["number" => 1,"Hello-1" => "world!","boolean-super" => true,NAN,null];
+        $j->setPropsStyle('snake');
+        $j->addArray('arr', $arr);
+        $this->assertEquals('{"arr":[{"number":1}, {"hello_1":"world!"}, {"boolean_super":true}, "NAN", null]}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testAddArray05() {
+        $j = new Json();
+        $arr = ["number" => 1,"Hello-1" => "world!","boolean-super" => true,NAN,null];
+        $j->setPropsStyle('snake');
+        $j->add('arr', $arr, [
+            'array-as-object' => true
+        ]);
+        $this->assertEquals('{"arr":{"number":1, "hello_1":"world!", "boolean_super":true, "0":"NAN", "1":null}}',$j.'');
+    }
+    /**
+     * @test
+     */
     public function testAddBoolean00() {
         $j = new Json();
         $j->addBoolean('bool ', true);

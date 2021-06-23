@@ -159,7 +159,7 @@ class Json {
      * 
      * @param boolean $isFormatted If this attribute is set to true, the generated 
      * JSON will be indented and have new lines (readable). Note that the parameter 
-     * will be ignored if the constant 'VERBOSE' is defined and is set to true.
+     * will be ignored if the constant 'WF_VERBOSE' is defined and is set to true.
      * 
      * @since 1.2.2
      */
@@ -809,6 +809,7 @@ class Json {
                 $comma = ', '.$this->NL;
             }
             $valueAtKey = $value[$keys[$x]];
+            $keyStyled = self::toStyle($keys[$x], $this->getPropStyle());
             $keyType = gettype($keys[$x]);
             $valueType = gettype($valueAtKey);
 
@@ -819,7 +820,7 @@ class Json {
                 $jsonXObj->NL = $this->NL;
 
                 if ($asObject === true) {
-                    $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($jsonXObj->_toJson()).$comma;
+                    $arr .= $this->_getTab().'"'.$keyStyled.'":'.trim($jsonXObj->_toJson()).$comma;
                 } else {
                     $arr .= $this->_getTab().trim($jsonXObj->_toJson()).$comma;
                 }
@@ -838,11 +839,11 @@ class Json {
                 if ($valueType == JsonTypes::INT || $valueType == JsonTypes::DOUBLE) {
                     if ($asObject === true) {
                         if (is_nan($valueAtKey)) {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":"NAN"'.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":"NAN"'.$comma;
                         } else if ($valueAtKey == INF) {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":"INF"'.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":"INF"'.$comma;
                         } else {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.$valueAtKey.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":'.$valueAtKey.$comma;
                         }
                     } else if (is_nan($valueAtKey)) {
                                     $arr .= $this->_getTab().'"NAN"'.$comma;
@@ -857,9 +858,9 @@ class Json {
 
                         if ($asBool === true || $asBool === false) {
                             $toAdd = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":'.$toAdd;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":'.$toAdd;
                         } else {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
                         }
                     } else {
                         $asBool = $this->_stringAsBoolean($valueAtKey);
@@ -874,9 +875,9 @@ class Json {
                 } else if ($valueType == JsonTypes::BOOL) {
                     if ($asObject) {
                         if ($valueAtKey) {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":true'.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":true'.$comma;
                         } else {
-                            $arr .= $this->_getTab().'"'.$keys[$x].'":false'.$comma;
+                            $arr .= $this->_getTab().'"'.$keyStyled.'":false'.$comma;
                         }
                     } else if ($valueAtKey) {
                         $arr .= $this->_getTab().self::$BoolTypes[0].$comma;
@@ -885,27 +886,27 @@ class Json {
                     }
                 } else if ($valueType == JsonTypes::ARR) {
                     if ($asObject) {
-                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
+                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                     } else {
                         $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
                     }
                 } else if ($valueType == JsonTypes::NUL) {
                     if ($asObject) {
-                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.'null'.$comma;
+                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.'null'.$comma;
                     } else {
                         $arr .= $this->_getTab().'null'.$comma;
                     }
                 } else if ($valueType == JsonTypes::OBJ) {
                     if ($asObject) {
                         $json = $this->_objectToJson($valueAtKey);
-                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($json->_toJson()).$comma;
+                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.trim($json->_toJson()).$comma;
                     } else {
                         $json = $this->_objectToJson($valueAtKey);
                         $arr .= $this->_getTab().trim($json).$comma;
                     }
                 }
             } else if ($asObject) {
-                $arr .= $this->_getTab().'"'.$keys[$x].'":';
+                $arr .= $this->_getTab().'"'.$keyStyled.'":';
                 $type = gettype($valueAtKey);
 
                 if ($type == JsonTypes::STRING) {
@@ -937,7 +938,7 @@ class Json {
                 $j->setPropsStyle($this->getPropStyle());
                 $j->currentTab = $this->currentTab;
                 $j->tabSize = $this->tabSize;
-                $j->add($keys[$x], $valueAtKey);
+                $j->add($keyStyled, $valueAtKey);
                 $arr .= $j.$comma;
             }
         }
