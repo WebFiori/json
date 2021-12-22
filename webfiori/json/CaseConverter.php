@@ -10,6 +10,25 @@ namespace webfiori\json;
  */
 class CaseConverter {
     /**
+     * An array of supported property styles.
+     * 
+     * This array holds the following values:
+     * <ul>
+     * <li>camel</li>
+     * <li>kebab</li>
+     * <li>snake</li>
+     * <li>none</li>
+     * </ul>
+     * 
+     * @since 1.0
+     */
+    const PROP_NAME_STYLES = [
+        'camel',
+        'kebab',
+        'snake',
+        'none'
+    ];
+    /**
      * Converts a string to specific case.
      * 
      * @param string $value The string that will be converted.
