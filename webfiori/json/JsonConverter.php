@@ -50,26 +50,25 @@ class JsonConverter {
 
         return $isIndexed;
     }
-    public static function arrayToJsonString(array $array, $asObj) {
-        self::updateTab(true);
+    public static function arrayToJsonString(array $array, $asObj, $propsStyle = 'snake') {
+        
         $retVal = '';
         if ($asObj === true) {
             $jsonObj = new Json();
+            $jsonObj->setPropsStyle($propsStyle);
             
             foreach ($array as $key => $val) {
-                $jsonObj->add($key, $val);
+                $jsonObj->add($key, $val, $asObj);
             }
             $retVal = self::toJsonString($jsonObj);
         } else {
+            self::updateTab(true);
             $retVal = '['.self::$CRLF;
-            $comma = ",". self::$CRLF;
-            for ($x = 0 ; $x < count($array) ; $x++) {
-                if ($x + 1 == count($array)) {
-                    $comma = self::$CRLF;
-                }
-                $val = $array[$x];
+            $valToPreAppend = "";
+
+            foreach ($array as $val) {
                 $valType = gettype($val);
-                $retVal .= self::$Tab;
+                $retVal .= $valToPreAppend.self::$Tab;
                 if ($val instanceof Json) {
                     $retVal .= self::toJsonString($val);
                 } else if (is_subclass_of($val, 'webfiori\\json\\JsonI')) {
@@ -79,9 +78,11 @@ class JsonConverter {
                 } else if ($valType == JsonTypes::NUL) {
                     $retVal .= 'null';
                 } else if ($valType == JsonTypes::OBJ) {
-                    $retVal .= self::toJsonString(self::objToJson($val));
+                    $retVal .= self::objToJson($val, $propsStyle);
                 } else if ($valType == JsonTypes::ARR) {
-                    $retVal .= self::arrayToJsonString($val, $asObj);
+                    $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
+                }  else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
+                    $retVal .= self::getNumberVal($val);
                 } else if ($valType == JsonTypes::BOOL) {
                     if ($val === true) {
                         $retVal .= 'true';
@@ -91,11 +92,17 @@ class JsonConverter {
                 } else {
                     $retVal .= $val;
                 }
-                $retVal .= $comma;
+                $valToPreAppend = ",".self::$CRLF;
             }
-            $retVal .= substr(self::$Tab, 0, self::$TabSize).']';
+            self::updateTab(false);
+            if (count($array) == 0) {
+                $retVal .= self::$Tab.']';
+            } else {
+                $retVal .= self::$CRLF.self::$Tab.']';
+            }
+            
         }
-        self::updateTab(false);
+        
         return $retVal;
     }
     public static function propertyToJsonString(Property $prop, $formatted = false) {
@@ -112,20 +119,20 @@ class JsonConverter {
             $retVal .= self::getNumberVal($probVal);
         } else if ($probType == JsonTypes::NUL) {
             $retVal .= 'null';
-        } else if ($probType == 'boolean') {
+        } else if ($probType == JsonTypes::BOOL) {
             if ($probVal === true) {
                 $retVal .= 'true';
             } else {
                 $retVal .= 'false';
             }
         } else if ($probType == JsonTypes::OBJ) {
-            $retVal .= self::objToJson($probVal);
+            $retVal .= self::objToJson($probVal, $prop->getStyle());
         } else if ($probType == JsonTypes::ARR) {
-            $retVal .= self::arrayToJsonString($probVal, $prop->isAsObject());
+            $retVal .= self::arrayToJsonString($probVal, $prop->isAsObject(), $prop->getStyle());
         }
         return $retVal;
     }
-    private static function objToJson($probVal) {
+    private static function objToJson($probVal, $style) {
         if (!($probVal instanceof Json)) {
             if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
                 $probVal = Json::objectToJson($probVal);
@@ -133,7 +140,8 @@ class JsonConverter {
                 $probVal = $probVal->toJSON();
             }
         }
-
+        $probVal->setPropsStyle($style);
+        
         $retVal = "{".self::$CRLF;
         self::updateTab(true);
         $subProbs = $probVal->getProperties();
