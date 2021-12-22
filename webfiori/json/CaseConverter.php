@@ -50,7 +50,7 @@ class CaseConverter {
         if ($style == 'snake') {
             return self::toSnackCase($value);
         } else if ($style == 'kebab') {
-            return self::toKebabCase($value);
+                return self::toKebabCase($value);
         } else if ($style == 'camel') {
             return self::toCamelCase($value);
         } else {
@@ -71,7 +71,7 @@ class CaseConverter {
         $retVal = '';
         $changeNextCharCase = false;
         $valueTrim = trim($value);
-        
+
         for ($x = 0 ; $x < strlen($valueTrim) ; $x++) {
             $char = $valueTrim[$x];
 
@@ -87,6 +87,7 @@ class CaseConverter {
                 $retVal .= $value[$x];
             }
         }
+
         return $retVal;
     }
     /**

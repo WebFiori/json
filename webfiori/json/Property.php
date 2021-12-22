@@ -29,26 +29,11 @@ class Property {
     ];
     /**
      * 
-     * @var int
-     * 
-     * @since 1.0
-     */
-    private $tabSize;
-    const NL = "\r\n";
-    /**
-     * 
      * @var boolean
      * 
      * @since 1.0
      */
     private $asObject;
-    /**
-     * 
-     * @var string
-     * 
-     * @since 1.0
-     */
-    private $probsStyle;
     /**
      * 
      * @var string
@@ -65,68 +50,72 @@ class Property {
     private $name;
     /**
      * 
+     * @var string
+     * 
+     * @since 1.0
+     */
+    private $probsStyle;
+    /**
+     * 
      * @var mixed
      * 
      * @since 1.0
      */
     private $value;
-
     /**
-     * Sets the name of the property.
+     * Creates new instance of the class.
      * 
      * @param string $name The name of the property.
-     * @return boolean
+     * 
+     * @param mixed $value The value of the property.
+     * 
+     * @param string $style The style at which the name of the property will
+     * use to represent its name. Can be one of the following values:
+     * <ul>
+     * <li>snake</li>
+     * <li>kebab</li>
+     * <li>camel</li>
+     * <li>none</li>
+     * </ul>
+     * The default value is 'none'.
+     * 
+     * @throws InvalidArgumentException If the name of the property is invalid
+     * 
+     * @since 1.0
      */
-    public function setName($name) {
-        $keyValidity = self::_isValidKey($name, $this->getStyle());
-        
-        if ($keyValidity === false) {
-            return false;
+    public function __construct($name, $value, $style = null) {
+        $this->setStyle('none');
+        $this->setAsObject(false);
+
+        if ($style !== null) {
+            $this->setStyle($style);
         }
-        $this->name = $keyValidity;
-        
-        return true;
-    }
-    public function setAsObject($bool) {
-        $this->asObject = $bool === true;
-    }
-    public function isAsObject() {
-        return $this->asObject;
-    }
-    public function setCurrentTab($num) {
-        if ($num >= 0) {
-            $this->currentTabe = $num;
+
+        if (!$this->setName($name)) {
+            throw new InvalidArgumentException('Invalid property name: "'.$name.'"');
         }
+        $this->setValue($value);
     }
-    public function setTabSize($size) {
-        if ($size >= 0) {
-            $this->tabSize = $size;
-        }
+    /**
+     * Returns the value of the property.
+     * 
+     * @return mixed|Json The value of the property.
+     * 
+     * @since 1.0
+     */
+    public function &getValue() {
+        return $this->value;
     }
     /**
      * Returns the name of the property.
      * 
      * @return string The name of the property. Note that the returned value
      * will depend on the style at which the property name is set to use.
+     * 
+     * @since 1.0
      */
     public function getName() {
         return $this->name;
-    }
-    /**
-     * Returns the datatype of property value.
-     * 
-     * @return string The method will return one of the following values:
-     * <ul>
-     * <li>integer</li>
-     * <li>double</li>
-     * <li>string</li>
-     * <li>boolean</li>
-     * <li>object</li>
-     * <li>NULL</li>
-     * </ul>
-     */
-    public function getType() {
-        return $this->datatype;
     }
     /**
      * Returns the style at which the names of the properties will use.
@@ -144,6 +133,73 @@ class Property {
      */
     public function getStyle() {
         return $this->probsStyle;
+    }
+    /**
+     * Returns the datatype of property value.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>integer</li>
+     * <li>double</li>
+     * <li>string</li>
+     * <li>boolean</li>
+     * <li>object</li>
+     * <li>NULL</li>
+     * </ul>
+     * 
+     * @since 1.0
+     */
+    public function getType() {
+        return $this->datatype;
+    }
+    /**
+     * Checks if the property will be represented as object or array.
+     * 
+     * This method is only used with arrays since in some cases the developer
+     * would like to have associative arrays as objects.
+     * 
+     * @return boolean If the property will be represented as object, true is
+     * returned. False otherwise.
+     * 
+     * @since 1.0
+     */
+    public function isAsObject() {
+        return $this->asObject;
+    }
+    /**
+     * Sets the value of the property which is used to tell if
+     * the property will be represented as object or array.
+     * 
+     * This method is only used with arrays since in some cases the developer
+     * would like to have associative arrays as objects.
+     * 
+     * @param boolean $bool True to represent the array as object. False 
+     * otherwise.
+     * 
+     * @since 1.0
+     */
+    public function setAsObject($bool) {
+        $this->asObject = $bool === true;
+    }
+    /**
+     * Sets the name of the property.
+     * 
+     * @param string $name The name of the property.
+     * 
+     * @return boolean If the name is set, the method will return true. False
+     * otherwise.
+     * 
+     * @since 1.0
+     */
+    public function setName($name) {
+        $keyValidity = self::_isValidKey($name, $this->getStyle());
+
+        if ($keyValidity === false) {
+            return false;
+        }
+        $this->name = $keyValidity;
+
+        return true;
     }
     /**
      * Sets the style at which the names of the properties will use.
@@ -173,23 +229,10 @@ class Property {
             $this->setName(CaseConverter::convert($this->getName(), $trimmed));
         }
         $val = $this->getValue();
-        
+
         if ($val instanceof Json) {
             $val->setPropsStyle($trimmed);
         }
-    }
-    public function __construct($name, $value, $style = null) {
-        $this->setStyle('none');
-        $this->tabSize = 0;
-        $this->setAsObject(false);
-        if ($style !== null) {
-            $this->setStyle($style);
-        }
-        
-        if (!$this->setName($name)) {
-            throw new InvalidArgumentException('Invalid property name: "'.$name.'"');
-        }
-        $this->setValue($value);
     }
     /**
      * Sets the value of the property.
@@ -200,23 +243,12 @@ class Property {
      * @since 1.0
      */
     public function setValue($val) {
-        
         if (is_subclass_of($val, 'webfiori\\json\\JsonI')) {
             $this->value = $val->toJSON();
         } else {
             $this->value = $val;
         }
         $this->datatype = gettype($val);
-    }
-    /**
-     * Returns the value of the property.
-     * 
-     * @return mixed|Json The value of the property.
-     * 
-     * @since 1.0
-     */
-    public function &getValue() {
-        return $this->value;
     }
     /**
      * Checks if the key is a valid key string.

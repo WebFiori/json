@@ -9,8 +9,8 @@ error_reporting(-1);
 require_once '../webfiori/json/Json.php';
 require_once '../webfiori/json/JsonI.php';
 
-use webfiori\json\JsonI;
 use webfiori\json\Json;
+use webfiori\json\JsonI;
 //defining a class user
 //in order for the class to be added in JsonX object,
 //it must implement the interface JsonI
