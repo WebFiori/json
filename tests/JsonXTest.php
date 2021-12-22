@@ -392,6 +392,7 @@ class JsonXTest extends TestCase {
         $this->assertTrue($j->add('null-value',null));
         $this->assertTrue($j->add('infinity',INF));
         $this->assertTrue($j->add('not-a-number',INF));
+        $this->assertFalse($j->addObject('ok', null));
     }
 
     /**
@@ -570,6 +571,36 @@ class JsonXTest extends TestCase {
         $j->setPropsStyle('snake');
         $j->add('arr',$arr,true);
         $this->assertEquals('{"arr":{"number":1,"hello_1":"world!","boolean_super":true,"0":"NaN","1":null}}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testAddArray06() {
+        $arr = [
+            [
+                new Json([
+                    'null' => null
+                ]),
+                [
+                    'hello'
+                ]
+            ]
+        ];
+        $j = new Json([
+            'array' => $arr
+        ], true);
+        $this->assertEquals('{'."\r\n"
+                . '    "array":['."\r\n"
+                . '        ['."\r\n"
+                . '            {'."\r\n"
+                . '                "null":null'."\r\n"
+                . '            },'."\r\n"
+                . '            ['."\r\n"
+                . '                "hello"'."\r\n"
+                . '            ]'."\r\n"
+                . '        ]'."\r\n"
+                . '    ]'."\r\n"
+                . '}', $j.'');
     }
     /**
      * @test
@@ -1051,6 +1082,20 @@ class JsonXTest extends TestCase {
         $this->assertTrue($j->hasKey('user-display-name'));
         $this->assertTrue($j->hasKey('user-email'));
         $this->assertTrue($j->hasKey('user-id'));
+    }
+    /**
+     * @test
+     */
+    public function testRemove00() {
+        $j = new Json([
+            'p1' => 1,
+            'p2' => 'hello',
+            'p3' => null
+        ]);
+        $this->assertTrue($j->hasKey('p2'));
+        $prop = $j->remove('p2');
+        $this->assertFalse($j->hasKey('p2'));
+        $this->assertEquals('hello', $prop->getValue());
     }
     /**
      * @test
