@@ -101,22 +101,7 @@ class CaseConverter {
      * @since 1.0
      */
     public static function toKebabCase($value) {
-        $attr1 = str_replace('_', '-', trim($value));
-        $retVal = '';
-
-        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
-            $char = $attr1[$x];
-
-            if (self::_isUpper($char) && $x != 0) {
-                $retVal .= '-'.strtolower($char);
-            }  else if (self::_isUpper($char) && $x == 0) {
-                $retVal .= strtolower($char);
-            } else {
-                $retVal .= $char;
-            }
-        }
-
-        return $retVal;
+        return self::_toSnakeOrKebab($value, '_', '-');
     }
     /**
      * Converts a string to snake case.
@@ -129,14 +114,17 @@ class CaseConverter {
      * @since 1.0
      */
     public static function toSnackCase($value) {
-        $attr1 = str_replace('-', '_', trim($value));
+        return self::_toSnakeOrKebab($value, '-', '_');
+    }
+    private static function _toSnakeOrKebab($value, $from, $to) {
+        $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
 
             if (self::_isUpper($char) && $x != 0) {
-                $retVal .= '_'.strtolower($char);
+                $retVal .= $to.strtolower($char);
             } else if (self::_isUpper($char) && $x == 0) {
                 $retVal .= strtolower($char);
             } else {

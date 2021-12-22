@@ -35,9 +35,7 @@ class JsonConverter {
         $count = count($methods);
         $json = new Json();
 
-        set_error_handler(function()
-        {
-        });
+        set_error_handler(null);
 
         for ($y = 0 ; $y < $count; $y++) {
             $funcNm = substr($methods[$y], 0, 3);
@@ -76,25 +74,6 @@ class JsonConverter {
 
         $retVal .= self::checkVal($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
         
-//        if ($probType == JsonTypes::STRING) {
-//            $retVal .= '"'.Json::escapeJSONSpecialChars($probVal).'"';
-//        } else if ($probType == JsonTypes::INT || $probType == JsonTypes::DOUBLE) {
-//            $retVal .= self::getNumberVal($probVal);
-//        } else if ($probType == JsonTypes::NUL) {
-//            $retVal .= 'null';
-//        } else if ($probType == JsonTypes::BOOL) {
-//            if ($probVal === true) {
-//                $retVal .= 'true';
-//            } else {
-//                $retVal .= 'false';
-//            }
-//        } else if ($probType == JsonTypes::OBJ) {
-//            $retVal .= self::objToJson($probVal, $prop->getStyle());
-//        } else if ($probType == JsonTypes::ARR) {
-//            $retVal .= self::arrayToJsonString($probVal, $prop->isAsObject(), $prop->getStyle());
-//        }
-        
-
         return $retVal;
     }
     /**
