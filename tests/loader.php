@@ -40,6 +40,9 @@ if (explode($DS, $rootDirTrimmed)[0] == 'home') {
 }
 define('ROOT', $rootDir);
 echo 'Root Directory: \''.$rootDir.'\'.'."\n";
+require_once $rootDir.'webfiori'.$DS.'json'.$DS.'JsonConverter.php';
+require_once $rootDir.'webfiori'.$DS.'json'.$DS.'CaseConverter.php';
+require_once $rootDir.'webfiori'.$DS.'json'.$DS.'Property.php';
 require_once $rootDir.'webfiori'.$DS.'json'.$DS.'JsonTypes.php';
 require_once $rootDir.'webfiori'.$DS.'json'.$DS.'Json.php';
 require_once $rootDir.'webfiori'.$DS.'json'.$DS.'JsonI.php';

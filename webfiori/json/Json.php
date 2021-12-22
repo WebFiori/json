@@ -24,6 +24,7 @@
  */
 namespace webfiori\json;
 
+use InvalidArgumentException;
 /**
  * A class that can be used to create well formatted JSON strings. 
  * 
@@ -44,25 +45,6 @@ namespace webfiori\json;
  * @version 1.2.5
  */
 class Json {
-    /**
-     * An array of supported property styles.
-     * 
-     * This array holds the following values:
-     * <ul>
-     * <li>camel</li>
-     * <li>kebab</li>
-     * <li>snake</li>
-     * <li>none</li>
-     * </ul>
-     * 
-     * @since 1.2.4
-     */
-    const PROP_NAME_STYLES = [
-        'camel',
-        'kebab',
-        'snake',
-        'none'
-    ];
     /**
      * An array that contains JSON special characters.
      * 
@@ -104,50 +86,10 @@ class Json {
      * @since 1.2.4
      */
     private $attrNameStyle;
-    /**
-     * @var array array of boolean types.
-     */
-    private static $BoolTypes = [
-        'true',
-        'false'
-    ];
-    /**
-     * The number of tabs that have been pressed.
-     * 
-     * @var int
-     * 
-     * @since 1.2.2 
-     */
-    private $currentTab;
-    /**
-     * New line character.
-     */
-    private $NL = "\n";
-    /**
-     * An array that contains JSON data.
-     * 
-     * This array will store the keys as indices and every value will be at 
-     * each index.
-     * 
-     * @var array 
-     * 
-     * @since 1.0
-     */
-    private $originals = [];
-    /**
-     * A number that represents the number of spaces in a tab.
-     * 
-     * @var int
-     * 
-     * @since 1.2.2 
-     */
-    private $tabSize;
-    /**
-     *
-     * @var string 
-     * @since 1.2.2
-     */
-    private $tabStr;
+    private $formatted;
+    private $propsArr;
+
+
     /**
      * Creates new instance of the class.
      * 
@@ -163,16 +105,10 @@ class Json {
      * 
      * @since 1.2.2
      */
-    public function __construct(array $initialData = [],$isFormatted = false) {
-        $this->currentTab = 0;
+    public function __construct(array $initialData = [], $isFormatted = false) {
+        $this->propsArr = [];
 
-        if ($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true)) {
-            $this->tabSize = 4;
-            $this->NL = "\n";
-        } else {
-            $this->tabSize = 0;
-            $this->NL = '';
-        }
+        $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));
         $this->setPropsStyle('none');
 
         if (defined('JSON_PROP_STYLE')) {
@@ -194,12 +130,12 @@ class Json {
      * @since 1.2
      */
     public function &get($key) {
-        $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
+        $keyTrimmed = CaseConverter::convert($key, $this->getPropStyle());
         $retVal = null;
 
-        foreach ($this->originals as $key => $val) {
-            if (self::_isValidKey($key, $this->getPropStyle()) == $keyTrimmed) {
-                $retVal = $val['val'];
+        foreach ($this->getProperties() as $val) {
+            if ($val->getName() == $keyTrimmed) {
+                $retVal = $val->getValue();
                 break;
             }
         }
@@ -226,61 +162,27 @@ class Json {
      * 
      * @param mixed $value The value of the key.
      * 
-     * @param array $options An associative array of options. Currently, the 
-     * array has the following options: 
-     * <ul>
-     * <li><b>string-as-boolean</b>: A boolean value. If set to true and 
-     * the given string is one of the following values, it will be added as 
-     * a boolean:
-     * <ul>
-     * <li>true</li>
-     * <li>false</li>
-     * <li>t</li>
-     * <li>f</li>
-     * <li>Yes</li>
-     * <li>No</li>
-     * <li>On</li>
-     * <li>Off</li>
-     * <li>Y</li>
-     * <li>N</li>
-     * <li>Ok</li>
-     * </ul> Default is false.</li>
-     * <li><b>array-as-object</b>: A boolean value. If set to true, 
-     * the array will be added as an object. Default is false.</li>
-     * </ul>
+     * @param array $arrayAsObj This parameter is used only if the given value
+     * is an array. If set to true, the array will be added as an object. 
+     * Default is false.
      * 
      * @return boolean The method will return true if the value is set. 
      * If the given value or key is invalid, the method will return false.
      * 
      * @since 1.1
      */
-    public function add($key, $value, $options = [
-        'string-as-boolean' => false,
-        'array-as-object' => false
-    ]) {
+    public function add($key, $value, $arrayAsObj = false) {
         if ($value !== null) {
-            if (isset($options['string-as-boolean'])) {
-                $strAsbool = $options['string-as-boolean'] === true ? true : false;
-            } else {
-                $strAsbool = false;
-            }
-
-            if (isset($options['array-as-object'])) {
-                $arrAsObj = $options['array-as-object'] === true ? true : false;
-            } else {
-                $arrAsObj = false;
-            }
-
-            return $this->addString($key, $value,$strAsbool) ||
-                    $this->addArray($key, $value, $arrAsObj) ||
+            return $this->addString($key, $value) ||
+            $this->addArray($key, $value, $arrayAsObj) ||
             $this->addBoolean($key, $value) ||
             $this->addNumber($key, $value) || 
             $this->addObject($key, $value);
         } else {
-            $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
+            $prop = $this->createProb($key, $value);
 
-            if ($keyValidated !== false) {
-                $this->_addToOriginals($keyValidated, null, 'null');
+            if ($prop !== null) {
+                $this->propsArr[] = $prop;
 
                 return true;
             }
@@ -302,11 +204,13 @@ class Json {
      * @return boolean The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
-    public function addArray($key, $value,$asObject = false) {
-        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
+    public function addArray($key, $value, $asObject = false) {
+        $prop = $this->createProb($key, $value);
+        $propType = $prop->getType();
 
-        if ($keyValidated !== false && gettype($value) == JsonTypes::ARR) {
-            $this->_addToOriginals($keyValidated, $value, 'array', ['array-as-object' => $asObject === true]);
+        if ($prop !== null && $propType == JsonTypes::ARR) {
+            $prop->setAsObject($asObject);
+            $this->propsArr[] = $prop;
 
             return true;
         }
@@ -327,11 +231,11 @@ class Json {
      * 
      * @since 1.0
      */
-    public function addBoolean($key,$val = true) {
-        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
+    public function addBoolean($key, $val = true) {
+        $prop = $this->createProb($key, $val);
 
-        if ($keyValidated !== false && gettype($val) == JsonTypes::BOOL) {
-            $this->_addToOriginals($keyValidated, $val, 'boolean');
+        if ($prop !== null && $prop->getType() == 'boolean') {
+            $this->propsArr[] = $prop;
 
             return true;
         }
@@ -348,13 +252,7 @@ class Json {
      * 
      * @since 1.2.3
      */
-    public function addMultiple($arr) {
-        $paramType = gettype($arr);
-
-        if ($paramType != 'array') {
-            throw new \InvalidArgumentException('Was expecting an array. '.$paramType.' is given.');
-        }
-
+    public function addMultiple(array $arr) {
         foreach ($arr as $key => $value) {
             $this->add($key, $value);
         }
@@ -363,7 +261,8 @@ class Json {
      * Adds a number to the JSON data.
      * 
      * Note that if the given number is the constant <b>INF</b> or the constant 
-     * <b>NAN</b>, The method will add them as a string.
+     * <b>NAN</b>, The method will add them as a string. The 'INF' will be added
+     * as the string "Infinity" and the 'NAN' will be added as the string "Nan".
      * 
      * @param string $key The name of the key.
      * 
@@ -377,25 +276,16 @@ class Json {
      * @since 1.0
      */
     public function addNumber($key,$value) {
-        $val_type = gettype($value);
-        $keyValidated = self::_isValidKey($key, $this->getPropStyle());
-        $retVal = false;
+        $prop = $this->createProb($key, $value);
+        $propType = $prop->getType();
 
-        if ($keyValidated !== false && ($val_type == JsonTypes::INT || $val_type == JsonTypes::DOUBLE)) {
-            if (is_nan($value)) {
-                $retVal = $this->addString($keyValidated, 'NAN');
-            } else if ($value == INF) {
-                $retVal = $this->addString($keyValidated, 'INF');
-            } else {
-                $retVal = true;
-            }
+        if ($prop !== null && $propType == JsonTypes::INT || $propType == JsonTypes::DOUBLE) {
+            $this->propsArr[] = $prop;
 
-            if ($retVal) {
-                $this->_addToOriginals($keyValidated, $value, 'number');
-            }
+            return true;
         }
 
-        return $retVal;
+        return false;
     }
     /**
      * Adds an object to the JSON string.
@@ -420,19 +310,13 @@ class Json {
      * @since 1.0
      */
     public function addObject($key, $val) {
-        $keyValidated = self::_isValidKey($key, $this->getPropStyle());
+        $prop = $this->createProb($key, $val);
+        $propType = $prop->getType();
 
-        if ($keyValidated !== false && gettype($val) == JsonTypes::OBJ) {
-            if (is_subclass_of($val, 'webfiori\json\JsonI')) {
-                $this->_addToOriginals($keyValidated, $val, 'jsoni');
-                return true;
-            } else if ($val instanceof Json) {
-                $this->_addToOriginals($keyValidated, $val, 'jsonx');
-                return true;
-            } else if (gettype($val) == 'object') {
-                $this->_addToOriginals($keyValidated, $val, 'object');
-                return true;
-            }
+        if ($prop !== null && $propType == JsonTypes::OBJ) {
+            $this->propsArr[] = $prop;
+
+            return true;
         }
 
         return false;
@@ -442,47 +326,21 @@ class Json {
      * 
      * @param string $key The name of the key. Must be non empty string.
      * 
-     * @param string $val The value of the string. Note that if the given string 
-     * is one of the following and the parameter <b>$toBool</b> is set to true, 
-     * it will be converted into boolean (case insensitive).
-     * <ul>
-     * <li>yes => <b>true</b></li>
-     * <li>no => <b>false</b></li>
-     * <li>y => <b>true</b></li>
-     * <li>n => <b>false</b></li>
-     * <li>t => <b>true</b></li>
-     * <li>f => <b>false</b></li>
-     * <li>true => <b>true</b></li>
-     * <li>false => <b>false</b></li>
-     * <li>on => <b>true</b></li>
-     * <li>off => <b>false</b></li>
-     * <li>ok => <b>true</b></li>
-     * </ul>
-     * 
-     * @param boolean $toBool If set to true and the string represents a boolean 
-     * value, then the string will be added as a boolean. Default is false.
+     * @param string $val The value of the string.
      * 
      * @return boolean The method will return true in case the string is added. 
-     * If the given value is not a string or the given key is invalid or the 
-     * parameter <b>$toBool</b> is set to true and given string is not a boolean, the 
+     * If the given value is not a string or the given key is invalid, the 
      * method will return false.
      * 
      * @since 1.0
      */
-    public function addString($key, $val,$toBool = false) {
-        $keyValidated = Json::_isValidKey($key, $this->getPropStyle());
+    public function addString($key, $val) {
+        $prop = $this->createProb($key, $val);
 
-        if ($keyValidated !== false && gettype($val) == JsonTypes::STRING) {
-            if ($toBool) {
-                $boolVal = $this->_stringAsBoolean($val);
+        if ($prop !== null && $prop->getType() == JsonTypes::STRING) {
+            $this->propsArr[] = $prop;
 
-                if ($boolVal === true || $boolVal === false) {
-                    return $this->addBoolean($keyValidated, $boolVal);
-                }
-            } else {
-                $this->_addToOriginals($keyValidated, $val, 'string');
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -566,24 +424,40 @@ class Json {
      * @since 1.2.5
      */
     public static function fromFile($pathToJsonFile) {
-        $fileContent = file_get_contents($pathToJsonFile);
+        if (file_exists($pathToJsonFile)) {
+            $fileContent = file_get_contents($pathToJsonFile);
 
-        if ($fileContent !== false) {
-            return self::decode($fileContent);
+            if ($fileContent !== false) {
+                return self::decode($fileContent);
+            }
         }
+    }
+    /**
+     * Returns an array that holds all added attributes.
+     * 
+     * @return array An array that holds objects of type 'Property'.
+     */
+    public function getProperties() {
+        return $this->propsArr;
     }
     /**
      * Returns an array that contains the names of all added properties.
      * 
-     * Note that the names will be returned same as when added without changing 
-     * the style.
+     * Note that the names may differ if properties style is changed after
+     * adding them.
      * 
      * @return array An array that contains the names of all added properties.
      * 
      * @since 1.2.5
      */
     public function getPropsNames() {
-        return array_keys($this->originals);
+        $retVal = [];
+
+        foreach ($this->getProperties() as $propObj) {
+            $retVal[] = $propObj->getName();
+        }
+
+        return $retVal;
     }
     /**
      * Returns the style at which the names of the properties will use.
@@ -618,33 +492,47 @@ class Json {
      * @since 1.2
      */
     public function hasKey($key) {
-        $keyTrimmed = self::_isValidKey($key, $this->getPropStyle());
-        $keys = array_keys($this->originals);
+        $keyTrimmed = CaseConverter::convert($key, $this->getPropStyle());
 
-        foreach ($keys as $propKey) {
-            if (self::_isValidKey($propKey, $this->getPropStyle()) == $keyTrimmed) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($keyTrimmed, $this->getPropsNames());
     }
+    /**
+     * Checks if the final JSON output will be formatted or not.
+     * 
+     * This can be used to make the generated output readable by adding 
+     * indentation and new lines.
+     * 
+     * @return boolean True if will be formatted. False otherwise.
+     */
+    public function isFormatted() {
+        return $this->formatted;
+    }
+
     /**
      * Removes a property from the instance.
      * 
      * @param string $keyName The name of the property.
      * 
-     * @return mixed|null The method will return the value of the property if 
+     * @return Property|null The method will return the property as object if
      * removed. Other than that, the method will return null.
      * 
      * @since 1.2.5
      */
     public function remove($keyName) {
-        $keyValidated = self::_isValidKey($keyName, $this->getPropStyle());
+        $keyValidated = CaseConverter::convert($keyName, $this->getPropStyle());
 
         if ($this->hasKey($keyValidated)) {
-            $retVal = $this->get($keyValidated);
-            unset($this->originals[$keyValidated]);
+            $oldPropsArr = $this->getProperties();
+            $this->propsArr = [];
+            $retVal = null;
+
+            foreach ($oldPropsArr as $prop) {
+                if ($prop->getName() != $keyValidated) {
+                    $this->propsArr[] = $prop;
+                } else {
+                    $retVal = $prop;
+                }
+            }
 
             return $retVal;
         }
@@ -662,17 +550,17 @@ class Json {
      * @since 1.2.5
      */
     public function setIsFormatted($bool) {
-        $formatted = $bool === true;
+        $this->formatted = $bool === true;
 
-        if ($formatted) {
-            $this->tabSize = 4;
-            $this->NL = "\n";
-            $this->currentTab = 0;
-        } else {
-            $this->tabSize = 0;
-            $this->NL = '';
+        foreach ($this->getProperties() as $prop) {
+            if ($prop->getValue() instanceof Json) {
+                $prop->getValue()->setIsFormatted($this->isFormatted());
+            } else if ($prop->getType() == JsonTypes::ARR) {
+                $this->_setIsFormattedArray($prop->getValue());
+            }
         }
     }
+
     /**
      * Sets the style at which the names of the properties will use.
      * 
@@ -696,8 +584,12 @@ class Json {
     public function setPropsStyle($style) {
         $trimmed = strtolower(trim($style));
 
-        if (in_array($trimmed, self::PROP_NAME_STYLES)) {
+        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES)) {
             $this->attrNameStyle = $trimmed;
+
+            foreach ($this->getProperties() as $prop) {
+                $prop->setStyle($style);
+            }
         }
     }
     /**
@@ -708,252 +600,7 @@ class Json {
      * provided data.
      */
     public function toJSONString() {
-        return $this->_toJson(false);
-    }
-    /**
-     * @since 1.2.2
-     */
-    private function _addTab() {
-        if ($this->_isFormatted()) {
-            $this->currentTab++;
-        }
-    }
-    /**
-     * 
-     * @param type $key
-     * @param type $value
-     * @param type $type
-     * @param type $options
-     */
-    private function _addToOriginals($key, $value, $type, $options = []) {
-        $this->originals[$key] = [
-            'type' => $type,
-            'val' => $value,
-            'options' => $options
-        ];
-    }
-    private function _appendBool(&$jsonStr, $val,$propsTab, $keyPropStyle) {
-        if ($val === true) {
-            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":true';
-        } else {
-            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":false';
-        }
-    }
-    private function _appendJsonI(&$jsonStr, $val, $propsTab, $keyPropStyle) {
-        $jsonXObj = $val->toJSON();
-
-        if ($this->tabSize != 0) {
-            $jsonXObj->tabSize = $this->tabSize;
-            $jsonXObj->currentTab = $this->currentTab;
-        }
-        $jsonXObj->NL = $this->NL;
-        $jsonXObj->setPropsStyle($this->getPropStyle());
-        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->_toJson();
-    }
-    private function _appendJsonX(&$jsonStr, $val, $propsTab, $keyPropStyle) {
-        if ($this->tabSize != 0) {
-            $val->tabSize = $this->tabSize;
-        }
-        $val->currentTab = $this->currentTab;
-        $val->NL = $this->NL;
-        $val->setPropsStyle($this->getPropStyle());
-        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val->_toJson();
-    }
-    private function _appendNum(&$jsonStr, $val, $propsTab, $keyPropStyle) {
-        if (is_nan($val)) {
-            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"NAN"';
-        } else if ($val == INF) {
-            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":"INF"';
-        } else {
-            $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$val;
-        }
-    }
-    private function _appendObj(&$jsonStr, $val, $propsTab, $keyPropStyle) {
-        $jsonXObj = $this->_objectToJson($val);
-
-        if ($this->tabSize != 0) {
-            $jsonXObj->tabSize = $this->tabSize;
-            $jsonXObj->currentTab = $this->currentTab;
-        }
-        $jsonXObj->NL = $this->NL;
-        $jsonXObj->setPropsStyle($this->getPropStyle());
-        $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$jsonXObj->_toJson();
-    }
-    /**
-     * A helper method used to parse arrays.
-     * 
-     * @param array $value
-     * 
-     * @return string A JSON string that represents the array.
-     * 
-     * @since 1.0
-     */
-    private function _arrayToJSONString(array $value,$asObject = false) {
-        $keys = array_keys($value);
-        $keysCount = count($keys);
-
-        if ($asObject === true) {
-            $arr = '{'.$this->NL;
-        } else {
-            $arr = '['.$this->NL;
-        }
-
-        if ($keysCount > 0) {
-            $this->_addTab();
-        }
-
-        for ($x = 0 ; $x < $keysCount ; $x++) {
-            if ($x + 1 == $keysCount) {
-                $comma = ''.$this->NL;
-            } else {
-                $comma = ', '.$this->NL;
-            }
-            $valueAtKey = $value[$keys[$x]];
-            $keyStyled = self::toStyle($keys[$x], $this->getPropStyle());
-            $keyType = gettype($keys[$x]);
-            $valueType = gettype($valueAtKey);
-
-            if ($valueAtKey instanceof JsonI) {
-                $jsonXObj = $valueAtKey->toJSON();
-                $jsonXObj->tabSize = $this->tabSize;
-                $jsonXObj->currentTab = $this->currentTab;
-                $jsonXObj->NL = $this->NL;
-
-                if ($asObject === true) {
-                    $arr .= $this->_getTab().'"'.$keyStyled.'":'.trim($jsonXObj->_toJson()).$comma;
-                } else {
-                    $arr .= $this->_getTab().trim($jsonXObj->_toJson()).$comma;
-                }
-            } else if ($valueAtKey instanceof Json) {
-                    $valueAtKey->setPropsStyle($this->getPropStyle());
-                    $valueAtKey->tabSize = $this->tabSize;
-                    $valueAtKey->currentTab = $this->currentTab;
-                    $valueAtKey->NL = $this->NL;
-
-                    if ($asObject === true) {
-                        $arr .= $this->_getTab().'"'.$keys[$x].'":'.trim($valueAtKey->_toJson()).$comma;
-                    } else {
-                        $arr .= $this->_getTab().trim($valueAtKey->_toJson()).$comma;
-                    }
-            } else if ($keyType == 'integer') {
-                if ($valueType == JsonTypes::INT || $valueType == JsonTypes::DOUBLE) {
-                    if ($asObject === true) {
-                        if (is_nan($valueAtKey)) {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":"NAN"'.$comma;
-                        } else if ($valueAtKey == INF) {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":"INF"'.$comma;
-                        } else {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":'.$valueAtKey.$comma;
-                        }
-                    } else if (is_nan($valueAtKey)) {
-                                    $arr .= $this->_getTab().'"NAN"'.$comma;
-                    } else if ($valueAtKey == INF) {
-                        $arr .= $this->_getTab().'"INF"'.$comma;
-                    } else {
-                        $arr .= $this->_getTab().$valueAtKey.$comma;
-                    }
-                } else if ($valueType == JsonTypes::STRING) {
-                    if ($asObject === true) {
-                        $asBool = $this->_stringAsBoolean($valueAtKey);
-
-                        if ($asBool === true || $asBool === false) {
-                            $toAdd = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":'.$toAdd;
-                        } else {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
-                        }
-                    } else {
-                        $asBool = $this->_stringAsBoolean($valueAtKey);
-
-                        if ($asBool === true || $asBool === false) {
-                            $toAdd = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                            $arr .= $toAdd;
-                        } else {
-                            $arr .= $this->_getTab().'"'.Json::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
-                        }
-                    }
-                } else if ($valueType == JsonTypes::BOOL) {
-                    if ($asObject) {
-                        if ($valueAtKey) {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":true'.$comma;
-                        } else {
-                            $arr .= $this->_getTab().'"'.$keyStyled.'":false'.$comma;
-                        }
-                    } else if ($valueAtKey) {
-                        $arr .= $this->_getTab().self::$BoolTypes[0].$comma;
-                    } else {
-                        $arr .= $this->_getTab().self::$BoolTypes[1].$comma;
-                    }
-                } else if ($valueType == JsonTypes::ARR) {
-                    if ($asObject) {
-                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
-                    } else {
-                        $arr .= $this->_getTab().$this->_arrayToJSONString($valueAtKey,$asObject).$comma;
-                    }
-                } else if ($valueType == JsonTypes::NUL) {
-                    if ($asObject) {
-                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.'null'.$comma;
-                    } else {
-                        $arr .= $this->_getTab().'null'.$comma;
-                    }
-                } else if ($valueType == JsonTypes::OBJ) {
-                    if ($asObject) {
-                        $json = $this->_objectToJson($valueAtKey);
-                        $arr .= $this->_getTab().'"'.$keyStyled.'":'.trim($json->_toJson()).$comma;
-                    } else {
-                        $json = $this->_objectToJson($valueAtKey);
-                        $arr .= $this->_getTab().trim($json).$comma;
-                    }
-                }
-            } else if ($asObject) {
-                $arr .= $this->_getTab().'"'.$keyStyled.'":';
-                $type = gettype($valueAtKey);
-
-                if ($type == JsonTypes::STRING) {
-                    $asBool = $this->_stringAsBoolean($valueAtKey);
-
-                    if ($asBool === true || $asBool === false) {
-                        $result = $asBool === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                        $arr .= $result;
-                    } else {
-                        $arr .= '"'.self::escapeJSONSpecialChars($valueAtKey).'"'.$comma;
-                    }
-                } else if ($type == JsonTypes::INT || $type == JsonTypes::DOUBLE) {
-                    $arr .= $valueAtKey.$comma;
-                } else if ($type == JsonTypes::BOOL) {
-                    $arr .= $valueAtKey === true ? self::$BoolTypes[0].$comma : self::$BoolTypes[1].$comma;
-                } else if ($type == JsonTypes::NUL) {
-                    $arr .= 'null'.$comma;
-                } else if ($type == JsonTypes::ARR) {
-                    $result = $this->_arrayToJSONString($valueAtKey, $asObject, true);
-                    $arr .= $result.$comma;
-                } else if ($type == JsonTypes::OBJ) {
-                    $json = $this->_objectToJson($valueAtKey);
-                    $arr .= trim($json->_toJson()).$comma;
-                } else {
-                    $arr .= 'null'.$comma;
-                }
-            } else {
-                $j = new Json();
-                $j->setPropsStyle($this->getPropStyle());
-                $j->currentTab = $this->currentTab;
-                $j->tabSize = $this->tabSize;
-                $j->add($keyStyled, $valueAtKey);
-                $arr .= $j.$comma;
-            }
-        }
-
-        if ($keysCount > 0) {
-            $this->_reduceTab();
-        }
-
-        if ($asObject === true) {
-            $arr .= $this->_getTab().'}';
-        } else {
-            $arr .= $this->_getTab().']';
-        }
-
-        return $arr;
+        return JsonConverter::toJsonString($this, $this->isFormatted());
     }
     private static function _checkArr($subVal, &$parentArr) {
         $isIndexed = self::_isIndexedArr($subVal);
@@ -971,6 +618,7 @@ class Json {
                     // Object inside array.
                     $subObj = new Json();
                     $props = get_object_vars($subArrVal);
+
                     foreach ($props as $propName => $propVal) {
                         self::_fixParsed($subObj, $propName, $propVal);
                     }
@@ -998,6 +646,7 @@ class Json {
             //An object
             $xJson = new Json();
             $xProps = get_object_vars($xVal);
+
             foreach ($xProps as $prop => $val) {
                 self::_fixParsed($xJson, $prop, $val);
             }
@@ -1009,54 +658,7 @@ class Json {
 
         return $jsonx;
     }
-    /**
-     * Convert the name of the prop name to the correct case.
-     * 
-     * @param string $attr The name of the attribute.
-     * 
-     * @param string $style The name of the style that the given string will be 
-     * converted to. It can be one of 3 values:
-     * <ul>
-     * <li>snake</li>
-     * <li>kebab</li>
-     * <li>camel</li>
-     * </ul>
-     * 
-     * @return string The same string converted to selected style.
-     * 
-     * @since 1.2.5
-     */
-    public static function toStyle($attr, $style) {
-        if ($style == 'snake') {
-            return self::_toSnackCase($attr);
-        } else if ($style == 'kebab') {
-            return self::_toKebabCase($attr);
-        } else if ($style == 'camel') {
-            return self::_toCamelCase($attr);
-        } else {
-            return $attr;
-        }
-    }
-    /**
-     * 
-     * 
-     * @return string
-     * 
-     * @since 1.2.2
-     */
-    private function _getTab() {
-        $tabLen = $this->tabSize * $this->currentTab;
 
-        if (strlen($this->tabStr) != $tabLen) {
-            $this->tabStr = '';
-
-            for ($x = 0 ; $x < $tabLen ; $x++) {
-                $this->tabStr .= ' ';
-            }
-        }
-
-        return $this->tabStr;
-    }
     /**
      * 
      * @param array $data
@@ -1067,9 +669,6 @@ class Json {
             $this->add($key, $value);
         }
     }
-    private function _isFormatted() {
-        return $this->NL == "\n" && $this->tabSize != 0;
-    }
     private static function _isIndexedArr($arr) {
         $isIndexed = true;
 
@@ -1079,190 +678,32 @@ class Json {
 
         return $isIndexed;
     }
-    private static function _isUpper($char) {
-        return $char >= 'A' && $char <= 'Z';
-    }
-    /**
-     * Checks if the key is a valid key string.
-     * 
-     * The key is invalid if its an empty string.
-     * 
-     * @param string $key The key that will be validated.
-     * 
-     * @return boolean|string If the key is valid, it will be returned 
-     * after trimmed. If not valid, false is returned.
-     * 
-     * @since 1.0
-     */
-    private static function _isValidKey($key, $style = 'kebab') {
-        $trimmedKey = trim($key);
-
-        if (strlen($trimmedKey) != 0) {
-            return self::toStyle($trimmedKey, $style);
-        }
-
-        return false;
-    }
-    /**
-     * 
-     * @param type $valueAtKey
-     * 
-     * @return Json
-     */
-    private function _objectToJson($valueAtKey) {
-        $methods = get_class_methods($valueAtKey);
-        $count = count($methods);
-        $json = new Json();
-        $json->setPropsStyle($this->getPropStyle());
-        $json->currentTab = $this->currentTab;
-        $json->tabSize = $this->tabSize;
-        $json->NL = $this->NL;
-        $propNum = 0;
-        set_error_handler(function()
-        {
-        });
-
-        for ($y = 0 ; $y < $count; $y++) {
-            $funcNm = substr($methods[$y], 0, 3);
-
-            if (strtolower($funcNm) == 'get') {
-                $propVal = call_user_func([$valueAtKey, $methods[$y]]);
-
-                if ($propVal !== false && $propVal !== null) {
-                    $json->add(substr($methods[$y], 3), $propVal);
-                    $propNum++;
+    private function _setIsFormattedArray(&$arr) {
+        foreach ($arr as $arrVal) {
+            if ($arrVal instanceof Json) {
+                $arrVal->setIsFormatted($this->isFormatted());
+            } else {
+                if (gettype($arrVal) == 'array') {
+                    $this->_setIsFormattedArray($arrVal);
                 }
             }
         }
-
-        return $json;
     }
-    private function _reduceTab() {
-        if ($this->currentTab > 0) {
-            $this->currentTab--;
+    /**
+     * 
+     * @param type $name
+     * 
+     * @param type $value
+     * 
+     * @return Property|null
+     */
+    private function createProb($name, $value) {
+        try {
+            $prop = new Property($name, $value, $this->getPropStyle());
+
+            return $prop;
+        } catch (\Exception $ex) {
+            return null;
         }
-    }
-    private function _stringAsBoolean($str) {
-        $lower = strtolower($str);
-        $boolTypes = [
-            't' => true,
-            'f' => false,
-            'yes' => true,
-            'no' => false,
-            'true' => true,
-            'false' => false,
-            'on' => true,
-            'off' => false,
-            'y' => true,
-            'n' => false,
-            'ok' => true
-        ];
-
-        if (isset($boolTypes[$lower])) {
-            return $boolTypes[$lower];
-        }
-
-        return 'INV';
-    }
-    private static function _toCamelCase($attr) {
-        $retVal = '';
-        $changeNextCharCase = false;
-
-        for ($x = 0 ; $x < strlen($attr) ; $x++) {
-            $char = $attr[$x];
-
-            if (($char == '-' || $char == '_') && $x != 0) {
-                $changeNextCharCase = true;
-                continue;
-            }
-
-            if ($changeNextCharCase) {
-                $retVal .= strtoupper($char);
-                $changeNextCharCase = false;
-            } else {
-                $retVal .= $attr[$x];
-            }
-        }
-        return $retVal;
-    }
-    private function _toJson($parentCall = true) {
-        if (!$parentCall) {
-            $this->currentTab = 0;
-        }
-        $jsonStr = '{';
-        $this->_addTab();
-        $propsTab = $this->_getTab();
-        $comma = $this->NL;
-        $dataType = null;
-
-        foreach ($this->originals as $key => $val) {
-            $dataType = $val['type'];
-            $keyPropStyle = self::_isValidKey($key, $this->getPropStyle());
-            $jsonStr .= $comma;
-
-            if ($dataType == 'string') {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.'"'.Json::escapeJSONSpecialChars($val['val']).'"';
-            } else if ($dataType == 'number') {
-                $this->_appendNum($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-            } else if ($dataType == 'boolean') {
-                $this->_appendBool($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-            } else if ($dataType == 'jsonx') {
-                $this->_appendJsonX($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-            } else if ($dataType == 'jsoni') {
-                $this->_appendJsonI($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-            } else if ($dataType == 'object') {
-                $this->_appendObj($jsonStr, $val['val'], $propsTab, $keyPropStyle);
-            } else if ($dataType == 'array') {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":'.$this->_arrayToJSONString($val['val'],$val['options']['array-as-object']);
-            } else if ($dataType == 'null') {
-                $jsonStr .= $propsTab.'"'.$keyPropStyle.'":null';
-            }
-            $comma = ', '.$this->NL;
-        }
-
-        if ($this->currentTab > 1) {
-            $this->currentTab--;
-            $jsonStr .= $this->NL.$this->_getTab().'}';
-        } else {
-            $jsonStr .= $this->NL.'}';
-        }
-
-        return $jsonStr;
-    }
-    private static function _toKebabCase($attr) {
-        $attr1 = str_replace('_', '-', $attr);
-        $retVal = '';
-
-        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
-            $char = $attr1[$x];
-
-            if (self::_isUpper($char) && $x != 0) {
-                $retVal .= '-'.strtolower($char);
-            }  else if (self::_isUpper($char) && $x == 0) {
-                $retVal .= strtolower($char);
-            } else {
-                $retVal .= $char;
-            }
-        }
-
-        return $retVal;
-    }
-    private static function _toSnackCase($attr) {
-        $attr1 = str_replace('-', '_', $attr);
-        $retVal = '';
-
-        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
-            $char = $attr1[$x];
-
-            if (self::_isUpper($char) && $x != 0) {
-                $retVal .= '_'.strtolower($char);
-            } else if (self::_isUpper($char) && $x == 0) {
-                $retVal .= strtolower($char);
-            } else {
-                $retVal .= $char;
-            }
-        }
-
-        return $retVal;
     }
 }
