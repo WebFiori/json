@@ -583,7 +583,8 @@ class JsonXTest extends TestCase {
                 ]),
                 [
                     'hello'
-                ]
+                ],
+                new Obj1(1, 2, 3, 4, 5)
             ]
         ];
         $j = new Json([
@@ -597,7 +598,12 @@ class JsonXTest extends TestCase {
                 . '            },'."\r\n"
                 . '            ['."\r\n"
                 . '                "hello"'."\r\n"
-                . '            ]'."\r\n"
+                . '            ],'."\r\n"
+                . '            {'."\r\n"
+                . '                "property-00":1,'."\r\n"
+                . '                "property-01":2,'."\r\n"
+                . '                "property-02":3'."\r\n"
+                . '            }'."\r\n"
                 . '        ]'."\r\n"
                 . '    ]'."\r\n"
                 . '}', $j.'');
