@@ -45,25 +45,6 @@ use InvalidArgumentException;
  * @version 1.2.5
  */
 class Json {
-    /**
-     * An array of supported property styles.
-     * 
-     * This array holds the following values:
-     * <ul>
-     * <li>camel</li>
-     * <li>kebab</li>
-     * <li>snake</li>
-     * <li>none</li>
-     * </ul>
-     * 
-     * @since 1.2.4
-     */
-    const PROP_NAME_STYLES = [
-        'camel',
-        'kebab',
-        'snake',
-        'none'
-    ];
     private $formatted;
     /**
      * An array that contains JSON special characters.
@@ -469,12 +450,12 @@ class Json {
      * @since 1.2.5
      */
     public static function fromFile($pathToJsonFile) {
-        set_error_handler(null);
-        $fileContent = file_get_contents($pathToJsonFile);
-        restore_error_handler();
-
-        if ($fileContent !== false) {
-            return self::decode($fileContent);
+        if (file_exists($pathToJsonFile)) {
+            $fileContent = file_get_contents($pathToJsonFile);
+            
+            if ($fileContent !== false) {
+                return self::decode($fileContent);
+            }
         }
     }
     /**
@@ -618,7 +599,7 @@ class Json {
     public function setPropsStyle($style) {
         $trimmed = strtolower(trim($style));
 
-        if (in_array($trimmed, self::PROP_NAME_STYLES)) {
+        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES)) {
             $this->attrNameStyle = $trimmed;
             
             foreach ($this->getProperties() as $prop) {
