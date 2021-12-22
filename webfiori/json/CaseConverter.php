@@ -35,7 +35,7 @@ class CaseConverter {
         } else if ($style == 'camel') {
             return self::toCamelCase($value);
         } else {
-            return $value;
+            return trim($value);
         }
     }
     /**
@@ -51,9 +51,10 @@ class CaseConverter {
     public static function toCamelCase($value) {
         $retVal = '';
         $changeNextCharCase = false;
-
-        for ($x = 0 ; $x < strlen($value) ; $x++) {
-            $char = $value[$x];
+        $valueTrim = trim($value);
+        
+        for ($x = 0 ; $x < strlen($valueTrim) ; $x++) {
+            $char = $valueTrim[$x];
 
             if (($char == '-' || $char == '_') && $x != 0) {
                 $changeNextCharCase = true;
@@ -80,7 +81,7 @@ class CaseConverter {
      * @since 1.0
      */
     public static function toKebabCase($value) {
-        $attr1 = str_replace('_', '-', $value);
+        $attr1 = str_replace('_', '-', trim($value));
         $retVal = '';
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
@@ -108,7 +109,7 @@ class CaseConverter {
      * @since 1.0
      */
     public static function toSnackCase($value) {
-        $attr1 = str_replace('-', '_', $value);
+        $attr1 = str_replace('-', '_', trim($value));
         $retVal = '';
 
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
