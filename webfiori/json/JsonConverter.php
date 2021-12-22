@@ -2,16 +2,30 @@
 namespace webfiori\json;
 
 /**
- * Description of JsonConverter
+ * A class to convert Json instance to it's JSON string representation.
  *
  * @author Ibrahim
+ * 
+ * @version 1.0
  */
 class JsonConverter {
     private static $CurrentTab = 0;
     private static $TabSize = 0;
     private static $CRLF = "\r\n";
     private static $Tab = '';
-
+    /**
+     * Convert Json instance to it's JSON string representation.
+     * 
+     * @param Json $jsonObj The object that will be converted.
+     * 
+     * @param boolean $formatted If set to true, the generated output will have
+     * indentation and new lines which makes it readable. Note that the
+     * size of generated string will increase if set to true.
+     * 
+     * @return string A well formatted JSON string.
+     * 
+     * @since 1.0
+     */
     public static function toJsonString(Json $jsonObj, $formatted = false) {
         if (self::$CurrentTab == 0) {
             self::setIsFormatted($formatted);
@@ -32,6 +46,12 @@ class JsonConverter {
         $jsonString .= self::$Tab.'}';
         return $jsonString;
     }
+    /**
+     * 
+     * @param boolean $increase
+     * 
+     * @since 1.0
+     */
     private static function updateTab($increase = true) {
         if ($increase === true) {
             self::$CurrentTab++;
@@ -40,17 +60,19 @@ class JsonConverter {
         }
         self::$Tab = str_repeat(' ', self::$CurrentTab * self::$TabSize);
     }
-
-    private static function _isIndexedArr($arr) {
-        $isIndexed = true;
-
-        foreach ($arr as $index => $val) {
-            $isIndexed = $isIndexed && gettype($index) == 'integer';
-        }
-
-        return $isIndexed;
-    }
-    public static function arrayToJsonString(array $array, $asObj, $propsStyle = 'snake') {
+    /**
+     * 
+     * @param array $array
+     * 
+     * @param type $asObj
+     * 
+     * @param type $propsStyle
+     * 
+     * @return string
+     * 
+     * @since 1.0
+     */
+    private static function arrayToJsonString(array $array, $asObj, $propsStyle = 'snake') {
         
         $retVal = '';
         if ($asObj === true) {
@@ -105,6 +127,18 @@ class JsonConverter {
         
         return $retVal;
     }
+    /**
+     * Converts a JSON property to its JSON string representation.
+     * 
+     * @param Property $prop The property that will be converted.
+     * 
+     * @param boolean $formatted If set to true, the generated output will have
+     * indentations and new lines which makes it readable.
+     * 
+     * @return string JSON representation of the property as string.
+     * 
+     * @since 1.0
+     */
     public static function propertyToJsonString(Property $prop, $formatted = false) {
         if (self::$CurrentTab == 0) {
             self::setIsFormatted($formatted);
@@ -132,10 +166,20 @@ class JsonConverter {
         }
         return $retVal;
     }
+    /**
+     * 
+     * @param type $probVal
+     * 
+     * @param type $style
+     * 
+     * @return string
+     * 
+     * @since 1.0
+     */
     private static function objToJson($probVal, $style) {
         if (!($probVal instanceof Json)) {
             if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
-                $probVal = Json::objectToJson($probVal);
+                $probVal = self::objectToJson($probVal);
             } else {
                 $probVal = $probVal->toJSON();
             }
@@ -158,6 +202,14 @@ class JsonConverter {
         $retVal .= self::$Tab.'}';
         return $retVal;
     }
+    /**
+     * 
+     * @param type $val
+     * 
+     * @return string
+     * 
+     * @since 1.0
+     */
     private static function getNumberVal($val) {
         $retVal = $val;
         if (is_nan($retVal)) {
@@ -167,11 +219,12 @@ class JsonConverter {
         }
         return $retVal;
     }
-    private static function _getTab() {
-        $tabStr = str_repeat(' ', self::$CurrentTab * self::$TabSize);
-        return $tabStr;
-    }
-
+    /**
+     * 
+     * @param boolean $bool
+     * 
+     * @since 1.0
+     */
     private static function setIsFormatted($bool) {
         if ($bool === true) {
             self::$TabSize = 4;
@@ -180,5 +233,47 @@ class JsonConverter {
             self::$TabSize = 0;
             self::$CRLF = "";
         }
+    }
+    /**
+     * Convert an object to Json object.
+     * 
+     * Note that the properties which will be in the generated Json
+     * object will depend on the public 'get' methods of the object.
+     * The name of the properties will depend on the name of the method. For
+     * example, if the name of one of the methods is 'getFullName', then
+     * property name will be 'FullName'.
+     * 
+     * @param object $obj The object that will be converted.
+     * 
+     * @return Json
+     */
+    public static function objectToJson($obj) {
+        
+        if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
+            return $obj->toJSON();
+        }
+        
+        $methods = get_class_methods($obj);
+        $count = count($methods);
+        $json = new Json();
+        
+        set_error_handler(function()
+        {
+        });
+
+        for ($y = 0 ; $y < $count; $y++) {
+            $funcNm = substr($methods[$y], 0, 3);
+
+            if (strtolower($funcNm) == 'get') {
+                $propVal = call_user_func([$obj, $methods[$y]]);
+
+                if ($propVal !== false && $propVal !== null) {
+                    $json->add(substr($methods[$y], 3), $propVal);
+                }
+            }
+        }
+        restore_error_handler();
+        
+        return $json;
     }
 }
