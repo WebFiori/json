@@ -170,6 +170,12 @@ class Property {
 
         if (in_array($trimmed, self::PROP_NAME_STYLES)) {
             $this->probsStyle = $trimmed;
+            $this->setName(CaseConverter::convert($this->getName(), $trimmed));
+        }
+        $val = $this->getValue();
+        
+        if ($val instanceof Json) {
+            $val->setPropsStyle($trimmed);
         }
     }
     public function __construct($name, $value, $style = null) {
