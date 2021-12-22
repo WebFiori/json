@@ -699,9 +699,7 @@ class Json {
      */
     private function createProb($name, $value) {
         try {
-            $prop = new Property($name, $value, $this->getPropStyle());
-
-            return $prop;
+            return new Property($name, $value, $this->getPropStyle());
         } catch (\Exception $ex) {
             return null;
         }
