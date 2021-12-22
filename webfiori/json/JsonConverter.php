@@ -74,23 +74,25 @@ class JsonConverter {
         $probType = $prop->getType();
         $probVal = $prop->getValue();
 
-        if ($probType == JsonTypes::STRING) {
-            $retVal .= '"'.Json::escapeJSONSpecialChars($probVal).'"';
-        } else if ($probType == JsonTypes::INT || $probType == JsonTypes::DOUBLE) {
-            $retVal .= self::getNumberVal($probVal);
-        } else if ($probType == JsonTypes::NUL) {
-            $retVal .= 'null';
-        } else if ($probType == JsonTypes::BOOL) {
-            if ($probVal === true) {
-                $retVal .= 'true';
-            } else {
-                $retVal .= 'false';
-            }
-        } else if ($probType == JsonTypes::OBJ) {
-            $retVal .= self::objToJson($probVal, $prop->getStyle());
-        } else if ($probType == JsonTypes::ARR) {
-            $retVal .= self::arrayToJsonString($probVal, $prop->isAsObject(), $prop->getStyle());
-        }
+        $retVal .= self::checkVal($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
+        
+//        if ($probType == JsonTypes::STRING) {
+//            $retVal .= '"'.Json::escapeJSONSpecialChars($probVal).'"';
+//        } else if ($probType == JsonTypes::INT || $probType == JsonTypes::DOUBLE) {
+//            $retVal .= self::getNumberVal($probVal);
+//        } else if ($probType == JsonTypes::NUL) {
+//            $retVal .= 'null';
+//        } else if ($probType == JsonTypes::BOOL) {
+//            if ($probVal === true) {
+//                $retVal .= 'true';
+//            } else {
+//                $retVal .= 'false';
+//            }
+//        } else if ($probType == JsonTypes::OBJ) {
+//            $retVal .= self::objToJson($probVal, $prop->getStyle());
+//        } else if ($probType == JsonTypes::ARR) {
+//            $retVal .= self::arrayToJsonString($probVal, $prop->isAsObject(), $prop->getStyle());
+//        }
         
 
         return $retVal;
@@ -159,31 +161,7 @@ class JsonConverter {
 
             foreach ($array as $val) {
                 $valType = gettype($val);
-                $retVal .= $valToPreAppend.self::$Tab;
-
-                if ($val instanceof Json) {
-                    $retVal .= self::toJsonString($val);
-                } else if (is_subclass_of($val, 'webfiori\\json\\JsonI')) {
-                    $retVal .= self::toJsonString($val->toJSON());
-                } else if ($valType == JsonTypes::STRING) {
-                    $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
-                } else if ($valType == JsonTypes::NUL) {
-                    $retVal .= 'null';
-                } else if ($valType == JsonTypes::OBJ) {
-                    $retVal .= self::objToJson($val, $propsStyle);
-                } else if ($valType == JsonTypes::ARR) {
-                    $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
-                } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
-                    $retVal .= self::getNumberVal($val);
-                } else if ($valType == JsonTypes::BOOL) {
-                    if ($val === true) {
-                        $retVal .= 'true';
-                    } else {
-                        $retVal .= 'false';
-                    }
-                } else {
-                    $retVal .= $val;
-                }
+                $retVal .= $valToPreAppend.self::$Tab.self::checkVal($val, $valType, $propsStyle, $asObj);
                                        
                 $valToPreAppend = ",".self::$CRLF;
             }
@@ -196,6 +174,28 @@ class JsonConverter {
             }
         }
 
+        return $retVal;
+    }
+    private static function checkVal($val, $valType, $propsStyle, $asObj) {
+        $retVal = '';
+        if ($valType == JsonTypes::STRING) {
+            $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
+        } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
+            $retVal .= self::getNumberVal($val);
+        } else if ($valType == JsonTypes::NUL) {
+            $retVal .= 'null';
+        } else if ($valType == JsonTypes::BOOL) {
+            if ($val === true) {
+                $retVal .= 'true';
+            } else {
+                $retVal .= 'false';
+            }
+        } else if ($valType == JsonTypes::OBJ) {
+            $retVal .= self::objToJson($val, $propsStyle);
+        } else if ($valType == JsonTypes::ARR) {
+            $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
+        }
+        
         return $retVal;
     }
     /**
