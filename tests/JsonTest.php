@@ -589,7 +589,8 @@ class JsonXTest extends TestCase {
         ];
         $j = new Json([
             'array' => $arr
-        ], true);
+        ], false);
+        $j->setIsFormatted(true);
         $this->assertEquals('{'."\r\n"
                 . '    "array":['."\r\n"
                 . '        ['."\r\n"
