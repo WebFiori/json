@@ -694,46 +694,5 @@ class Json {
             $this->add($key, $value);
         }
     }
-    /**
-     * Convert an object to Json object.
-     * 
-     * Note that the proberties which will be in the generated Json
-     * object will depend on the public 'get' methods of the object.
-     * The name of the properties will depend on the name of the method. For
-     * example, if the name of one of the methods is 'getFullName', then
-     * property name will be 'FullName'.
-     * 
-     * @param object $obj The object that will be converted.
-     * 
-     * @return Json
-     */
-    public static function objectToJson($obj) {
-        
-        if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
-            return $obj->ToJSON();
-        }
-        
-        $methods = get_class_methods($obj);
-        $count = count($methods);
-        $json = new Json();
-        
-        set_error_handler(function()
-        {
-        });
-
-        for ($y = 0 ; $y < $count; $y++) {
-            $funcNm = substr($methods[$y], 0, 3);
-
-            if (strtolower($funcNm) == 'get') {
-                $propVal = call_user_func([$obj, $methods[$y]]);
-
-                if ($propVal !== false && $propVal !== null) {
-                    $json->add(substr($methods[$y], 3), $propVal);
-                }
-            }
-        }
-        restore_error_handler();
-        
-        return $json;
-    }
+    
 }
