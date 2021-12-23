@@ -157,4 +157,184 @@ class JsonConverterTest extends TestCase {
                 .'    ]'."\r\n"
                 .'}', JsonConverter::propertyToJsonString($prop, true));
     }
+    
+    /**
+     * @test
+     */
+    public function testToJsonX00() {
+        $prop = new Property('hello', 'world');
+        $this->assertEquals('<json:string name="hello">'."\r\n"
+                . '    world'."\r\n"
+                . '</json:string>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonXX01() {
+        $prop = new Property('hello', 1);
+        $this->assertEquals('<json:number name="hello">'."\r\n"
+                . '    1'."\r\n"
+                . '</json:number>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX02() {
+        $prop = new Property('hello', 1.7);
+        $this->assertEquals('<json:number name="hello">'."\r\n"
+                . '    1.7'."\r\n"
+                . '</json:number>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX03() {
+        $prop = new Property('hello', true);
+        $this->assertEquals('<json:boolean name="hello">'."\r\n"
+                . '    true'."\r\n"
+                . '</json:boolean>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX04() {
+        $prop = new Property('hello', false);
+        $this->assertEquals('<json:boolean name="hello">'."\r\n"
+                . '    false'."\r\n"
+                . '</json:boolean>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX05() {
+        $prop = new Property('hello', null);
+        $this->assertEquals('<json:null name="hello">'."\r\n"
+                . '    null'."\r\n"
+                . '</json:null>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX06() {
+        $prop = new Property('hello', new Json([
+            'one' => 1,
+            'bool' => true
+        ]));
+        $this->assertEquals('<json:object name="hello">'."\r\n"
+                . '    <json:number name="one">'."\r\n"
+                . '        1'."\r\n"
+                . '    </json:number>'."\r\n"
+                . '    <json:boolean name="bool">'."\r\n"
+                . '        true'."\r\n"
+                . '    </json:boolean>'."\r\n"
+                . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX07() {
+        $prop = new Property('hello', new Json([
+            'one' => 1,
+            'bool' => true,
+            'obj' => new Json([
+                'good' => true,
+                'null' => null
+            ])
+        ]));
+        $this->assertEquals('<json:object name="hello">'."\r\n"
+                . '    <json:number name="one">'."\r\n"
+                . '        1'."\r\n"
+                . '    </json:number>'."\r\n"
+                . '    <json:boolean name="bool">'."\r\n"
+                . '        true'."\r\n"
+                . '    </json:boolean>'."\r\n"
+                . '    <json::object name="obj">'."\r\n"
+                . '        <json::boolean name="good>'."\r\n"
+                . '            true'."\r\n"
+                . '        </json::boolean>'."\r\n"
+                . '        <json:null name="null">'."\r\n"
+                . '            null'."\r\n"
+                . '        </json:null>'."\r\n"
+                . '    </json:object>'."\r\n"
+                . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX08() {
+        $prop = new Property('hello', new Json([
+            'one' => 1,
+            'bool' => true,
+            'array' => []
+        ]));
+        $this->assertEquals('<json:object name="hello">'."\r\n"
+                . '    <json:number name="one">'."\r\n"
+                . '        1'."\r\n"
+                . '    </json:number>'."\r\n"
+                . '    <json:boolean name="bool">'."\r\n"
+                . '        true'."\r\n"."\r\n"
+                . '    </json:boolean>'."\r\n"
+                . '    <json:array name="array">'."\r\n"
+                . '    </json:array>'."\r\n"
+                . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX09() {
+        $prop = new Property('hello', new Json([
+            'one' => 1,
+            'bool' => true,
+            'array' => [
+                "string of text"
+            ]
+        ]));
+        $this->assertEquals('<json:object name="hello">'."\r\n"
+                . '    <json:number name="one">'."\r\n"
+                . '        1'."\r\n"
+                . '    </json:number>'."\r\n"
+                . '    <json:boolean name="bool">'."\r\n"
+                . '        true'."\r\n"."\r\n"
+                . '    </json:boolean>'."\r\n"
+                . '    <json:array name="array">'."\r\n"
+                . '        <json:string>'."\r\n"
+                . '            string of text'."\r\n"
+                . '        </json:string>'."\r\n"
+                . '    </json:array>'."\r\n"
+                . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
+    }
+    /**
+     * @test
+     */
+    public function testToJsonX10() {
+        $prop = new Property('hello', new Json([
+            'one' => 1,
+            'bool' => true,
+            'array' => [
+                "string of text",
+                new Json([
+                    'ok' => false
+                ])
+            ]
+        ]));
+        $this->assertEquals('<json:object name="hello">'."\r\n"
+                . '    <json:number name="one">'."\r\n"
+                . '        1'."\r\n"
+                . '    </json:number>'."\r\n"
+                . '    <json:boolean name="bool">'."\r\n"
+                . '        true'."\r\n"."\r\n"
+                . '    </json:boolean>'."\r\n"
+                . '    <json:array name="array">'."\r\n"
+                . '        <json:string>'."\r\n"
+                . '            string of text'."\r\n"
+                . '        </json:string>'."\r\n"
+                . '        <json:object>'."\r\n"
+                . '            <json:boolean name="ok">'."\r\n"
+                . '                false'."\r\n"
+                . '            </json:boolean>'."\r\n"
+                . '        </json:object>'."\r\n"
+                . '    </json:array>'."\r\n"
+                . '</json:object>', JsonConverter::propertyToJsonXString($prop));
+    }
+
 }
