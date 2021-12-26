@@ -130,9 +130,17 @@ class Property {
             } case JsonTypes::BOOL : {
                 return 'json:boolean';
             } case JsonTypes::INT : {
-                return 'json:number';
+                if (is_nan($this->getValue()) || $this->getValue() == INF) {
+                    return 'json:string';
+                } else {
+                    return 'json:number';
+                }
             } case JsonTypes::DOUBLE : {
-                return 'json:number';
+                if (is_nan($this->getValue()) || $this->getValue() == INF) {
+                    return 'json:string';
+                } else {
+                    return 'json:number';
+                }
             } case JsonTypes::STRING : {
                 return 'json:string';
             } case JsonTypes::NUL : {
