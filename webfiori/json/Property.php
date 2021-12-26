@@ -117,12 +117,13 @@ class Property {
      */
     public function getJsonXTagName() {
         $type = $this->getType();
-        
+
         switch ($type) {
             case JsonTypes::ARR : {
                 if ($this->isAsObject()) {
                     return 'json:object';
                 }
+
                 return 'json:array';
             } case JsonTypes::OBJ : {
                 return 'json:object';
