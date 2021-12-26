@@ -380,6 +380,18 @@ class Json {
             'error-message' => json_last_error_msg()
         ];
     }
+    public static function jsonxDecode($xmlStr) {
+        //try {
+            $doc = new \DOMDocument("1.0", 'UTF-8');
+            $doc->loadXML($xmlStr);
+            $json = new Json();
+            $ch = $doc->childNodes;
+            //var_dump($xmlTree->children());
+            return $json;
+//        } catch (\Exception $ex) {
+//            throw new InvalidArgumentException('Given string does not represent well formatted XML tree.');
+//        }
+    }
     /**
      * Escape JSON special characters from string.
      * If the given string is null,the method will return empty string.
