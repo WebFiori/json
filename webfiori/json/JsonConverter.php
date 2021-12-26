@@ -204,22 +204,21 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function arrayToJsonX(Property $propObj) {
+    private static function arrayToJsonX(Property $propObj, $value) {
         $retVal = '';
 
-        if (count($propObj->getValue()) == 0) {
+        if (count($value) == 0) {
             return '';
         }
 
-        foreach ($propObj->getValue() as $arrayEl) {
-            $retVal .= self::checkType(gettype($arrayEl), $arrayEl, $propObj);
+        foreach ($value as $arrayEl) {
+            $retVal .= self::checkType(gettype($arrayEl), $arrayEl, $propObj, true);
         }
 
         return $retVal;
     }
-    private static function checkType($datatype, $value, Property $prop = null) {
+    private static function checkType($datatype, $value, Property $prop = null, $isArrayValue = false) {
         $retVal = self::$Tab;
-        $isArrayValue = $datatype != $prop->getType();
 
         if ($datatype == JsonTypes::STRING) {
             if ($isArrayValue) {
@@ -231,7 +230,7 @@ class JsonConverter {
         } else if ($datatype == JsonTypes::BOOL) {
             if ($isArrayValue) {
                 $propX = new Property('x', $value);
-                $retVal .= self::propertyToJsonXString($propX, false);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 if ($value === true) {
                     $retVal .= 'true'.self::$CRLF;
@@ -242,7 +241,7 @@ class JsonConverter {
         } else if ($datatype == JsonTypes::NUL) {
             if ($isArrayValue) {
                 $propX = new Property('x', $value);
-                $retVal .= self::propertyToJsonXString($propX, false);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 $retVal .= 'null'.self::$CRLF;
             }
@@ -262,7 +261,13 @@ class JsonConverter {
                 $retVal .= substr(self::objToJsonX($prop, $value), self::$CurrentTab * self::$TabSize);
             }
         } else if ($datatype == JsonTypes::ARR) {
-            $retVal = self::arrayToJsonX($prop);
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $propX->setStyle($prop->getStyle());
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal = self::arrayToJsonX($prop, $value);
+            }
         }
 
         return $retVal;
