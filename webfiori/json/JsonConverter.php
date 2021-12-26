@@ -13,6 +13,32 @@ class JsonConverter {
     private static $CurrentTab = 0;
     private static $Tab = '';
     private static $TabSize = 0;
+    private static $XmlClosingPool = [];
+    /**
+     * Converts an instance of Json to JSONx string.
+     * 
+     * @param Json $json The object that holds the attributes.
+     * 
+     * @return string Returns XML string that represents Json schema.
+     * 
+     * @since 1.0
+     */
+    public static function jsonToJsonXString(Json $json) {
+        if (self::$CurrentTab == 0) {
+            self::setIsFormatted(true);
+        }
+        $retVal = '<?xml version="1.0" encoding="UTF-8"?>'.self::$CRLF;
+        $retVal .= '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+                    .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
+        self::push('json:object');
+        foreach ($json->getProperties() as $prop) {
+            $retVal .= self::propertyToJsonXString($prop);
+        }
+        $retVal .= self::pop();
+
+        return $retVal;
+    }
     /**
      * Convert an object to Json object.
      * 
@@ -29,6 +55,10 @@ class JsonConverter {
     public static function objectToJson($obj) {
         if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
             return $obj->toJSON();
+        } else {
+            if ($obj instanceof Json) {
+                return $obj;
+            }
         }
 
         $methods = get_class_methods($obj);
@@ -73,7 +103,25 @@ class JsonConverter {
         $probVal = $prop->getValue();
 
         $retVal .= self::checkVal($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
-        
+
+        return $retVal;
+    }
+    public static function propertyToJsonXString(Property $prop, $withName = true) {
+        if (self::$CurrentTab == 0) {
+            self::setIsFormatted(true);
+        }
+
+        if ($withName) {
+            $retVal = self::$Tab.'<'.$prop->getJsonXTagName().' name="'.$prop->getName().'">'.self::$CRLF;
+        } else {
+            $retVal = self::$Tab.'<'.$prop->getJsonXTagName().'>'.self::$CRLF;
+        }
+
+        self::push($prop->getJsonXTagName());
+        //$retVal .= self::$Tab;
+        $retVal .= self::checkType($prop->getType(), $prop->getValue(), $prop);
+        $retVal .= self::pop().self::$CRLF;
+
         return $retVal;
     }
     /**
@@ -110,6 +158,7 @@ class JsonConverter {
 
         return $jsonString;
     }
+
     /**
      * 
      * @param array $array
@@ -141,7 +190,7 @@ class JsonConverter {
             foreach ($array as $val) {
                 $valType = gettype($val);
                 $retVal .= $valToPreAppend.self::$Tab.self::checkVal($val, $valType, $propsStyle, $asObj);
-                                       
+
                 $valToPreAppend = ",".self::$CRLF;
             }
             self::updateTab(false);
@@ -155,8 +204,77 @@ class JsonConverter {
 
         return $retVal;
     }
+    private static function arrayToJsonX(Property $propObj, $value) {
+        $retVal = '';
+
+        if (count($value) == 0) {
+            return '';
+        }
+
+        foreach ($value as $arrayEl) {
+            $retVal .= self::checkType(gettype($arrayEl), $arrayEl, $propObj, true);
+        }
+
+        return $retVal;
+    }
+    private static function checkType($datatype, $value, Property $prop = null, $isArrayValue = false) {
+        $retVal = self::$Tab;
+
+        if ($datatype == JsonTypes::STRING) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal = self::propertyToJsonXString($propX, false);
+            } else {
+                $retVal .= htmlentities($value).self::$CRLF;
+            }
+        } else if ($datatype == JsonTypes::BOOL) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                if ($value === true) {
+                    $retVal .= 'true'.self::$CRLF;
+                } else {
+                    $retVal .= 'false'.self::$CRLF;
+                }
+            }
+        } else if ($datatype == JsonTypes::NUL) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal .= 'null'.self::$CRLF;
+            }
+        } else if ($datatype == JsonTypes::INT || $datatype == JsonTypes::DOUBLE) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal .= trim(self::getNumberVal($value),'"').self::$CRLF;
+            }
+        } else if ($datatype == JsonTypes::OBJ) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $propX->setStyle($prop->getStyle());
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal .= substr(self::objToJsonX($prop, $value), self::$CurrentTab * self::$TabSize);
+            }
+        } else if ($datatype == JsonTypes::ARR) {
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $propX->setStyle($prop->getStyle());
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal = self::arrayToJsonX($prop, $value);
+            }
+        }
+
+        return $retVal;
+    }
     private static function checkVal($val, $valType, $propsStyle, $asObj) {
         $retVal = '';
+
         if ($valType == JsonTypes::STRING) {
             $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
         } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
@@ -174,7 +292,7 @@ class JsonConverter {
         } else if ($valType == JsonTypes::ARR) {
             $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
         }
-        
+
         return $retVal;
     }
     /**
@@ -232,6 +350,30 @@ class JsonConverter {
         $retVal .= self::$Tab.'}';
 
         return $retVal;
+    }
+    private static function objToJsonX(Property $prop, $val = null) {
+        $asJson = self::objectToJson($val);
+
+        if (count($asJson->getProperties()) == 0) {
+            return self::$CRLF;
+        }
+        $asJson->setPropsStyle($prop->getStyle());
+        $retVal = '';
+
+        foreach ($asJson->getProperties() as $subProp) {
+            $retVal .= self::propertyToJsonXString($subProp);
+        }
+
+        return $retVal;
+    }
+    private static function pop() {
+        self::updateTab(false);
+
+        return array_pop(self::$XmlClosingPool);
+    }
+    private static function push($tagName) {
+        self::$XmlClosingPool[] = self::$Tab.'</'.$tagName.'>';
+        self::updateTab();
     }
     /**
      * 

@@ -107,6 +107,48 @@ class Property {
         return $this->value;
     }
     /**
+     * Returns the name of XML tag that will be used when representing the
+     * property in JSONx.
+     * 
+     * @return string The returned string will have the following syntax:
+     * "json:&lt;type&gt;" where "&lt;type&gt;" is the datatype of the property.
+     * 
+     * @since 1.0
+     */
+    public function getJsonXTagName() {
+        $type = $this->getType();
+
+        switch ($type) {
+            case JsonTypes::ARR : {
+                if ($this->isAsObject()) {
+                    return 'json:object';
+                }
+
+                return 'json:array';
+            } case JsonTypes::OBJ : {
+                return 'json:object';
+            } case JsonTypes::BOOL : {
+                return 'json:boolean';
+            } case JsonTypes::INT : {
+                if (is_nan($this->getValue()) || $this->getValue() == INF) {
+                    return 'json:string';
+                } else {
+                    return 'json:number';
+                }
+            } case JsonTypes::DOUBLE : {
+                if (is_nan($this->getValue()) || $this->getValue() == INF) {
+                    return 'json:string';
+                } else {
+                    return 'json:number';
+                }
+            } case JsonTypes::STRING : {
+                return 'json:string';
+            } case JsonTypes::NUL : {
+                return 'json:null';
+            }
+        }
+    }
+    /**
      * Returns the name of the property.
      * 
      * @return string The name of the property. Note that the returned value

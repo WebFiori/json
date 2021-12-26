@@ -602,6 +602,16 @@ class Json {
     public function toJSONString() {
         return JsonConverter::toJsonString($this, $this->isFormatted());
     }
+    /**
+     * Creates and returns a well formatted XML string that will be created using 
+     * provided data.
+     * 
+     * @return string A well formatted JSONx string that will be created using 
+     * provided data.
+     */
+    public function toJSONxString() {
+        return JsonConverter::jsonToJsonXString($this);
+    }
     private static function _checkArr($subVal, &$parentArr) {
         $isIndexed = self::_isIndexedArr($subVal);
 

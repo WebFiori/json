@@ -116,6 +116,9 @@ class CaseConverter {
     public static function toSnackCase($value) {
         return self::_toSnakeOrKebab($value, '-', '_');
     }
+    private static function _isUpper($char) {
+        return $char >= 'A' && $char <= 'Z';
+    }
     private static function _toSnakeOrKebab($value, $from, $to) {
         $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
@@ -133,8 +136,5 @@ class CaseConverter {
         }
 
         return $retVal;
-    }
-    private static function _isUpper($char) {
-        return $char >= 'A' && $char <= 'Z';
     }
 }
