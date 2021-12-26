@@ -28,14 +28,14 @@ class JsonConverter {
             self::setIsFormatted(true);
         }
         $retVal = '<?xml version="1.0" encoding="UTF-8"?>'.self::$CRLF;
-        $retVal .= '<json::object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+        $retVal .= '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                     .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">';
-
+                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
+        self::push('json:object');
         foreach ($json->getProperties() as $prop) {
             $retVal .= self::propertyToJsonXString($prop);
         }
-        $retVal .= '</json::object>';
+        $retVal .= self::pop();
 
         return $retVal;
     }
@@ -240,9 +240,19 @@ class JsonConverter {
                 }
             }
         } else if ($datatype == JsonTypes::NUL) {
-            $retVal .= $isArrayValue ? '<json:null>null</json:null>'.self::$CRLF : 'null'.self::$CRLF;
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal .= self::propertyToJsonXString($propX, false);
+            } else {
+                $retVal .= 'null'.self::$CRLF;
+            }
         } else if ($datatype == JsonTypes::INT || $datatype == JsonTypes::DOUBLE) {
-            $retVal .= $value.self::$CRLF;
+            if ($isArrayValue) {
+                $propX = new Property('x', $value);
+                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
+            } else {
+                $retVal .= trim(self::getNumberVal($value),'"').self::$CRLF;
+            }
         } else if ($datatype == JsonTypes::OBJ) {
             if ($isArrayValue) {
                 $propX = new Property('x', $value);
