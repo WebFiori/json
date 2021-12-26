@@ -5,7 +5,7 @@ use jsonx\tests\Obj0;
 use jsonx\tests\Obj1;
 use PHPUnit\Framework\TestCase;
 
-class JsonXTest extends TestCase {
+class JsonTest extends TestCase {
     /**
      * @test
      */
@@ -195,6 +195,27 @@ class JsonXTest extends TestCase {
         $json->addArray('x-array', $arr, true);
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr","1":1,"2":2,"hello":"world",'
                 . '"3":{"Property00":"1","Property01":2,"Property02":3,"Property04":5},"4":{"good":true}},"1":{"bad":false}}}',$json.'');
+    }
+    /**
+     * @test
+     */
+    public function testJsonXDecode00() {
+        $this->expectException(\InvalidArgumentException::class);
+        $xmlString = '<?xml version="1.0" encoding="UTF-8" ?>'
+                . '<b></b';
+        $jsonObj = Json::jsonxDecode($xmlString);
+    }
+    /**
+     * @test
+     */
+    public function testJsonXDecode01() {
+        $xmlString = '<?xml version="1.0" encoding="UTF-8" ?>'
+                . '<json:object>'
+                . '<json:string name="hello">'."\r\n"
+                . '    world'."\r\n"
+                . '</json:string>'."\r\n"
+                . '</json:object>';
+        $jsonObj = Json::jsonxDecode($xmlString);
     }
     /**
      * @test
