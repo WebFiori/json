@@ -113,8 +113,16 @@ class JsonConverter {
 
         return $jsonString;
     }
-    
-    public function jsonToJsonXString(Json $json) {
+    /**
+     * Converts an instance of Json to JSONx string.
+     * 
+     * @param Json $json The object that holds the attributes.
+     * 
+     * @return string Returns XML string that represents Json schema.
+     * 
+     * @since 1.0
+     */
+    public static function jsonToJsonXString(Json $json) {
         if (self::$CurrentTab == 0) {
             self::setIsFormatted(true);
         }
