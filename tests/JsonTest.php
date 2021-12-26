@@ -199,27 +199,6 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
-    public function testJsonXDecode00() {
-        $this->expectException(\InvalidArgumentException::class);
-        $xmlString = '<?xml version="1.0" encoding="UTF-8" ?>'
-                . '<b></b';
-        $jsonObj = Json::jsonxDecode($xmlString);
-    }
-    /**
-     * @test
-     */
-    public function testJsonXDecode01() {
-        $xmlString = '<?xml version="1.0" encoding="UTF-8" ?>'
-                . '<json:object>'
-                . '<json:string name="hello">'."\r\n"
-                . '    world'."\r\n"
-                . '</json:string>'."\r\n"
-                . '</json:object>';
-        $jsonObj = Json::jsonxDecode($xmlString);
-    }
-    /**
-     * @test
-     */
     public function testDecode00() {
         $jsonStr = '{"Hello":"world"}';
         $decoded = Json::decode($jsonStr);
