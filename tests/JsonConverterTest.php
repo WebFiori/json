@@ -248,10 +248,10 @@ class JsonConverterTest extends TestCase {
                 . '    <json:boolean name="bool">'."\r\n"
                 . '        true'."\r\n"
                 . '    </json:boolean>'."\r\n"
-                . '    <json::object name="obj">'."\r\n"
-                . '        <json::boolean name="good>'."\r\n"
+                . '    <json:object name="obj">'."\r\n"
+                . '        <json:boolean name="good">'."\r\n"
                 . '            true'."\r\n"
-                . '        </json::boolean>'."\r\n"
+                . '        </json:boolean>'."\r\n"
                 . '        <json:null name="null">'."\r\n"
                 . '            null'."\r\n"
                 . '        </json:null>'."\r\n"
@@ -272,9 +272,10 @@ class JsonConverterTest extends TestCase {
                 . '        1'."\r\n"
                 . '    </json:number>'."\r\n"
                 . '    <json:boolean name="bool">'."\r\n"
-                . '        true'."\r\n"."\r\n"
+                . '        true'."\r\n"
                 . '    </json:boolean>'."\r\n"
                 . '    <json:array name="array">'."\r\n"
+                //. '        '."\r\n"
                 . '    </json:array>'."\r\n"
                 . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
     }
@@ -294,7 +295,7 @@ class JsonConverterTest extends TestCase {
                 . '        1'."\r\n"
                 . '    </json:number>'."\r\n"
                 . '    <json:boolean name="bool">'."\r\n"
-                . '        true'."\r\n"."\r\n"
+                . '        true'."\r\n"
                 . '    </json:boolean>'."\r\n"
                 . '    <json:array name="array">'."\r\n"
                 . '        <json:string>'."\r\n"
@@ -322,7 +323,7 @@ class JsonConverterTest extends TestCase {
                 . '        1'."\r\n"
                 . '    </json:number>'."\r\n"
                 . '    <json:boolean name="bool">'."\r\n"
-                . '        true'."\r\n"."\r\n"
+                . '        true'."\r\n"
                 . '    </json:boolean>'."\r\n"
                 . '    <json:array name="array">'."\r\n"
                 . '        <json:string>'."\r\n"
@@ -334,7 +335,7 @@ class JsonConverterTest extends TestCase {
                 . '            </json:boolean>'."\r\n"
                 . '        </json:object>'."\r\n"
                 . '    </json:array>'."\r\n"
-                . '</json:object>', JsonConverter::propertyToJsonXString($prop));
+                . '</json:object>'."\r\n", JsonConverter::propertyToJsonXString($prop));
     }
 
 }
