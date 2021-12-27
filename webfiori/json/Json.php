@@ -423,7 +423,7 @@ class Json {
      * 
      * @since 1.2.5
      */
-    public static function fromFile($pathToJsonFile) {
+    public static function fromJsonFile($pathToJsonFile) {
         if (file_exists($pathToJsonFile)) {
             $fileContent = file_get_contents($pathToJsonFile);
 
@@ -610,7 +610,7 @@ class Json {
      * provided data.
      */
     public function toJSONxString() {
-        return JsonConverter::jsonToJsonXString($this);
+        return JsonConverter::toJsonXString($this);
     }
     private static function _checkArr($subVal, &$parentArr) {
         $isIndexed = self::_isIndexedArr($subVal);
