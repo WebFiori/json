@@ -21,6 +21,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('hello', $prop->getName());
         $this->assertEquals('world', $prop->getValue());
         $this->assertEquals('string', $prop->getType());
+        $this->assertEquals('json:string', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -30,6 +31,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('a-number', $prop->getName());
         $this->assertEquals(1, $prop->getValue());
         $this->assertEquals('integer', $prop->getType());
+        $this->assertEquals('json:number', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -39,6 +41,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('a_double', $prop->getName());
         $this->assertEquals(1.3, $prop->getValue());
         $this->assertEquals('double', $prop->getType());
+        $this->assertEquals('json:number', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -49,6 +52,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('anObj', $prop->getName());
         $this->assertSame($obj, $prop->getValue());
         $this->assertEquals('object', $prop->getType());
+        $this->assertEquals('json:object', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -58,6 +62,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('a-bool', $prop->getName());
         $this->assertTrue($prop->getValue());
         $this->assertEquals('boolean', $prop->getType());
+        $this->assertEquals('json:boolean', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -67,6 +72,7 @@ class PropertyTest extends TestCase {
         $this->assertEquals('a-bool', $prop->getName());
         $this->assertFalse($prop->getValue());
         $this->assertEquals('boolean', $prop->getType());
+        $this->assertEquals('json:boolean', $prop->getJsonXTagName());
     }
     /**
      * @test
@@ -76,5 +82,26 @@ class PropertyTest extends TestCase {
         $this->assertEquals('null-val', $prop->getName());
         $this->assertNull($prop->getValue());
         $this->assertEquals('NULL', $prop->getType());
+        $this->assertEquals('json:null', $prop->getJsonXTagName());
+    }
+    /**
+     * @test
+     */
+    public function testConstructor07() {
+        $prop = new Property('nan_val', NAN, 'kebab');
+        $this->assertEquals('nan-val', $prop->getName());
+        $this->assertTrue(is_nan($prop->getValue()));
+        $this->assertEquals('double', $prop->getType());
+        $this->assertEquals('json:string', $prop->getJsonXTagName());
+    }
+    /**
+     * @test
+     */
+    public function testConstructor08() {
+        $prop = new Property('inf_val', INF, 'kebab');
+        $this->assertEquals('inf-val', $prop->getName());
+        $this->assertTrue(is_infinite($prop->getValue()));
+        $this->assertEquals('double', $prop->getType());
+        $this->assertEquals('json:string', $prop->getJsonXTagName());
     }
 }
