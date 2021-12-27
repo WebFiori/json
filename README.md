@@ -26,12 +26,17 @@ Accoording to [json.org](https://www.json.org/json-en.html), JSON is a data exch
 ## Supported PHP Versions
 The library supports all versions from PHP 5.6 up to PHP 8.1.
 
+## Installation
+If you are using composer to manage your dependencies, then it is possible to install the library by including the entry `"webfiori/jsonx":"*"` in the `require` section of your `composer.json` file to install the latest release. 
+
+Another way to include the library is by going to [releases](https://github.com/WebFiori/json/releases) and download the latest release and extract compressed file content and add them to your include directory.
+
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
-  * Import the class `Json`.
+  * Import (or include) the class [`Json`](https://github.com/WebFiori/json/blob/master/webfiori/json/Json.php).
   * Create an instance of the class.
-  * Add JSON data as needed.
+  * Add data as needed.
   * Output the object using `echo` command or any similar one.
 
 For more information and advanced use cases, check [here](https://webfiori.com/learn/webfiori-json).
