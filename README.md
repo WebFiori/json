@@ -1,6 +1,6 @@
 # WebFiori Json
 
-A helper library for creating JSON strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects). More information about JSON notation can be found at https://www.json.org/.
+A helper class library for creating JSON or JSONx strings in PHP. It can be used to create well-formatted json strings from any variable type (strings, numbers, boolean arrays and even objects).
 
 <p align="center">
   <img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207,8/badge.svg?branch=master">
@@ -12,11 +12,19 @@ A helper library for creating JSON strings in PHP. It can be used to create well
   </a>
 </p>
 
-## API Docs
-This library is a part of <a href="https://github.com/WebFiori/framework">WebFiori Framework</a>. API docs of the library can be found at https://webfiori.com/docs/webfiori/json.
+## What is JSON?
+
+Accoording to [json.org](https://www.json.org/json-en.html), JSON is a data exchange format which is based partially on JavaScript. It is easy for humans to read and for machines to understand. JSON data is represented as pairs of keys and values.
+
+## Library Features
+* Support fo creating well formatted JSON.
+* Support for creating [JSONx](https://www.ibm.com/docs/en/datapower-gateways/10.0.1?topic=20-jsonx).
+* Ability to decode JSON strings and convert them to `Json` objects.
+* Ability to read JSON files and map JSON values to PHP datatypes.
+* Ability to manupulate JSON properties as needed.
 
 ## Supported PHP Versions
-The library supports all versions from PHP 5.6 up to PHP 8.0.
+The library supports all versions from PHP 5.6 up to PHP 8.1.
 
 ## Usage
 The process of using the classes is very simple. What you have to do is the following steps:
