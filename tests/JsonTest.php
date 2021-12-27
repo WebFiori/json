@@ -648,10 +648,10 @@ class JsonTest extends TestCase {
      * @test
      */
     public function testFromFile00() {
-        $this->assertNull(Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
-        $arr = Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
+        $this->assertNull(Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
+        $arr = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
         $this->assertTrue(gettype($arr) == 'array');
-        $jsonx = Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
+        $jsonx = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
         $this->assertTrue($jsonx instanceof Json);
         $packagesArr = $jsonx->get('packages');
         $this->assertEquals(5,count($packagesArr));
