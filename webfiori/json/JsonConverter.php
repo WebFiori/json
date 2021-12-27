@@ -23,7 +23,7 @@ class JsonConverter {
      * 
      * @since 1.0
      */
-    public static function jsonToJsonXString(Json $json) {
+    public static function toJsonXString(Json $json) {
         if (self::$CurrentTab == 0) {
             self::setIsFormatted(true);
         }
@@ -103,7 +103,7 @@ class JsonConverter {
         $probType = $prop->getType();
         $probVal = $prop->getValue();
 
-        $retVal .= self::checkVal($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
+        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
 
         return $retVal;
     }
@@ -119,8 +119,7 @@ class JsonConverter {
         }
 
         self::push($prop->getJsonXTagName());
-        //$retVal .= self::$Tab;
-        $retVal .= self::checkType($prop->getType(), $prop->getValue(), $prop);
+        $retVal .= self::checkJsonXType($prop->getType(), $prop->getValue(), $prop);
         $retVal .= self::pop().self::$CRLF;
 
         return $retVal;
@@ -190,7 +189,7 @@ class JsonConverter {
 
             foreach ($array as $val) {
                 $valType = gettype($val);
-                $retVal .= $valToPreAppend.self::$Tab.self::checkVal($val, $valType, $propsStyle, $asObj);
+                $retVal .= $valToPreAppend.self::$Tab.self::checkJsonType($val, $valType, $propsStyle, $asObj);
 
                 $valToPreAppend = ",".self::$CRLF;
             }
@@ -213,24 +212,24 @@ class JsonConverter {
         }
 
         foreach ($value as $arrayEl) {
-            $retVal .= self::checkType(gettype($arrayEl), $arrayEl, $propObj, true);
+            $retVal .= self::checkJsonXType(gettype($arrayEl), $arrayEl, $propObj, true);
         }
 
         return $retVal;
     }
-    private static function checkType($datatype, $value, Property $prop = null, $isArrayValue = false) {
+    private static function checkJsonXType($datatype, $value, Property $prop = null, $isArrayValue = false) {
         $retVal = self::$Tab;
-
+        $propX = new Property('x', $value);
+        $propX->setStyle($prop->getStyle());
+                
         if ($datatype == JsonTypes::STRING) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
                 $retVal = self::propertyToJsonXString($propX, false);
             } else {
                 $retVal .= htmlentities($value).self::$CRLF;
             }
         } else if ($datatype == JsonTypes::BOOL) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 if ($value === true) {
@@ -241,30 +240,24 @@ class JsonConverter {
             }
         } else if ($datatype == JsonTypes::NUL) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 $retVal .= 'null'.self::$CRLF;
             }
         } else if ($datatype == JsonTypes::INT || $datatype == JsonTypes::DOUBLE) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 $retVal .= trim(self::getNumberVal($value),'"').self::$CRLF;
             }
         } else if ($datatype == JsonTypes::OBJ) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
-                $propX->setStyle($prop->getStyle());
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 $retVal = self::objToJsonX($prop, $value);
             }
         } else if ($datatype == JsonTypes::ARR) {
             if ($isArrayValue) {
-                $propX = new Property('x', $value);
-                $propX->setStyle($prop->getStyle());
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
                 if ($prop->isAsObject()) {
@@ -283,7 +276,7 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function checkVal($val, $valType, $propsStyle, $asObj) {
+    private static function checkJsonType($val, $valType, $propsStyle, $asObj) {
         $retVal = '';
 
         if ($valType == JsonTypes::STRING) {
