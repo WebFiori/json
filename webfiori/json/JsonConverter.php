@@ -32,6 +32,7 @@ class JsonConverter {
                     .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
                     .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
         self::push('json:object');
+        
         foreach ($json->getProperties() as $prop) {
             $retVal .= self::propertyToJsonXString($prop);
         }
@@ -258,7 +259,7 @@ class JsonConverter {
                 $propX->setStyle($prop->getStyle());
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
-                $retVal .= substr(self::objToJsonX($prop, $value), self::$CurrentTab * self::$TabSize);
+                $retVal = self::objToJsonX($prop, $value);
             }
         } else if ($datatype == JsonTypes::ARR) {
             if ($isArrayValue) {
@@ -266,7 +267,17 @@ class JsonConverter {
                 $propX->setStyle($prop->getStyle());
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
-                $retVal = self::arrayToJsonX($prop, $value);
+                if ($prop->isAsObject()) {
+                    $jsonObj = new Json();
+                    $jsonObj->setPropsStyle($prop->getStyle());
+
+                    foreach ($value as $key => $val) {
+                        $jsonObj->add($key, $val, true);
+                    }
+                    $retVal = self::objToJsonX($prop, $jsonObj);
+                } else {
+                    $retVal = self::arrayToJsonX($prop, $value);
+                }
             }
         }
 
@@ -355,7 +366,7 @@ class JsonConverter {
         $asJson = self::objectToJson($val);
 
         if (count($asJson->getProperties()) == 0) {
-            return self::$CRLF;
+            return '';
         }
         $asJson->setPropsStyle($prop->getStyle());
         $retVal = '';
