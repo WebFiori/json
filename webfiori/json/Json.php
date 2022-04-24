@@ -171,7 +171,7 @@ class Json {
      * 
      * @since 1.1
      */
-    public function add($key, $value, $arrayAsObj = false) {
+    public function add(string $key, $value, $arrayAsObj = false) {
         if ($value !== null) {
             return $this->addString($key, $value) ||
             $this->addArray($key, $value, $arrayAsObj) ||
@@ -204,7 +204,7 @@ class Json {
      * @return boolean The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
-    public function addArray($key, $value, $asObject = false) {
+    public function addArray(string $key, $value, $asObject = false) {
         $prop = $this->createProb($key, $value);
         $propType = $prop->getType();
 
@@ -275,7 +275,7 @@ class Json {
      * 
      * @since 1.0
      */
-    public function addNumber($key,$value) {
+    public function addNumber(string $key, $value) {
         $prop = $this->createProb($key, $value);
         $propType = $prop->getType();
 
@@ -309,7 +309,7 @@ class Json {
      * 
      * @since 1.0
      */
-    public function addObject($key, $val) {
+    public function addObject(string $key, $val) {
         $prop = $this->createProb($key, $val);
         $propType = $prop->getType();
 
@@ -334,7 +334,7 @@ class Json {
      * 
      * @since 1.0
      */
-    public function addString($key, $val) {
+    public function addString(string $key, $val) {
         $prop = $this->createProb($key, $val);
 
         if ($prop !== null && $prop->getType() == JsonTypes::STRING) {

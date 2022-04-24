@@ -83,17 +83,20 @@ class Property {
      * 
      * @since 1.0
      */
-    public function __construct($name, $value, $style = null) {
+    public function __construct(string $name, $value, $style = null) {
+        $this->name = '';
         $this->setStyle('none');
+        if (!$this->setName($name)) {
+            throw new InvalidArgumentException('Invalid property name: "'.$name.'"');
+        }
+        
         $this->setAsObject(false);
 
         if ($style !== null) {
             $this->setStyle($style);
         }
 
-        if (!$this->setName($name)) {
-            throw new InvalidArgumentException('Invalid property name: "'.$name.'"');
-        }
+        
         $this->setValue($value);
     }
     /**
@@ -115,7 +118,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function getJsonXTagName() {
+    public function getJsonXTagName() : string {
         $type = $this->getType();
         $retVal = '';
         
@@ -151,7 +154,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function getName() {
+    public function getName() : string {
         return $this->name;
     }
     /**
@@ -168,7 +171,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function getStyle() {
+    public function getStyle() : string {
         return $this->probsStyle;
     }
     /**
@@ -186,7 +189,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function getType() {
+    public function getType() : string {
         return $this->datatype;
     }
     /**
@@ -200,7 +203,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function isAsObject() {
+    public function isAsObject() : bool {
         return $this->asObject;
     }
     /**
@@ -228,7 +231,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function setName($name) {
+    public function setName(string $name) {
         $keyValidity = self::_isValidKey($name, $this->getStyle());
 
         if ($keyValidity === false) {
@@ -258,7 +261,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function setStyle($style) {
+    public function setStyle(string $style) {
         $trimmed = strtolower(trim($style));
 
         if (in_array($trimmed, self::PROP_NAME_STYLES)) {
