@@ -1,19 +1,20 @@
-name: Build PHP 7
+name: Build PHP 7.0
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ${{ matrix.os }} 
+    
     strategy: 
       fail-fast: true
       matrix: 
         os: [ ubuntu-latest ]
-        php: [7.1, 7.0, 5.6]
+        php: [7.0]
             
     name: PHP${{matrix.php}} - ${{matrix.os}}
     
@@ -25,8 +26,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }} 
-          extensions: mysqli, mbstring
-          tools: phpunit:5.7.27
-      
+          extensions: mysqli, mbstring, sqlsrv
+          tools: phpunit:5.7.27, composer
+          
+      - name: Install Dependencies
+        run: composer install --prefer-source --no-interaction --no-dev
+        
       - name: Execute Tests
         run: phpunit
+        
+      - name: CodeCov
+        uses: codecov/codecov-action@v1
