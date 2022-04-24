@@ -117,36 +117,31 @@ class Property {
      */
     public function getJsonXTagName() {
         $type = $this->getType();
-
-        switch ($type) {
-            case JsonTypes::ARR : {
-                if ($this->isAsObject()) {
-                    return 'json:object';
-                }
-
-                return 'json:array';
-            } case JsonTypes::OBJ : {
-                return 'json:object';
-            } case JsonTypes::BOOL : {
-                return 'json:boolean';
-            } case JsonTypes::INT : {
-                if (is_nan($this->getValue()) || $this->getValue() == INF) {
-                    return 'json:string';
-                } else {
-                    return 'json:number';
-                }
-            } case JsonTypes::DOUBLE : {
-                if (is_nan($this->getValue()) || $this->getValue() == INF) {
-                    return 'json:string';
-                } else {
-                    return 'json:number';
-                }
-            } case JsonTypes::STRING : {
-                return 'json:string';
-            } case JsonTypes::NUL : {
-                return 'json:null';
+        $retVal = '';
+        
+        if ($type == JsonTypes::ARR) {
+            if ($this->isAsObject()) {
+                $retVal = 'json:object';
+            } else {
+                $retVal = 'json:array';
             }
-        }
+        } else if ($type == JsonTypes::OBJ) {
+            $retVal = 'json:object';
+        } else if ($type == JsonTypes::BOOL) {
+            $retVal = 'json:boolean';
+        } else if ($type == JsonTypes::DOUBLE || $type == JsonTypes::INT) {
+            if (is_nan($this->getValue()) || $this->getValue() == INF) {
+                $retVal = 'json:string';
+            } else {
+                $retVal = 'json:number';
+            }
+        } else if ($type == JsonTypes::STRING) {
+            $retVal = 'json:string';
+        } else {
+            $retVal = 'json:null';
+        } 
+        
+        return $retVal;
     }
     /**
      * Returns the name of the property.

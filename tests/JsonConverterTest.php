@@ -157,7 +157,15 @@ class JsonConverterTest extends TestCase {
                 .'    ]'."\r\n"
                 .'}', JsonConverter::propertyToJsonString($prop, true));
     }
-    
+    /**
+     * @test
+     */
+    public function testToJson11() {
+        $obj = new Obj1(1, 2, 3, 4, 5);
+        $json = JsonConverter::objectToJson($obj);
+        $json->setIsFormatted(false);
+        $this->assertEquals('{"property-00":1,"property-01":2,"property-02":3}', $json.'');
+    }
     /**
      * @test
      */

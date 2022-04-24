@@ -279,6 +279,26 @@ class JsonTest extends TestCase {
                 . '}',$j->toJSONString());
         $j->setIsFormatted(false);
         $this->assertEquals('{"arr":{"0":"NaN","1":"Infinity"}}',$j->toJSONString());
+        return $j;
+    }
+    /**
+     * @depends testToJsonString09
+     * @param Json $json
+     */
+    public function testToJsonXString09(Json $json) {
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
+                . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+                . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                . 'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'."\r\n"
+                . '    <json:object name="arr">'."\r\n"
+                . '        <json:string name="0">'."\r\n"
+                . '            NaN'."\r\n"
+                . '        </json:string>'."\r\n"
+                . '        <json:string name="1">'."\r\n"
+                . '            Infinity'."\r\n"
+                . '        </json:string>'."\r\n"
+                . '    </json:object>'."\r\n"
+                . '</json:object>', $json->toJSONxString());
     }
     /**
      * @test
@@ -349,6 +369,53 @@ class JsonTest extends TestCase {
                 . '}',$j.'');
         $j->setIsFormatted(false);
         $this->assertEquals('{"jsonx":{"number_one":1,"arr":[],"obj":{},"general":{"property00":"1","property01":"3","property02":99,"property04":"ok"}},"o":{"property_00":"1","property_01":2,"property_02":3}}',$j.'');
+        return $j;
+    }
+    /**
+     * @depends testToJsonString10
+     * @param Json $json
+     */
+    public function testToJsonXString10(Json $json) {
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
+                . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+                . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                . 'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'."\r\n"
+                . '    <json:object name="jsonx">'."\r\n"
+                . '        <json:number name="number_one">'."\r\n"
+                . '            1'."\r\n"
+                . '        </json:number>'."\r\n"
+                . '        <json:array name="arr">'."\r\n"
+                . '        </json:array>'."\r\n"
+                . '        <json:object name="obj">'."\r\n"
+                . '        </json:object>'."\r\n"
+                . '        <json:object name="general">'."\r\n"
+                . '            <json:string name="property00">'."\r\n"
+                . '                1'."\r\n"
+                . '            </json:string>'."\r\n"
+                . '            <json:string name="property01">'."\r\n"
+                . '                3'."\r\n"
+                . '            </json:string>'."\r\n"
+                . '            <json:number name="property02">'."\r\n"
+                . '                99'."\r\n"
+                . '            </json:number>'."\r\n"
+                . '            <json:string name="property04">'."\r\n"
+                . '                ok'."\r\n"
+                . '            </json:string>'."\r\n"
+                . '        </json:object>'."\r\n"
+                . '    </json:object>'."\r\n"
+                . '    <json:object name="o">'."\r\n"
+                . '        <json:string name="property_00">'."\r\n"
+                . '            1'."\r\n"
+                . '        </json:string>'."\r\n"
+                . '        <json:number name="property_01">'."\r\n"
+                . '            2'."\r\n"
+                . '        </json:number>'."\r\n"
+                . '        <json:number name="property_02">'."\r\n"
+                . '            3'."\r\n"
+                . '        </json:number>'."\r\n"
+                . '    </json:object>'."\r\n"
+                
+                . '</json:object>', $json->toJSONxString());
     }
     /**
      * @test
@@ -375,6 +442,59 @@ class JsonTest extends TestCase {
         $json->addArray('x-array', $arr, true);
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr","1":1,"2":2,"hello":"world",'
                 . '"3":{"Property00":"1","Property01":2,"Property02":3,"Property04":5},"4":{"good":true}},"1":{"bad":false}}}',$json.'');
+        return $json;
+    }
+    /**
+     * @depends testToJsonString11
+     * @param Json $json
+     */
+    public function testToJsonXString11(Json $json) {
+        $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
+                . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+                . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                . 'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'."\r\n"
+                . '    <json:object name="x-array">'."\r\n"
+                . '        <json:object name="0">'."\r\n"
+                . '            <json:string name="0">'."\r\n"
+                . '                sub-arr'."\r\n"
+                . '            </json:string>'."\r\n"
+                . '            <json:number name="1">'."\r\n"
+                . '                1'."\r\n"
+                . '            </json:number>'."\r\n"
+                . '            <json:number name="2">'."\r\n"
+                . '                2'."\r\n"
+                . '            </json:number>'."\r\n"
+                . '            <json:string name="hello">'."\r\n"
+                . '                world'."\r\n"
+                . '            </json:string>'."\r\n"
+                . '            <json:object name="3">'."\r\n"
+                . '                <json:string name="Property00">'."\r\n"
+                . '                    1'."\r\n"
+                . '                </json:string>'."\r\n"
+                . '                <json:number name="Property01">'."\r\n"
+                . '                    2'."\r\n"
+                . '                </json:number>'."\r\n"
+                . '                <json:number name="Property02">'."\r\n"
+                . '                    3'."\r\n"
+                . '                </json:number>'."\r\n"
+                . '                <json:number name="Property04">'."\r\n"
+                . '                    5'."\r\n"
+                . '                </json:number>'."\r\n"
+                . '            </json:object>'."\r\n"
+                . '            <json:object name="4">'."\r\n"
+                . '                <json:boolean name="good">'."\r\n"
+                . '                    true'."\r\n"
+                . '                </json:boolean>'."\r\n"
+                . '            </json:object>'."\r\n"
+                . '        </json:object>'."\r\n"
+                . '        <json:object name="1">'."\r\n"
+                . '            <json:boolean name="bad">'."\r\n"
+                . '                false'."\r\n"
+                . '            </json:boolean>'."\r\n"
+                . '        </json:object>'."\r\n"
+                . '    </json:object>'."\r\n"
+                
+                . '</json:object>', $json->toJSONxString());
     }
     /**
      * @test
@@ -528,10 +648,10 @@ class JsonTest extends TestCase {
      * @test
      */
     public function testFromFile00() {
-        $this->assertNull(Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
-        $arr = Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
+        $this->assertNull(Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
+        $arr = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
         $this->assertTrue(gettype($arr) == 'array');
-        $jsonx = Json::fromFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
+        $jsonx = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
         $this->assertTrue($jsonx instanceof Json);
         $packagesArr = $jsonx->get('packages');
         $this->assertEquals(5,count($packagesArr));
