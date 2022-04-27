@@ -811,6 +811,8 @@ class JsonTest extends TestCase {
         $j->add('one', 'not one');
         $this->assertEquals(2, count($j->getPropsNames()));
         $this->assertEquals('not one', $j->get('one'));
+        $j->addNumber('one', 1);
+        $this->assertEquals(1, $j->get('one'));
     }
     /**
      * @test
