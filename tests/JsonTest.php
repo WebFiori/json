@@ -676,24 +676,7 @@ class JsonTest extends TestCase {
         ]);
         $this->assertEquals('{"user-id":5,"an-array":[1,2,3],"float":1.6,"bool":true}',$j.'');
     }
-    /**
-     * @test
-     */
-    public function testAdd00() {
-        $j = new Json();
-        $this->assertTrue($j->add('a-string','This is a string.'));
-        $this->assertTrue($j->add('string-as-bool-1','NO',['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-as-bool-2',-1,['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-as-bool-3',0,['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-as-bool-4',1,['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-as-bool-5','t',['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-as-bool-6','Yes',['string-as-boolean' => true]));
-        $this->assertTrue($j->add('string-not-as-bool','Yes'));
-        $this->assertTrue($j->add('null-value',null));
-        $this->assertTrue($j->add('infinity',INF));
-        $this->assertTrue($j->add('not-a-number',INF));
-        $this->assertFalse($j->addObject('ok', null));
-    }
+
 
     /**
      * @test
@@ -709,7 +692,7 @@ class JsonTest extends TestCase {
             new Obj1('1','Hello','No',true,false),
             $subJ,
             [[new Obj0('p0','p1','p2','p3','p4'),$subJ,new Obj1('p0','p1','p2','p3','p4')]]];
-        $j->add('big-array',$arr);
+        $j->add('big-array', $arr);
         $this->assertEquals('{'
                 .'"big-array":["world",'
                 .'{"Property00":"Nice","Property01":"To","Property02":99,"Property04":"NaN"},'
@@ -925,10 +908,32 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
+    public function testAddArray07() {
+        $j = new Json();
+        $j->addArray('my-val', [1]);
+        $this->assertEquals([1], $j->get('my-val'));
+        $j->addArray('my-val', [2]);
+        $this->assertEquals([2], $j->get('my-val'));
+        $j->add('my-val', [1, 2, 3]);
+        $this->assertEquals([1, 2, 3], $j->get('my-val'));
+    }
+    /**
+     * @test
+     */
     public function testAddBoolean00() {
         $j = new Json();
         $j->addBoolean('bool ',true);
         $this->assertEquals('{"bool":true}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testAddBoolean01() {
+        $j = new Json();
+        $j->addBoolean('my-val', true);
+        $this->assertTrue($j->get('my-val'));
+        $j->addBoolean('my-val', false);
+        $this->assertFalse($j->get('my-val'));
     }
     /**
      * @test
@@ -956,6 +961,15 @@ class JsonTest extends TestCase {
         $obj = new Obj1('Hello',0,true,null,'he');
         $j->addObject('object',$obj);
         $this->assertEquals('{"object":{"property-00":"Hello","property-01":0,"property-02":true}}',$j.'');
+    }
+    public function testAddObj02() {
+        $obj = new Obj1('Hello',0,true,null,'he');
+        $obj2 = new Obj0('Hello',0,true,null,'he');
+        $j = new Json();
+        $j->addObject('my-val', $obj2);
+        $this->assertEquals('{"my-val":{"Property00":"Hello","Property01":0,"Property02":true,"Property04":"he"}}',$j.'');
+        $j->addObject('my-val', $obj);
+        $this->assertEquals('{"my-val":{"property-00":"Hello","property-01":0,"property-02":true}}',$j.'');
     }
     /**
      * @test
