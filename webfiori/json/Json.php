@@ -143,6 +143,27 @@ class Json {
         return $retVal;
     }
     /**
+     * Returns a property object given its key.
+     * 
+     * @param string $key The key of the property.
+     * 
+     * @return Property|null if a property which has the given key exist, it
+     * will be returned. Other than that, null is returned.
+     */
+    public function &getProperty(string $key) {
+        $keyTrimmed = CaseConverter::convert($key, $this->getPropStyle());
+        $retVal = null;
+
+        foreach ($this->getProperties() as $val) {
+            if ($val->getName() == $keyTrimmed) {
+                $retVal = $val;
+                break;
+            }
+        }
+
+        return $retVal;
+    }
+    /**
      * Returns the data on the object as a JSON string.
      * 
      * @return string
@@ -173,11 +194,15 @@ class Json {
      */
     public function add(string $key, $value, $arrayAsObj = false) {
         if ($value !== null) {
-            return $this->addString($key, $value) ||
-            $this->addArray($key, $value, $arrayAsObj) ||
-            $this->addBoolean($key, $value) ||
-            $this->addNumber($key, $value) || 
-            $this->addObject($key, $value);
+            if (!$this->updateExisting($key, $value)) {
+                return $this->addString($key, $value) ||
+                $this->addArray($key, $value, $arrayAsObj) ||
+                $this->addBoolean($key, $value) ||
+                $this->addNumber($key, $value) || 
+                $this->addObject($key, $value);
+            }
+            $this->getProperty($key)->setAsObject($arrayAsObj);
+            return true;
         } else {
             $prop = $this->createProb($key, $value);
 
@@ -205,17 +230,22 @@ class Json {
      * or the given value is not an array.
      */
     public function addArray(string $key, $value, $asObject = false) {
-        $prop = $this->createProb($key, $value);
-        $propType = $prop->getType();
+        if (!$this->updateExisting($key, $value)) {
+            $prop = $this->createProb($key, $value);
+            $propType = $prop->getType();
 
-        if ($prop !== null && $propType == JsonTypes::ARR) {
-            $prop->setAsObject($asObject);
-            $this->propsArr[] = $prop;
+            if ($prop !== null && $propType == JsonTypes::ARR) {
+                $prop->setAsObject($asObject);
+                $this->propsArr[] = $prop;
 
+                return true;
+            }
+
+            return false;
+        } else {
+            $this->getProperty($key)->setAsObject($asObject);
             return true;
         }
-
-        return false;
     }
     /**
      * Adds a boolean value (true or false) to the JSON data.
@@ -232,15 +262,18 @@ class Json {
      * @since 1.0
      */
     public function addBoolean($key, $val = true) {
-        $prop = $this->createProb($key, $val);
+        if (!$this->updateExisting($key, $val)) {
+            $prop = $this->createProb($key, $val);
 
-        if ($prop !== null && $prop->getType() == 'boolean') {
-            $this->propsArr[] = $prop;
+            if ($prop !== null && $prop->getType() == 'boolean') {
+                $this->propsArr[] = $prop;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
-
-        return false;
+        return true;
     }
     /**
      * Adds multiple values to the object.
@@ -276,16 +309,19 @@ class Json {
      * @since 1.0
      */
     public function addNumber(string $key, $value) {
-        $prop = $this->createProb($key, $value);
-        $propType = $prop->getType();
+        if (!$this->updateExisting($key, $value)) {
+            $prop = $this->createProb($key, $value);
+            $propType = $prop->getType();
 
-        if ($prop !== null && $propType == JsonTypes::INT || $propType == JsonTypes::DOUBLE) {
-            $this->propsArr[] = $prop;
+            if ($prop !== null && $propType == JsonTypes::INT || $propType == JsonTypes::DOUBLE) {
+                $this->propsArr[] = $prop;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
-
-        return false;
+        return true;
     }
     /**
      * Adds an object to the JSON string.
@@ -310,16 +346,19 @@ class Json {
      * @since 1.0
      */
     public function addObject(string $key, $val) {
-        $prop = $this->createProb($key, $val);
-        $propType = $prop->getType();
+        if (!$this->updateExisting($key, $val)) {
+            $prop = $this->createProb($key, $val);
+            $propType = $prop->getType();
 
-        if ($prop !== null && $propType == JsonTypes::OBJ) {
-            $this->propsArr[] = $prop;
+            if ($prop !== null && $propType == JsonTypes::OBJ) {
+                $this->propsArr[] = $prop;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
-
-        return false;
+        return true;
     }
     /**
      * Adds a new key to the JSON data with its value as string.
@@ -335,16 +374,31 @@ class Json {
      * @since 1.0
      */
     public function addString(string $key, $val) {
-        $prop = $this->createProb($key, $val);
+        if (!$this->updateExisting($key, $val)) {
+            $prop = $this->createProb($key, $val);
 
-        if ($prop !== null && $prop->getType() == JsonTypes::STRING) {
-            $this->propsArr[] = $prop;
+            if ($prop !== null && $prop->getType() == JsonTypes::STRING) {
+                $this->propsArr[] = $prop;
 
+                return true;
+            }
+
+            return false;
+        }
+        return true;
+    }
+    private function updateExisting($key, $val) {
+        $tempProp = $this->getProperty($key);
+        
+        if ($tempProp !== null) {
+            $tempProp->setValue($val);
+            
             return true;
         }
-
+        
         return false;
     }
+
     /**
      * Converts a JSON-like string to JSON object.
      * 
