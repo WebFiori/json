@@ -819,6 +819,19 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
+    public function testAdd09() {
+        $j = new Json();
+        $j->add('one', 'one');
+        $this->assertEquals(1, count($j->getPropsNames()));
+        $j->add('two', 'two');
+        $this->assertEquals(2, count($j->getPropsNames()));
+        $j->add('one', 'not one');
+        $this->assertEquals(2, count($j->getPropsNames()));
+        $this->assertEquals('not one', $j->get('one'));
+    }
+    /**
+     * @test
+     */
     public function testAddArray00() {
         $j = new Json();
         $arr = [];
