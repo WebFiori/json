@@ -88,7 +88,7 @@ class Json {
     private $attrNameStyle;
     private $formatted;
     private $propsArr;
-
+    
 
     /**
      * Creates new instance of the class.
@@ -172,12 +172,13 @@ class Json {
         return $this->toJSONString();
     }
     /**
-     * Adds a new value to the JSON string.
+     * Adds a new value to JSON.
      * 
      * This method can be used to add an integer, a double, 
      * a string, an array or an object. If null is given, the method will 
      * set the value at the given key to null. If the given value or key is 
      * invalid, the method will not add the value and will return false.
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The value of the key.
      * 
@@ -193,30 +194,46 @@ class Json {
      * @since 1.1
      */
     public function add(string $key, $value, $arrayAsObj = false) {
-        if ($value !== null) {
-            if (!$this->updateExisting($key, $value)) {
-                return $this->addString($key, $value) ||
-                $this->addArray($key, $value, $arrayAsObj) ||
-                $this->addBoolean($key, $value) ||
-                $this->addNumber($key, $value) || 
-                $this->addObject($key, $value);
-            }
-            $this->getProperty($key)->setAsObject($arrayAsObj);
-            return true;
-        } else {
-            $prop = $this->createProb($key, $value);
+        if (!$this->updateExisting($key, $value)) {
+            return $this->addString($key, $value) ||
+            $this->addArray($key, $value, $arrayAsObj) ||
+            $this->addBoolean($key, $value) ||
+            $this->addNumber($key, $value) || 
+            $this->addObject($key, $value) ||
+            $this->addNull($key);
+        }
+        return true;
+    }
+    /**
+     * Adds a 'null' value to JSON.
+     * 
+     * This method also can be used to update the value of an existing property.
+     * 
+     * @param string $key The name of value key.
+     * 
+     * @return boolean The method will return true if the value is set. 
+     * If the given value or key is invalid, the method will return false.
+     */
+    public function addNull(string $key) {
+        $nul = null;
+        if (!$this->updateExisting($key, $nul)) {
+            $prop = $this->createProb($key, $nul);
+            $propType = $prop->getType();
 
-            if ($prop !== null) {
+            if ($prop !== null && $propType == JsonTypes::NUL) {
                 $this->propsArr[] = $prop;
 
                 return true;
             }
-        }
 
-        return false;
+            return false;
+        }
+        return true;
     }
     /**
      * Adds an array to the JSON.
+     * 
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The name of the key.
      * 
@@ -249,6 +266,8 @@ class Json {
     }
     /**
      * Adds a boolean value (true or false) to the JSON data.
+     * 
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The name of the key.
      * 
@@ -296,6 +315,7 @@ class Json {
      * Note that if the given number is the constant <b>INF</b> or the constant 
      * <b>NAN</b>, The method will add them as a string. The 'INF' will be added
      * as the string "Infinity" and the 'NAN' will be added as the string "Nan".
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The name of the key.
      * 
@@ -335,6 +355,7 @@ class Json {
      * <code>getFirstProp()</code> and <code>getSecondProp()</code>. 
      * In that case, the generated JSON will be on the formate 
      * <b>{"FirstProp":"prop-1","SecondProp":""}</b>.
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The key value.
      * 
@@ -345,7 +366,7 @@ class Json {
      * 
      * @since 1.0
      */
-    public function addObject(string $key, $val) {
+    public function addObject(string $key, &$val) {
         if (!$this->updateExisting($key, $val)) {
             $prop = $this->createProb($key, $val);
             $propType = $prop->getType();
@@ -362,6 +383,8 @@ class Json {
     }
     /**
      * Adds a new key to the JSON data with its value as string.
+     * 
+     * This method also can be used to update the value of an existing property.
      * 
      * @param string $key The name of the key. Must be non empty string.
      * 
@@ -387,7 +410,7 @@ class Json {
         }
         return true;
     }
-    private function updateExisting($key, $val) {
+    private function updateExisting($key, &$val) {
         $tempProp = $this->getProperty($key);
         
         if ($tempProp !== null) {
@@ -764,6 +787,8 @@ class Json {
     private function createProb($name, $value) {
         try {
             return new Property($name, $value, $this->getPropStyle());
+        } catch (InvalidArgumentException $ex) {
+            throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
         } catch (\Exception $ex) {
             return null;
         }
