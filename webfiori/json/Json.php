@@ -225,7 +225,7 @@ class Json {
             $prop = $this->createProb($key, $value);
             $propType = $prop->getType();
 
-            if ($prop !== null && $propType == JsonTypes::ARR) {
+            if ($propType == JsonTypes::ARR) {
                 $prop->setAsObject($asObject);
                 $this->propsArr[] = $prop;
 
@@ -259,7 +259,7 @@ class Json {
         if (!$this->updateExisting($key, $val)) {
             $prop = $this->createProb($key, $val);
 
-            if ($prop !== null && $prop->getType() == 'boolean') {
+            if ($prop->getType() == 'boolean') {
                 $this->propsArr[] = $prop;
 
                 return true;
@@ -302,7 +302,7 @@ class Json {
             $prop = $this->createProb($key, $nul);
             $propType = $prop->getType();
 
-            if ($prop !== null && $propType == JsonTypes::NUL) {
+            if ($propType == JsonTypes::NUL) {
                 $this->propsArr[] = $prop;
 
                 return true;
@@ -337,7 +337,7 @@ class Json {
             $prop = $this->createProb($key, $value);
             $propType = $prop->getType();
 
-            if ($prop !== null && $propType == JsonTypes::INT || $propType == JsonTypes::DOUBLE) {
+            if ($propType == JsonTypes::INT || $propType == JsonTypes::DOUBLE) {
                 $this->propsArr[] = $prop;
 
                 return true;
@@ -376,7 +376,7 @@ class Json {
             $prop = $this->createProb($key, $val);
             $propType = $prop->getType();
 
-            if ($prop !== null && $propType == JsonTypes::OBJ) {
+            if ($propType == JsonTypes::OBJ) {
                 $this->propsArr[] = $prop;
 
                 return true;
@@ -406,7 +406,7 @@ class Json {
         if (!$this->updateExisting($key, $val)) {
             $prop = $this->createProb($key, $val);
 
-            if ($prop !== null && $prop->getType() == JsonTypes::STRING) {
+            if ($prop->getType() == JsonTypes::STRING) {
                 $this->propsArr[] = $prop;
 
                 return true;
