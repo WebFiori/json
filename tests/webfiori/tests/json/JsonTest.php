@@ -1,4 +1,5 @@
 <?php
+namespace webfiori\tests\json;
 
 use webfiori\json\Json;
 use jsonx\tests\Obj0;
@@ -735,9 +736,11 @@ class JsonTest extends TestCase {
      */
     public function testAdd05() {
         $j = new Json();
-        $this->assertFalse($j->add('  ',null));
         $this->assertTrue($j->add('null-value',null));
         $this->assertEquals('{"null-value":null}',$j->toJSONString());
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertFalse($j->add('  ',null));
+        
     }
     /**
      * @test
@@ -813,6 +816,43 @@ class JsonTest extends TestCase {
         $this->assertEquals('not one', $j->get('one'));
         $j->addNumber('one', 1);
         $this->assertEquals(1, $j->get('one'));
+    }
+    /**
+     * @test
+     */
+    public function testAdd10() {
+        $j = new Json();
+        $j->add('one', 'one');
+        $this->assertEquals(1, count($j->getPropsNames()));
+        $j->add('one', null);
+        $this->assertEquals(1, count($j->getPropsNames()));
+        $this->assertNull($j->get('one'));
+    }
+    /**
+     * @test
+     */
+    public function testAddNull00() {
+        $j = new Json();
+        $this->assertTrue($j->addNull('null'));
+        $this->assertNull($j->get('null'));
+    }
+    /**
+     * @test
+     */
+    public function testAddNull01() {
+        $j = new Json();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertTrue($j->addNull(' '));
+    }
+    /**
+     * @test
+     */
+    public function testAddNull02() {
+        $j = new Json();
+        $j->addString('not-null', 'Hello');
+        $this->assertEquals('Hello', $j->get('not-null'));
+        $this->assertTrue($j->addNull('not-null'));
+        $this->assertNull($j->get('not-null'));
     }
     /**
      * @test
@@ -976,7 +1016,19 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
-    public function testAddStringTest00() {
+    public function testAddObj03() {
+        $j = new Json();
+        $obj = new Obj1('Hello',0,true,null,'he');
+        $j->addString('object','An Obj');
+        $this->assertEquals('An Obj', $j->get('object'));
+        $j->addObject('object', $obj);
+        $this->assertEquals('{"object":{"property-00":"Hello","property-01":0,"property-02":true}}',$j.'');
+    }
+    /**
+     * @test
+     */
+    public function testAddString00() {
+        $this->expectException(\InvalidArgumentException::class);
         $j = new Json();
         $this->assertFalse($j->addString('','Hello World!'));
         $this->assertFalse($j->addString('  ','Hello World!'));
@@ -986,17 +1038,29 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
-    public function testAddStringTest01() {
+    public function testAddString01() {
         $j = new Json();
         $this->assertTrue($j->addString('hello','Hello World!'));
         $this->assertEquals('{"hello":"Hello World!"}',$j.'');
+        $this->assertFalse($j->addString('a-number', 33));
     }
     /**
      * @test
      */
-    public function testAddStringTest02() {
+    public function testAddString02() {
         $j = new Json();
         $this->assertFalse($j->addBoolean('invalid-boolean','falseX'));
+    }
+    /**
+     * @test
+     */
+    public function testAddString03() {
+        $j = new Json();
+        $j->addNumber('a-number', 33);
+        $this->assertSame(33, $j->get('a-number'));
+        $j->addString('a-number', '33');
+        $this->assertNotSame(33, $j->get('a-number'));
+        $this->assertEquals('33', $j->get('a-number'));
     }
     /**
      * @test

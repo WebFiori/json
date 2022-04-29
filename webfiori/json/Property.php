@@ -86,17 +86,18 @@ class Property {
     public function __construct(string $name, $value, $style = null) {
         $this->name = '';
         $this->setStyle('none');
+
         if (!$this->setName($name)) {
             throw new InvalidArgumentException('Invalid property name: "'.$name.'"');
         }
-        
+
         $this->setAsObject(false);
 
         if ($style !== null) {
             $this->setStyle($style);
         }
 
-        
+
         $this->setValue($value);
     }
     /**
@@ -121,7 +122,7 @@ class Property {
     public function getJsonXTagName() : string {
         $type = $this->getType();
         $retVal = '';
-        
+
         if ($type == JsonTypes::ARR) {
             if ($this->isAsObject()) {
                 $retVal = 'json:object';
@@ -143,7 +144,7 @@ class Property {
         } else {
             $retVal = 'json:null';
         } 
-        
+
         return $retVal;
     }
     /**
