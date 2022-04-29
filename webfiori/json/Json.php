@@ -88,7 +88,7 @@ class Json {
     private $attrNameStyle;
     private $formatted;
     private $propsArr;
-    
+
 
     /**
      * Creates new instance of the class.
@@ -261,6 +261,7 @@ class Json {
             return false;
         } else {
             $this->getProperty($key)->setAsObject($asObject);
+
             return true;
         }
     }
@@ -292,6 +293,7 @@ class Json {
 
             return false;
         }
+
         return true;
     }
     /**
@@ -341,6 +343,7 @@ class Json {
 
             return false;
         }
+
         return true;
     }
     /**
@@ -379,6 +382,7 @@ class Json {
 
             return false;
         }
+
         return true;
     }
     /**
@@ -408,18 +412,8 @@ class Json {
 
             return false;
         }
+
         return true;
-    }
-    private function updateExisting($key, &$val) {
-        $tempProp = $this->getProperty($key);
-        
-        if ($tempProp !== null) {
-            $tempProp->setValue($val);
-            
-            return true;
-        }
-        
-        return false;
     }
 
     /**
@@ -792,5 +786,16 @@ class Json {
         } catch (\Exception $ex) {
             return null;
         }
+    }
+    private function updateExisting($key, &$val) {
+        $tempProp = $this->getProperty($key);
+
+        if ($tempProp !== null) {
+            $tempProp->setValue($val);
+
+            return true;
+        }
+
+        return false;
     }
 }
