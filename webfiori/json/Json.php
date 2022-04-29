@@ -785,8 +785,6 @@ class Json {
             return new Property($name, $value, $this->getPropStyle());
         } catch (InvalidArgumentException $ex) {
             throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
-        } catch (\Exception $ex) {
-            return null;
         }
     }
     private function updateExisting($key, &$val) {
