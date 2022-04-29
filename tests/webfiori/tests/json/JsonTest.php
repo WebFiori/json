@@ -1005,6 +1005,7 @@ class JsonTest extends TestCase {
         $j = new Json();
         $this->assertTrue($j->addString('hello','Hello World!'));
         $this->assertEquals('{"hello":"Hello World!"}',$j.'');
+        $this->assertFalse($j->addString('a-number', 33));
     }
     /**
      * @test
