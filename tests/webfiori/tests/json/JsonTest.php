@@ -1,4 +1,5 @@
 <?php
+namespace webfiori\tests\json;
 
 use webfiori\json\Json;
 use jsonx\tests\Obj0;
@@ -735,9 +736,11 @@ class JsonTest extends TestCase {
      */
     public function testAdd05() {
         $j = new Json();
-        $this->assertFalse($j->add('  ',null));
         $this->assertTrue($j->add('null-value',null));
         $this->assertEquals('{"null-value":null}',$j->toJSONString());
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertFalse($j->add('  ',null));
+        
     }
     /**
      * @test
@@ -813,6 +816,17 @@ class JsonTest extends TestCase {
         $this->assertEquals('not one', $j->get('one'));
         $j->addNumber('one', 1);
         $this->assertEquals(1, $j->get('one'));
+    }
+    /**
+     * @test
+     */
+    public function testAdd10() {
+        $j = new Json();
+        $j->add('one', 'one');
+        $this->assertEquals(1, count($j->getPropsNames()));
+        $j->add('one', null);
+        $this->assertEquals(1, count($j->getPropsNames()));
+        $this->assertNull($j->get('one'));
     }
     /**
      * @test
@@ -977,6 +991,7 @@ class JsonTest extends TestCase {
      * @test
      */
     public function testAddStringTest00() {
+        $this->expectException(\InvalidArgumentException::class);
         $j = new Json();
         $this->assertFalse($j->addString('','Hello World!'));
         $this->assertFalse($j->addString('  ','Hello World!'));

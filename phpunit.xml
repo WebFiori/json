@@ -4,7 +4,7 @@
     </php>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>./webfiori</directory>
+            <directory>./webfiori/tests/json</directory>
         </whitelist>
     </filter>
     <logging>
@@ -12,7 +12,7 @@
     </logging>
     <testsuites>
         <testsuite name="Json Tests">
-            <directory>./tests</directory>
+            <directory>./tests/webfiori/tests/json</directory>
         </testsuite>
     </testsuites>
 </phpunit>
