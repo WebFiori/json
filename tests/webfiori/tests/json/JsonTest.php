@@ -831,6 +831,32 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
+    public function testAddNull00() {
+        $j = new Json();
+        $this->assertTrue($j->addNull('null'));
+        $this->assertNull($j->get('null'));
+    }
+    /**
+     * @test
+     */
+    public function testAddNull01() {
+        $j = new Json();
+        $this->expectException(\InvalidArgumentException::class);
+        $this->assertTrue($j->addNull(' '));
+    }
+    /**
+     * @test
+     */
+    public function testAddNull02() {
+        $j = new Json();
+        $j->addString('not-null', 'Hello');
+        $this->assertEquals('Hello', $j->get('not-null'));
+        $this->assertTrue($j->addNull('not-null'));
+        $this->assertNull($j->get('not-null'));
+    }
+    /**
+     * @test
+     */
     public function testAddArray00() {
         $j = new Json();
         $arr = [];
