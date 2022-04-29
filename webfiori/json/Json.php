@@ -205,32 +205,6 @@ class Json {
         return true;
     }
     /**
-     * Adds a 'null' value to JSON.
-     * 
-     * This method also can be used to update the value of an existing property.
-     * 
-     * @param string $key The name of value key.
-     * 
-     * @return boolean The method will return true if the value is set. 
-     * If the given value or key is invalid, the method will return false.
-     */
-    public function addNull(string $key) {
-        $nul = null;
-        if (!$this->updateExisting($key, $nul)) {
-            $prop = $this->createProb($key, $nul);
-            $propType = $prop->getType();
-
-            if ($prop !== null && $propType == JsonTypes::NUL) {
-                $this->propsArr[] = $prop;
-
-                return true;
-            }
-
-            return false;
-        }
-        return true;
-    }
-    /**
      * Adds an array to the JSON.
      * 
      * This method also can be used to update the value of an existing property.
