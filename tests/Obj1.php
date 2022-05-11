@@ -10,7 +10,7 @@ use webfiori\json\Json;
  */
 class Obj1 extends Obj0 implements JsonI {
     //put your code here
-    public function toJSON() {
+    public function toJSON() : Json {
         $j = new Json();
         $j->add('property-00', $this->getProperty00());
         $j->add('property-01', $this->getProperty01());

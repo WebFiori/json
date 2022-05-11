@@ -41,5 +41,5 @@ interface JsonI {
      * 
      * @since 1.0
      */
-    public function toJSON();
+    public function toJSON() : Json;
 }
