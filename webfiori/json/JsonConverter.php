@@ -282,42 +282,18 @@ class JsonConverter {
         } else if ($datatype == JsonTypes::ARR) {
             if ($isArrayValue) {
                 $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
-            } else {
-                if ($prop->isAsObject()) {
-                    $jsonObj = new Json();
-                    $jsonObj->setPropsStyle($prop->getStyle());
+            } else if ($prop->isAsObject()) {
+                $jsonObj = new Json();
+                $jsonObj->setPropsStyle($prop->getStyle());
 
-                    foreach ($value as $key => $val) {
-                        $jsonObj->add($key, $val, true);
-                    }
-                    $retVal = self::objToJsonX($prop, $jsonObj);
-                } else {
-                    $retVal = self::arrayToJsonX($prop, $value);
+                foreach ($value as $key => $val) {
+                    $jsonObj->add($key, $val, true);
                 }
-            }
-        }
-
-        return $retVal;
-    }
-    private static function checkJsonType($val, $valType, $propsStyle, $asObj) {
-        $retVal = '';
-
-        if ($valType == JsonTypes::STRING) {
-            $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
-        } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
-            $retVal .= self::getNumberVal($val);
-        } else if ($valType == JsonTypes::NUL) {
-            $retVal .= 'null';
-        } else if ($valType == JsonTypes::BOOL) {
-            if ($val === true) {
-                $retVal .= 'true';
+                $retVal = self::objToJsonX($prop, $jsonObj);
             } else {
-                $retVal .= 'false';
+                $retVal = self::arrayToJsonX($prop, $value);
             }
-        } else if ($valType == JsonTypes::OBJ) {
-            $retVal .= self::objToJson($val, $propsStyle);
-        } else if ($valType == JsonTypes::ARR) {
-            $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
+
         }
 
         return $retVal;
@@ -335,8 +311,10 @@ class JsonConverter {
 
         if (is_nan($retVal)) {
             $retVal = '"NaN"';
-        } else if ($val == INF) {
-            $retVal = '"Infinity"';
+        } else {
+            if ($val == INF) {
+                $retVal = '"Infinity"';
+            }
         }
 
         return $retVal;
