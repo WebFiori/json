@@ -217,6 +217,29 @@ class JsonConverter {
 
         return $retVal;
     }
+    private static function checkJsonType($val, $valType, $propsStyle, $asObj) {
+        $retVal = '';
+
+        if ($valType == JsonTypes::STRING) {
+            $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
+        } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
+            $retVal .= self::getNumberVal($val);
+        } else if ($valType == JsonTypes::NUL) {
+            $retVal .= 'null';
+        } else if ($valType == JsonTypes::BOOL) {
+            if ($val === true) {
+                $retVal .= 'true';
+            } else {
+                $retVal .= 'false';
+            }
+        } else if ($valType == JsonTypes::OBJ) {
+            $retVal .= self::objToJson($val, $propsStyle);
+        } else if ($valType == JsonTypes::ARR) {
+                $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
+
+        }
+        return $retVal;
+    }
     private static function checkJsonXType($datatype, $value, Property $prop = null, $isArrayValue = false) {
         $retVal = self::$Tab;
         $propX = new Property('x', $value);
