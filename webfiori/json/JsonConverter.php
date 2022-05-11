@@ -244,7 +244,7 @@ class JsonConverter {
         $retVal = self::$Tab;
         $propX = new Property('x', $value);
         $propX->setStyle($prop->getStyle());
-                
+
         if ($datatype == JsonTypes::STRING) {
             if ($isArrayValue) {
                 $retVal = self::propertyToJsonXString($propX, false);
