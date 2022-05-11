@@ -15,32 +15,6 @@ class JsonConverter {
     private static $TabSize = 0;
     private static $XmlClosingPool = [];
     /**
-     * Converts an instance of Json to JSONx string.
-     * 
-     * @param Json $json The object that holds the attributes.
-     * 
-     * @return string Returns XML string that represents Json schema.
-     * 
-     * @since 1.0
-     */
-    public static function toJsonXString(Json $json) {
-        if (self::$CurrentTab == 0) {
-            self::setIsFormatted(true);
-        }
-        $retVal = '<?xml version="1.0" encoding="UTF-8"?>'.self::$CRLF;
-        $retVal .= '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
-                    .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
-        self::push('json:object');
-        
-        foreach ($json->getProperties() as $prop) {
-            $retVal .= self::propertyToJsonXString($prop);
-        }
-        $retVal .= self::pop();
-
-        return $retVal;
-    }
-    /**
      * Convert an object to Json object.
      * 
      * Note that the properties which will be in the generated Json
@@ -157,6 +131,32 @@ class JsonConverter {
         $jsonString .= self::$Tab.'}';
 
         return $jsonString;
+    }
+    /**
+     * Converts an instance of Json to JSONx string.
+     * 
+     * @param Json $json The object that holds the attributes.
+     * 
+     * @return string Returns XML string that represents Json schema.
+     * 
+     * @since 1.0
+     */
+    public static function toJsonXString(Json $json) {
+        if (self::$CurrentTab == 0) {
+            self::setIsFormatted(true);
+        }
+        $retVal = '<?xml version="1.0" encoding="UTF-8"?>'.self::$CRLF;
+        $retVal .= '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
+                    .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
+        self::push('json:object');
+
+        foreach ($json->getProperties() as $prop) {
+            $retVal .= self::propertyToJsonXString($prop);
+        }
+        $retVal .= self::pop();
+
+        return $retVal;
     }
 
     /**
