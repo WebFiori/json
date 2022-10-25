@@ -123,26 +123,41 @@ class CaseConverter {
         $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
         $isNumFound = false;
+        $snakeOrKebabFound = false;
+        
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
-
-            if ($char >= '0' && $char <= '9') {
+            
+            if ($char == $to) {
+                $snakeOrKebabFound = true;
+                $retVal .= $char;
+            } else if ($char >= '0' && $char <= '9') {
                 if ($x == 0) {
                     $isNumFound = true;
                     $retVal .= $char;
-                } else if ($isNumFound) {
+                } else if ($isNumFound || $snakeOrKebabFound) {
                     $retVal .= $char;
+                    $snakeOrKebabFound = false;
                 } else {
-                    $isNumFound = true;
                     $retVal .= $to.$char;
                 }
-            } else if ((self::_isUpper($char) || $isNumFound) && $x != 0) {
-                $retVal .= $to.strtolower($char);
-                $isNumFound = false;
-            } else if (self::_isUpper($char) && $x == 0) {
-                $retVal .= strtolower($char);
+                $isNumFound = true;
             } else {
-                $retVal .= $char;
+                $isUpper = self::_isUpper($char);
+                
+                if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
+                    $retVal .= $to.strtolower($char);
+                    
+                } else if ($isUpper && $x == 0) {
+                    $retVal .= strtolower($char);
+                } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
+                    $retVal .= strtolower($char);
+                    
+                } else {
+                    $retVal .= $char;
+                }
+                $snakeOrKebabFound = false;
+                $isNumFound = false;
             }
         }
 

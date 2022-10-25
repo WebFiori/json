@@ -356,10 +356,10 @@ class JsonTest extends TestCase {
                 . '        "obj":{'."\r\n"
                 . '        },'."\r\n"
                 . '        "general":{'."\r\n"
-                . '            "property00":"1",'."\r\n"
-                . '            "property01":"3",'."\r\n"
-                . '            "property02":99,'."\r\n"
-                . '            "property04":"ok"'."\r\n"
+                . '            "property_00":"1",'."\r\n"
+                . '            "property_01":"3",'."\r\n"
+                . '            "property_02":99,'."\r\n"
+                . '            "property_04":"ok"'."\r\n"
                 . '        }'."\r\n"
                 . '    },'."\r\n"
                 . '    "o":{'."\r\n"
@@ -369,7 +369,7 @@ class JsonTest extends TestCase {
                 . '    }'."\r\n"
                 . '}',$j.'');
         $j->setIsFormatted(false);
-        $this->assertEquals('{"jsonx":{"number_one":1,"arr":[],"obj":{},"general":{"property00":"1","property01":"3","property02":99,"property04":"ok"}},"o":{"property_00":"1","property_01":2,"property_02":3}}',$j.'');
+        $this->assertEquals('{"jsonx":{"number_one":1,"arr":[],"obj":{},"general":{"property_00":"1","property_01":"3","property_02":99,"property_04":"ok"}},"o":{"property_00":"1","property_01":2,"property_02":3}}',$j.'');
         return $j;
     }
     /**
@@ -390,16 +390,16 @@ class JsonTest extends TestCase {
                 . '        <json:object name="obj">'."\r\n"
                 . '        </json:object>'."\r\n"
                 . '        <json:object name="general">'."\r\n"
-                . '            <json:string name="property00">'."\r\n"
+                . '            <json:string name="property_00">'."\r\n"
                 . '                1'."\r\n"
                 . '            </json:string>'."\r\n"
-                . '            <json:string name="property01">'."\r\n"
+                . '            <json:string name="property_01">'."\r\n"
                 . '                3'."\r\n"
                 . '            </json:string>'."\r\n"
-                . '            <json:number name="property02">'."\r\n"
+                . '            <json:number name="property_02">'."\r\n"
                 . '                99'."\r\n"
                 . '            </json:number>'."\r\n"
-                . '            <json:string name="property04">'."\r\n"
+                . '            <json:string name="property_04">'."\r\n"
                 . '                ok'."\r\n"
                 . '            </json:string>'."\r\n"
                 . '        </json:object>'."\r\n"
@@ -444,6 +444,35 @@ class JsonTest extends TestCase {
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr","1":1,"2":2,"hello":"world",'
                 . '"3":{"Property00":"1","Property01":2,"Property02":3,"Property04":5},"4":{"good":true}},"1":{"bad":false}}}',$json.'');
         return $json;
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString12() {
+        $j = new Json([
+            '123_56_oKo' => 5,
+            'hell-55-o-p-P-x' => 'Ok'
+        ]);
+        $this->assertEquals('{"123_56_oKo":5,"hell-55-o-p-P-x":"Ok"}', $j->toJSONString());
+        $j->setPropsStyle('snake');
+        $this->assertEquals('{"123_56_o_ko":5,"hell_55_o_p_p_x":"Ok"}', $j->toJSONString());
+        $j->setPropsStyle('kebab');
+        $this->assertEquals('{"123-56-o-ko":5,"hell-55-o-p-p-x":"Ok"}', $j->toJSONString());
+    }
+    /**
+     * @test
+     */
+    public function testToJsonString13() {
+        $j = new Json([
+            '_123_56_oKo' => 5,
+            'hell-55-o-p-P-x' => 'Ok'
+        ]);
+        $this->assertEquals('{"_123_56_oKo":5,"hell-55-o-p-P-x":"Ok"}', $j->toJSONString());
+        $j->setPropsStyle('kebab');
+        $this->assertEquals('{"-123-56-o-ko":5,"hell-55-o-p-p-x":"Ok"}', $j->toJSONString());
+        $j->setPropsStyle('snake');
+        $this->assertEquals('{"_123_56_o_ko":5,"hell_55_o_p_p_x":"Ok"}', $j->toJSONString());
+        
     }
     /**
      * @depends testToJsonString11
