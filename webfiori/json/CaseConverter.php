@@ -136,15 +136,13 @@ class CaseConverter {
                     $isNumFound = true;
                     $retVal .= $to.$char;
                 }
-            } else if (self::_isUpper($char) && $x != 0) {
+            } else if ((self::_isUpper($char) || $isNumFound) && $x != 0) {
                 $retVal .= $to.strtolower($char);
                 $isNumFound = false;
             } else if (self::_isUpper($char) && $x == 0) {
                 $retVal .= strtolower($char);
-                $isNumFound = false;
             } else {
                 $retVal .= $char;
-                $isNumFound = false;
             }
         }
 
