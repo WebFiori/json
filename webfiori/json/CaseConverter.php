@@ -132,35 +132,41 @@ class CaseConverter {
                 $snakeOrKebabFound = true;
                 $retVal .= $char;
             } else if ($char >= '0' && $char <= '9') {
-                if ($x == 0) {
-                    $isNumFound = true;
-                    $retVal .= $char;
-                } else if ($isNumFound || $snakeOrKebabFound) {
-                    $retVal .= $char;
-                    $snakeOrKebabFound = false;
-                } else {
-                    $retVal .= $to.$char;
-                }
-                $isNumFound = true;
+                self::addNumber($x, $isNumFound, $to, $char, $retVal, $snakeOrKebabFound);
             } else {
-                $isUpper = self::_isUpper($char);
-                
-                if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
-                    $retVal .= $to.strtolower($char);
-                    
-                } else if ($isUpper && $x == 0) {
-                    $retVal .= strtolower($char);
-                } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
-                    $retVal .= strtolower($char);
-                    
-                } else {
-                    $retVal .= $char;
-                }
-                $snakeOrKebabFound = false;
-                $isNumFound = false;
+                self::addChar($x, $isNumFound, $to, $char, $retVal, $snakeOrKebabFound);
             }
         }
 
         return $retVal;
+    }
+    private static function addChar($x, &$isNumFound, $to, $char, &$retVal, &$snakeOrKebabFound) {
+        $isUpper = self::_isUpper($char);
+                
+        if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
+            $retVal .= $to.strtolower($char);
+        } else if ($isUpper && $x == 0) {
+            $retVal .= strtolower($char);
+        } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
+            $retVal .= strtolower($char);
+
+        } else {
+            $retVal .= $char;
+        }
+        $snakeOrKebabFound = false;
+        $isNumFound = false;
+    }
+
+    private static function addNumber($x, &$isNumFound, $to, $char, &$retVal, &$snakeOrKebabFound) {
+        if ($x == 0) {
+            $isNumFound = true;
+            $retVal .= $char;
+        } else if ($isNumFound || $snakeOrKebabFound) {
+            $retVal .= $char;
+            $snakeOrKebabFound = false;
+        } else {
+            $retVal .= $to.$char;
+        }
+        $isNumFound = true;
     }
 }
