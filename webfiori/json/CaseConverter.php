@@ -126,24 +126,22 @@ class CaseConverter {
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
 
-            if (self::_isUpper($char) && $x != 0) {
+            if ($char >= '0' && $char <= '9') {
+                if ($x == 0) {
+                    $isNumFound = true;
+                    $retVal .= $char;
+                } else if ($isNumFound) {
+                    $retVal .= $char;
+                } else {
+                    $isNumFound = true;
+                    $retVal .= $to.$char;
+                }
+            } else if (self::_isUpper($char) && $x != 0) {
                 $retVal .= $to.strtolower($char);
                 $isNumFound = false;
             } else if (self::_isUpper($char) && $x == 0) {
                 $retVal .= strtolower($char);
                 $isNumFound = false;
-            } else if ($char >= '0' && $char <= '9') {
-                if ($x == 0) {
-                    $isNumFound = true;
-                    $retVal .= $char;
-                } else {
-                    if ($isNumFound) {
-                        $retVal .= $char;
-                    } else {
-                        $isNumFound = true;
-                        $retVal .= $to.$char;
-                    }
-                }
             } else {
                 $retVal .= $char;
                 $isNumFound = false;
