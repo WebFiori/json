@@ -2,411 +2,154 @@
 namespace webfiori\json;
 
 /**
- * A class to convert Json instance to it's JSON string representation.
+ * A class which is used to convert string case from one to another (e.g. camle to snake).
  *
  * @author Ibrahim
  * 
  * @version 1.0
  */
-class JsonConverter {
-    private static $CRLF = "\r\n";
-    private static $CurrentTab = 0;
-    private static $Tab = '';
-    private static $TabSize = 0;
-    private static $XmlClosingPool = [];
+class CaseConverter {
     /**
-     * Convert an object to Json object.
+     * An array of supported property styles.
      * 
-     * Note that the properties which will be in the generated Json
-     * object will depend on the public 'get' methods of the object.
-     * The name of the properties will depend on the name of the method. For
-     * example, if the name of one of the methods is 'getFullName', then
-     * property name will be 'FullName'.
+     * This array holds the following values:
+     * <ul>
+     * <li>camel</li>
+     * <li>kebab</li>
+     * <li>snake</li>
+     * <li>none</li>
+     * </ul>
      * 
-     * @param object $obj The object that will be converted.
-     * 
-     * @return Json
+     * @since 1.0
      */
-    public static function objectToJson($obj) {
-        if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
-            return $obj->toJSON();
+    const PROP_NAME_STYLES = [
+        'camel',
+        'kebab',
+        'snake',
+        'none'
+    ];
+    /**
+     * Converts a string to specific case.
+     * 
+     * @param string $value The string that will be converted.
+     * 
+     * @param string $style The name of the style that the given string will be 
+     * converted to. It can be one of 3 values:
+     * <ul>
+     * <li>snake</li>
+     * <li>kebab</li>
+     * <li>camel</li>
+     * </ul>
+     * If the given value is non of the given 3, the string woun't be changed.
+     * 
+     * @return string The same string converted to selected style.
+     * 
+     * @since 1.0
+     */
+    public static function convert($value, $style) {
+        if ($style == 'snake') {
+            return self::toSnackCase($value);
+        } else if ($style == 'kebab') {
+                return self::toKebabCase($value);
+        } else if ($style == 'camel') {
+            return self::toCamelCase($value);
         } else {
-            if ($obj instanceof Json) {
-                return $obj;
-            }
+            return trim($value);
         }
-
-        $methods = get_class_methods($obj);
-        $count = count($methods);
-        $json = new Json();
-
-        set_error_handler(null);
-
-        for ($y = 0 ; $y < $count; $y++) {
-            $funcNm = substr($methods[$y], 0, 3);
-
-            if (strtolower($funcNm) == 'get') {
-                $propVal = call_user_func([$obj, $methods[$y]]);
-
-                if ($propVal !== false && $propVal !== null) {
-                    $json->add(substr($methods[$y], 3), $propVal);
-                }
-            }
-        }
-        restore_error_handler();
-
-        return $json;
     }
     /**
-     * Converts a JSON property to its JSON string representation.
+     * Converts a string to camel case.
      * 
-     * @param Property $prop The property that will be converted.
+     * @param string $value A string such as 'my-val'.
      * 
-     * @param boolean $formatted If set to true, the generated output will have
-     * indentations and new lines which makes it readable.
-     * 
-     * @return string JSON representation of the property as string.
+     * @return string The method will return the string after conversion. For
+     * example, if the string is 'my-val', the method will return the string 'myVal'.
      * 
      * @since 1.0
      */
-    public static function propertyToJsonString(Property $prop, $formatted = false) {
-        if (self::$CurrentTab == 0) {
-            self::setIsFormatted($formatted);
-        }
-        $retVal = self::$Tab.'"'.$prop->getName().'":';
-        $probType = $prop->getType();
-        $probVal = $prop->getValue();
-
-        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
-
-        return $retVal;
-    }
-    public static function propertyToJsonXString(Property $prop, $withName = true) {
-        if (self::$CurrentTab == 0) {
-            self::setIsFormatted(true);
-        }
-
-        if ($withName) {
-            $retVal = self::$Tab.'<'.$prop->getJsonXTagName().' name="'.$prop->getName().'">'.self::$CRLF;
-        } else {
-            $retVal = self::$Tab.'<'.$prop->getJsonXTagName().'>'.self::$CRLF;
-        }
-
-        self::push($prop->getJsonXTagName());
-        $retVal .= self::checkJsonXType($prop->getType(), $prop->getValue(), $prop);
-        $retVal .= self::pop().self::$CRLF;
-
-        return $retVal;
-    }
-    /**
-     * Convert Json instance to it's JSON string representation.
-     * 
-     * @param Json $jsonObj The object that will be converted.
-     * 
-     * @param boolean $formatted If set to true, the generated output will have
-     * indentation and new lines which makes it readable. Note that the
-     * size of generated string will increase if set to true.
-     * 
-     * @return string A well formatted JSON string.
-     * 
-     * @since 1.0
-     */
-    public static function toJsonString(Json $jsonObj, $formatted = false) {
-        if (self::$CurrentTab == 0) {
-            self::setIsFormatted($formatted);
-        }
-        $jsonString = '{'.self::$CRLF;
-        $propsArr = $jsonObj->getProperties();
-        $propsCount = count($propsArr);
-        self::updateTab(true);
-
-        for ($x = 0 ; $x < $propsCount ; $x++) {
-            if ($x + 1 != $propsCount) {
-                $jsonString .= self::propertyToJsonString($propsArr[$x]).','.self::$CRLF;
-            } else {
-                $jsonString .= self::propertyToJsonString($propsArr[$x]).self::$CRLF;
-            }
-        }
-        self::updateTab(false);
-        $jsonString .= self::$Tab.'}';
-
-        return $jsonString;
-    }
-    /**
-     * Converts an instance of Json to JSONx string.
-     * 
-     * @param Json $json The object that holds the attributes.
-     * 
-     * @return string Returns XML string that represents Json schema.
-     * 
-     * @since 1.0
-     */
-    public static function toJsonXString(Json $json) {
-        if (self::$CurrentTab == 0) {
-            self::setIsFormatted(true);
-        }
-        $retVal = '<?xml version="1.0" encoding="UTF-8"?>'.self::$CRLF;
-        $retVal .= '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
-                    .'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-                    .'xmlns:json="http://www.ibm.com/xmlns/prod/2009/jsonx">'.self::$CRLF;
-        self::push('json:object');
-
-        foreach ($json->getProperties() as $prop) {
-            $retVal .= self::propertyToJsonXString($prop);
-        }
-        $retVal .= self::pop();
-
-        return $retVal;
-    }
-
-    /**
-     * 
-     * @param array $array
-     * 
-     * @param type $asObj
-     * 
-     * @param type $propsStyle
-     * 
-     * @return string
-     * 
-     * @since 1.0
-     */
-    private static function arrayToJsonString(array $array, $asObj, $propsStyle = 'snake') {
+    public static function toCamelCase($value) {
         $retVal = '';
+        $changeNextCharCase = false;
+        $valueTrim = trim($value);
 
-        if ($asObj === true) {
-            $jsonObj = new Json();
-            $jsonObj->setPropsStyle($propsStyle);
+        for ($x = 0 ; $x < strlen($valueTrim) ; $x++) {
+            $char = $valueTrim[$x];
 
-            foreach ($array as $key => $val) {
-                $jsonObj->add($key, $val, $asObj);
+            if (($char == '-' || $char == '_') && $x != 0) {
+                $changeNextCharCase = true;
+                continue;
             }
-            $retVal = self::toJsonString($jsonObj);
-        } else {
-            self::updateTab(true);
-            $retVal = '['.self::$CRLF;
-            $valToPreAppend = "";
 
-            foreach ($array as $val) {
-                $valType = gettype($val);
-                $retVal .= $valToPreAppend.self::$Tab.self::checkJsonType($val, $valType, $propsStyle, $asObj);
-
-                $valToPreAppend = ",".self::$CRLF;
-            }
-            self::updateTab(false);
-
-            if (count($array) == 0) {
-                $retVal .= self::$Tab.']';
+            if ($changeNextCharCase) {
+                $retVal .= strtoupper($char);
+                $changeNextCharCase = false;
             } else {
-                $retVal .= self::$CRLF.self::$Tab.']';
+                $retVal .= $value[$x];
             }
         }
 
         return $retVal;
     }
-    private static function arrayToJsonX(Property $propObj, $value) {
+    /**
+     * Converts a string to kebab case.
+     * 
+     * @param string $value A string such as 'myVal'.
+     * 
+     * @return string The method will return the string after conversion. For
+     * example, if the string is 'myVal', the method will return the string 'my-val'.
+     * 
+     * @since 1.0
+     */
+    public static function toKebabCase($value) {
+        return self::_toSnakeOrKebab($value, '_', '-');
+    }
+    /**
+     * Converts a string to snake case.
+     * 
+     * @param string $value A string such as 'my-val'.
+     * 
+     * @return string The method will return the string after conversion. For
+     * example, if the string is 'my-val', the method will return the string 'my_val'.
+     * 
+     * @since 1.0
+     */
+    public static function toSnackCase($value) {
+        return self::_toSnakeOrKebab($value, '-', '_');
+    }
+    private static function _isUpper($char) {
+        return $char >= 'A' && $char <= 'Z';
+    }
+    private static function _toSnakeOrKebab($value, $from, $to) {
+        $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
+        $isNumFound = false;
+        for ($x = 0 ; $x < strlen($attr1) ; $x++) {
+            $char = $attr1[$x];
 
-        if (count($value) == 0) {
-            return '';
-        }
-
-        foreach ($value as $arrayEl) {
-            $retVal .= self::checkJsonXType(gettype($arrayEl), $arrayEl, $propObj, true);
-        }
-
-        return $retVal;
-    }
-    private static function checkJsonType($val, $valType, $propsStyle, $asObj) {
-        $retVal = '';
-
-        if ($valType == JsonTypes::STRING) {
-            $retVal .= '"'.Json::escapeJSONSpecialChars($val).'"';
-        } else if ($valType == JsonTypes::INT || $valType == JsonTypes::DOUBLE) {
-            $retVal .= self::getNumberVal($val);
-        } else if ($valType == JsonTypes::NUL) {
-            $retVal .= 'null';
-        } else if ($valType == JsonTypes::BOOL) {
-            if ($val === true) {
-                $retVal .= 'true';
-            } else {
-                $retVal .= 'false';
-            }
-        } else if ($valType == JsonTypes::OBJ) {
-            $retVal .= self::objToJson($val, $propsStyle);
-        } else if ($valType == JsonTypes::ARR) {
-                $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
-
-        }
-        return $retVal;
-    }
-    private static function checkJsonXType($datatype, $value, Property $prop = null, $isArrayValue = false) {
-        $retVal = self::$Tab;
-        $propX = new Property('x', $value);
-        $propX->setStyle($prop->getStyle());
-
-        if ($datatype == JsonTypes::STRING) {
-            if ($isArrayValue) {
-                $retVal = self::propertyToJsonXString($propX, false);
-            } else {
-                $retVal .= htmlentities($value).self::$CRLF;
-            }
-        } else if ($datatype == JsonTypes::BOOL) {
-            if ($isArrayValue) {
-                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
-            } else {
-                if ($value === true) {
-                    $retVal .= 'true'.self::$CRLF;
+            if (self::_isUpper($char) && $x != 0) {
+                $retVal .= $to.strtolower($char);
+                $isNumFound = false;
+            } else if (self::_isUpper($char) && $x == 0) {
+                $retVal .= strtolower($char);
+                $isNumFound = false;
+            } else if ($char >= '0' && $char <= '9') {
+                if ($x == 0) {
+                    $isNumFound = true;
+                    $retVal .= $char;
                 } else {
-                    $retVal .= 'false'.self::$CRLF;
+                    if ($isNumFound) {
+                        $retVal .= $char;
+                    } else {
+                        $isNumFound = true;
+                        $retVal .= $to.$char;
+                    }
                 }
-            }
-        } else if ($datatype == JsonTypes::NUL) {
-            if ($isArrayValue) {
-                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
             } else {
-                $retVal .= 'null'.self::$CRLF;
-            }
-        } else if ($datatype == JsonTypes::INT || $datatype == JsonTypes::DOUBLE) {
-            if ($isArrayValue) {
-                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
-            } else {
-                $retVal .= trim(self::getNumberVal($value),'"').self::$CRLF;
-            }
-        } else if ($datatype == JsonTypes::OBJ) {
-            if ($isArrayValue) {
-                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
-            } else {
-                $retVal = self::objToJsonX($prop, $value);
-            }
-        } else if ($datatype == JsonTypes::ARR) {
-            if ($isArrayValue) {
-                $retVal .= substr(self::propertyToJsonXString($propX, false), self::$CurrentTab * self::$TabSize);
-            } else if ($prop->isAsObject()) {
-                $jsonObj = new Json();
-                $jsonObj->setPropsStyle($prop->getStyle());
-
-                foreach ($value as $key => $val) {
-                    $jsonObj->add($key, $val, true);
-                }
-                $retVal = self::objToJsonX($prop, $jsonObj);
-            } else {
-                $retVal = self::arrayToJsonX($prop, $value);
-            }
-
-        }
-
-        return $retVal;
-    }
-    /**
-     * 
-     * @param type $val
-     * 
-     * @return string
-     * 
-     * @since 1.0
-     */
-    private static function getNumberVal($val) {
-        $retVal = $val;
-
-        if (is_nan($retVal)) {
-            $retVal = '"NaN"';
-        } else {
-            if ($val == INF) {
-                $retVal = '"Infinity"';
+                $retVal .= $char;
+                $isNumFound = false;
             }
         }
 
         return $retVal;
-    }
-    /**
-     * 
-     * @param type $probVal
-     * 
-     * @param type $style
-     * 
-     * @return string
-     * 
-     * @since 1.0
-     */
-    private static function objToJson($probVal, $style) {
-        if (!($probVal instanceof Json)) {
-            if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
-                $probVal = self::objectToJson($probVal);
-            } else {
-                $probVal = $probVal->toJSON();
-            }
-        }
-        $probVal->setPropsStyle($style);
-
-        $retVal = "{".self::$CRLF;
-        self::updateTab(true);
-        $subProbs = $probVal->getProperties();
-        $subProbsCount = count($subProbs);
-
-        for ($x = 0 ; $x < $subProbsCount ; $x++) {
-            if ($x + 1 != $subProbsCount) {
-                $retVal .= self::propertyToJsonString($subProbs[$x]).','.self::$CRLF;
-            } else {
-                $retVal .= self::propertyToJsonString($subProbs[$x]).self::$CRLF;
-            }
-        }
-        self::updateTab(false);
-        $retVal .= self::$Tab.'}';
-
-        return $retVal;
-    }
-    private static function objToJsonX(Property $prop, $val = null) {
-        $asJson = self::objectToJson($val);
-
-        if (count($asJson->getProperties()) == 0) {
-            return '';
-        }
-        $asJson->setPropsStyle($prop->getStyle());
-        $retVal = '';
-
-        foreach ($asJson->getProperties() as $subProp) {
-            $retVal .= self::propertyToJsonXString($subProp);
-        }
-
-        return $retVal;
-    }
-    private static function pop() {
-        self::updateTab(false);
-
-        return array_pop(self::$XmlClosingPool);
-    }
-    private static function push($tagName) {
-        self::$XmlClosingPool[] = self::$Tab.'</'.$tagName.'>';
-        self::updateTab();
-    }
-    /**
-     * 
-     * @param boolean $bool
-     * 
-     * @since 1.0
-     */
-    private static function setIsFormatted($bool) {
-        if ($bool === true) {
-            self::$TabSize = 4;
-            self::$CRLF = "\r\n";
-        } else {
-            self::$TabSize = 0;
-            self::$CRLF = "";
-        }
-    }
-    /**
-     * 
-     * @param boolean $increase
-     * 
-     * @since 1.0
-     */
-    private static function updateTab($increase = true) {
-        if ($increase === true) {
-            self::$CurrentTab++;
-        } else {
-            self::$CurrentTab--;
-        }
-        self::$Tab = str_repeat(' ', self::$CurrentTab * self::$TabSize);
     }
 }
