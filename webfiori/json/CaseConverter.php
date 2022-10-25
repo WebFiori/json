@@ -122,19 +122,55 @@ class CaseConverter {
     private static function _toSnakeOrKebab($value, $from, $to) {
         $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
-
+        $isNumFound = false;
+        $snakeOrKebabFound = false;
+        
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
-
-            if (self::_isUpper($char) && $x != 0) {
-                $retVal .= $to.strtolower($char);
-            } else if (self::_isUpper($char) && $x == 0) {
-                $retVal .= strtolower($char);
-            } else {
+            
+            if ($char == $to) {
+                $snakeOrKebabFound = true;
                 $retVal .= $char;
+            } else if ($char >= '0' && $char <= '9') {
+                $retVal .= self::addNumber($x, $isNumFound, $to, $char, $snakeOrKebabFound);
+            } else {
+                $retVal .= self::addChar($x, $isNumFound, $to, $char, $snakeOrKebabFound);
             }
         }
 
+        return $retVal;
+    }
+    private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
+        $isUpper = self::_isUpper($char);
+        $retVal = '';
+        
+        if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
+            $retVal .= $to.strtolower($char);
+        } else if ($isUpper && $x == 0) {
+            $retVal .= strtolower($char);
+        } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
+            $retVal .= strtolower($char);
+
+        } else {
+            $retVal .= $char;
+        }
+        $snakeOrKebabFound = false;
+        $isNumFound = false;
+        return $retVal;
+    }
+
+    private static function addNumber($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
+        $retVal = '';
+        if ($x == 0) {
+            $isNumFound = true;
+            $retVal .= $char;
+        } else if ($isNumFound || $snakeOrKebabFound) {
+            $retVal .= $char;
+            $snakeOrKebabFound = false;
+        } else {
+            $retVal .= $to.$char;
+        }
+        $isNumFound = true;
         return $retVal;
     }
 }
