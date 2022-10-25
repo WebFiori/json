@@ -132,17 +132,18 @@ class CaseConverter {
                 $snakeOrKebabFound = true;
                 $retVal .= $char;
             } else if ($char >= '0' && $char <= '9') {
-                self::addNumber($x, $isNumFound, $to, $char, $retVal, $snakeOrKebabFound);
+                $retVal .= self::addNumber($x, $isNumFound, $to, $char, $snakeOrKebabFound);
             } else {
-                self::addChar($x, $isNumFound, $to, $char, $retVal, $snakeOrKebabFound);
+                $retVal .= self::addChar($x, $isNumFound, $to, $char, $snakeOrKebabFound);
             }
         }
 
         return $retVal;
     }
-    private static function addChar($x, &$isNumFound, $to, $char, &$retVal, &$snakeOrKebabFound) {
+    private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
         $isUpper = self::_isUpper($char);
-                
+        $retVal = '';
+        
         if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
             $retVal .= $to.strtolower($char);
         } else if ($isUpper && $x == 0) {
@@ -155,9 +156,11 @@ class CaseConverter {
         }
         $snakeOrKebabFound = false;
         $isNumFound = false;
+        return $retVal;
     }
 
-    private static function addNumber($x, &$isNumFound, $to, $char, &$retVal, &$snakeOrKebabFound) {
+    private static function addNumber($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
+        $retVal = '';
         if ($x == 0) {
             $isNumFound = true;
             $retVal .= $char;
@@ -168,5 +171,6 @@ class CaseConverter {
             $retVal .= $to.$char;
         }
         $isNumFound = true;
+        return $retVal;
     }
 }
