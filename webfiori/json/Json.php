@@ -448,11 +448,8 @@ class Json {
 
             return $jsonXObj;
         }
-
-        return [
-            'error-code' => json_last_error(),
-            'error-message' => json_last_error_msg()
-        ];
+        
+        throw  new JsonException(json_last_error_msg(), json_last_error());
     }
     /**
      * Escape JSON special characters from string.
@@ -502,20 +499,18 @@ class Json {
         
         if (strlen($nameTrim) == 0) {
             
-            throw new Exception('Invalid file name: '.$fileName, -1);
+            throw new JsonException('Invalid file name: '.$fileName, -1);
         }
         $pathTrimmed = trim(str_replace('\\', DIRECTORY_SEPARATOR, str_replace('/', DIRECTORY_SEPARATOR, $path)));
         
         if (strlen($pathTrimmed) == 0) {
             
-            throw new Exception('Invalid file path: '.$path, -1);
+            throw new JsonException('Invalid file path: '.$path, -1);
         }
         
-        if (!is_dir($pathTrimmed)) {
-            if (!mkdir($pathTrimmed, 0777 , true)) {
+        if (!is_dir($pathTrimmed) && !mkdir($pathTrimmed, 0777 , true)) {
                 
-                throw new Exception("Unable to create directory '$pathTrimmed'", -1);
-            }
+            throw new JsonException("Unable to create directory '$pathTrimmed'", -1);
         }
         
         $fixedName = explode('.', $fileName)[0];
@@ -525,7 +520,7 @@ class Json {
         
         if ($isExist && !$override) {
             
-            throw new Exception("File already exist: '$fullPath'", -1);;
+            throw new JsonException("File already exist: '$fullPath'", -1);;
         } else if ($isExist && $override) {
             unlink($fullPath);
         }
@@ -533,7 +528,7 @@ class Json {
         
         if (!is_resource($resource)) {
             
-            throw new Exception("Unable to open file for writing: '$fullPath'", -1);;
+            throw new JsonException("Unable to open file for writing: '$fullPath'", -1);;
         }
         fwrite($resource, $this->toJSONString());
         fclose($resource);
