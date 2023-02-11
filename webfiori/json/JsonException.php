@@ -7,4 +7,5 @@ use Exception;
  *
  * @author Ibrahim
  */
-class JsonException extends Exception {}
+class JsonException extends Exception {
+}

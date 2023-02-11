@@ -24,8 +24,8 @@
  */
 namespace webfiori\json;
 
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
 /**
  * A class that can be used to create well formatted JSON strings. 
  * 
@@ -203,6 +203,7 @@ class Json {
             $this->addObject($key, $value) ||
             $this->addNull($key);
         }
+
         return true;
     }
     /**
@@ -448,7 +449,7 @@ class Json {
 
             return $jsonXObj;
         }
-        
+
         throw  new JsonException(json_last_error_msg(), json_last_error());
     }
     /**
@@ -478,60 +479,6 @@ class Json {
         }
 
         return $escapedJson;
-    }
-    /**
-     * Attempt to write the generated JSON to a .json file.
-     * 
-     * @param string $fileName The name of the file at which JSON output will be
-     * sent to. If the file does not exist, the method will attempt to create it.
-     * 
-     * @param string $path The folder in file system that the file will be created
-     * at. If does not exist, the method will attempt to create it.
-     * 
-     * @param bool $override If a file exist in the specified location with same
-     * name and this parameter is set to true, the method will override existing
-     * file by deleting it and creating new one.
-     * 
-     * @throws Exception
-     */
-    public function toJsonFile(string $fileName, string $path, bool $override = false) {
-        $nameTrim = trim($fileName);
-        
-        if (strlen($nameTrim) == 0) {
-            
-            throw new JsonException('Invalid file name: '.$fileName, -1);
-        }
-        $pathTrimmed = trim(str_replace('\\', DIRECTORY_SEPARATOR, str_replace('/', DIRECTORY_SEPARATOR, $path)));
-        
-        if (strlen($pathTrimmed) == 0) {
-            
-            throw new JsonException('Invalid file path: '.$path, -1);
-        }
-        
-        if (!is_dir($pathTrimmed) && !mkdir($pathTrimmed, 0777 , true)) {
-                
-            throw new JsonException("Unable to create directory '$pathTrimmed'", -1);
-        }
-        
-        $fixedName = explode('.', $fileName)[0];
-        $fullPath = $path.DIRECTORY_SEPARATOR.$fixedName.'.json';
-        
-        $isExist = file_exists($fullPath);
-        
-        if ($isExist && !$override) {
-            
-            throw new JsonException("File already exist: '$fullPath'", -1);;
-        } else if ($isExist && $override) {
-            unlink($fullPath);
-        }
-        $resource = fopen($fullPath, 'wb');
-        
-        if (!is_resource($resource)) {
-            
-            throw new JsonException("Unable to open file for writing: '$fullPath'", -1);;
-        }
-        fwrite($resource, $this->toJSONString());
-        fclose($resource);
     }
     /**
      * Reads JSON data from a file and convert it to an object of type 'Json'.
@@ -716,6 +663,57 @@ class Json {
                 $prop->setStyle($style);
             }
         }
+    }
+    /**
+     * Attempt to write the generated JSON to a .json file.
+     * 
+     * @param string $fileName The name of the file at which JSON output will be
+     * sent to. If the file does not exist, the method will attempt to create it.
+     * 
+     * @param string $path The folder in file system that the file will be created
+     * at. If does not exist, the method will attempt to create it.
+     * 
+     * @param bool $override If a file exist in the specified location with same
+     * name and this parameter is set to true, the method will override existing
+     * file by deleting it and creating new one.
+     * 
+     * @throws Exception
+     */
+    public function toJsonFile(string $fileName, string $path, bool $override = false) {
+        $nameTrim = trim($fileName);
+
+        if (strlen($nameTrim) == 0) {
+            throw new JsonException('Invalid file name: '.$fileName, -1);
+        }
+        $pathTrimmed = trim(str_replace('\\', DIRECTORY_SEPARATOR, str_replace('/', DIRECTORY_SEPARATOR, $path)));
+
+        if (strlen($pathTrimmed) == 0) {
+            throw new JsonException('Invalid file path: '.$path, -1);
+        }
+
+        if (!is_dir($pathTrimmed) && !mkdir($pathTrimmed, 0777 , true)) {
+            throw new JsonException("Unable to create directory '$pathTrimmed'", -1);
+        }
+
+        $fixedName = explode('.', $fileName)[0];
+        $fullPath = $path.DIRECTORY_SEPARATOR.$fixedName.'.json';
+
+        $isExist = file_exists($fullPath);
+
+        if ($isExist && !$override) {
+            throw new JsonException("File already exist: '$fullPath'", -1);
+        } else {
+            if ($isExist && $override) {
+                unlink($fullPath);
+            }
+        }
+        $resource = fopen($fullPath, 'wb');
+
+        if (!is_resource($resource)) {
+            throw new JsonException("Unable to open file for writing: '$fullPath'", -1);
+        }
+        fwrite($resource, $this->toJSONString());
+        fclose($resource);
     }
     /**
      * Creates and returns a well formatted JSON string that will be created using 
