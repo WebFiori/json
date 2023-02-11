@@ -124,10 +124,10 @@ class CaseConverter {
         $retVal = '';
         $isNumFound = false;
         $snakeOrKebabFound = false;
-        
+
         for ($x = 0 ; $x < strlen($attr1) ; $x++) {
             $char = $attr1[$x];
-            
+
             if ($char == $to) {
                 $snakeOrKebabFound = true;
                 $retVal .= $char;
@@ -143,7 +143,7 @@ class CaseConverter {
     private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
         $isUpper = self::_isUpper($char);
         $retVal = '';
-        
+
         if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound) {
             $retVal .= $to.strtolower($char);
         } else if ($isUpper && $x == 0) {
@@ -156,11 +156,13 @@ class CaseConverter {
         }
         $snakeOrKebabFound = false;
         $isNumFound = false;
+
         return $retVal;
     }
 
     private static function addNumber($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
         $retVal = '';
+
         if ($x == 0) {
             $isNumFound = true;
             $retVal .= $char;
@@ -171,6 +173,7 @@ class CaseConverter {
             $retVal .= $to.$char;
         }
         $isNumFound = true;
+
         return $retVal;
     }
 }

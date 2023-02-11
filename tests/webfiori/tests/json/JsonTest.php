@@ -10,6 +10,26 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
+    public function testToJsonFile00() {
+        $json = new Json();
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output');
+        $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
+        $this->assertTrue(file_exists($outputPath));
+    }
+    /**
+     * @test
+     * @depends testToJsonFile00
+     */
+    public function testToJsonFile01() {
+        $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File already exist: '$outputPath'");
+        $json = new Json();
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output');
+    }
+    /**
+     * @test
+     */
     public function testToJsonString00() {
         $j = new Json(['hello'=>'world']);
         $this->assertEquals('{"hello":"world"}',$j->toJSONString());
@@ -610,11 +630,11 @@ class JsonTest extends TestCase {
      * @test
      */
     public function testDecode07() {
+        $this->expectException(\webfiori\json\JsonException::class);
+        $this->expectExceptionMessage('Syntax error');
+        $this->expectExceptionCode(4);
         $jsonStr = '{prop-1:1}';
         $decoded = Json::decode($jsonStr);
-        $this->assertTrue(gettype($decoded) == 'array');
-        $this->assertEquals(4,$decoded['error-code']);
-        $this->assertEquals('Syntax error',$decoded['error-message']);
     }
     /**
      * @test
@@ -679,8 +699,6 @@ class JsonTest extends TestCase {
      */
     public function testFromFile00() {
         $this->assertNull(Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'not-exist.json'));
-        $arr = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'Obj0.php');
-        $this->assertTrue(gettype($arr) == 'array');
         $jsonx = Json::fromJsonFile(ROOT.DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR.'composer.json');
         $this->assertTrue($jsonx instanceof Json);
         $packagesArr = $jsonx->get('packages');
