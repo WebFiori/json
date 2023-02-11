@@ -10,6 +10,26 @@ class JsonTest extends TestCase {
     /**
      * @test
      */
+    public function testToJsonFile00() {
+        $json = new Json();
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output');
+        $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
+        $this->assertTrue(file_exists($outputPath));
+    }
+    /**
+     * @test
+     * @depends testToJsonFile00
+     */
+    public function testToJsonFile01() {
+        $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage("File already exist: '$outputPath'");
+        $json = new Json();
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output');
+    }
+    /**
+     * @test
+     */
     public function testToJsonString00() {
         $j = new Json(['hello'=>'world']);
         $this->assertEquals('{"hello":"world"}',$j->toJSONString());
