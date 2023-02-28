@@ -5,3 +5,4 @@ test.*
 clover.xml
 *.phar
 .idea/*
+vendor/*
