@@ -59,7 +59,7 @@ class CaseConverter {
         if ($style == 'snake') {
             return self::toSnackCase($value);
         } else if ($style == 'kebab') {
-                return self::toKebabCase($value);
+            return self::toKebabCase($value);
         } else if ($style == 'camel') {
             return self::toCamelCase($value);
         } else {
@@ -157,9 +157,8 @@ class CaseConverter {
             $retVal .= $to.strtolower($char);
         } else if ($isUpper && $x == 0) {
             $retVal .= strtolower($char);
-        } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
+        } else if ($isUpper && $x != 0 && $snakeOrKebabFound) {
             $retVal .= strtolower($char);
-
         } else {
             $retVal .= $char;
         }
