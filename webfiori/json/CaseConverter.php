@@ -1,8 +1,17 @@
 <?php
+/**
+ * This file is licensed under MIT License.
+ *
+ * Copyright (c) 2022 Ibrahim BinAlshikh
+ *
+ * For more information on the license, please visit:
+ * https://github.com/WebFiori/.github/blob/main/LICENSE
+ *
+ */
 namespace webfiori\json;
 
 /**
- * A class which is used to convert string case from one to another (e.g. camle to snake).
+ * A class which is used to convert string case from one to another (e.g. camel to snake).
  *
  * @author Ibrahim
  * 
@@ -40,17 +49,17 @@ class CaseConverter {
      * <li>kebab</li>
      * <li>camel</li>
      * </ul>
-     * If the given value is non of the given 3, the string woun't be changed.
+     * If the given value is none of the given 3, the string wouldn't be changed.
      * 
      * @return string The same string converted to selected style.
      * 
      * @since 1.0
      */
-    public static function convert($value, $style) {
+    public static function convert(string $value, string $style) : string {
         if ($style == 'snake') {
             return self::toSnackCase($value);
         } else if ($style == 'kebab') {
-                return self::toKebabCase($value);
+            return self::toKebabCase($value);
         } else if ($style == 'camel') {
             return self::toCamelCase($value);
         } else {
@@ -67,7 +76,7 @@ class CaseConverter {
      * 
      * @since 1.0
      */
-    public static function toCamelCase($value) {
+    public static function toCamelCase(string $value) : string {
         $retVal = '';
         $changeNextCharCase = false;
         $valueTrim = trim($value);
@@ -100,7 +109,7 @@ class CaseConverter {
      * 
      * @since 1.0
      */
-    public static function toKebabCase($value) {
+    public static function toKebabCase(string $value) : string {
         return self::_toSnakeOrKebab($value, '_', '-');
     }
     /**
@@ -113,13 +122,13 @@ class CaseConverter {
      * 
      * @since 1.0
      */
-    public static function toSnackCase($value) {
+    public static function toSnackCase(string $value) : string {
         return self::_toSnakeOrKebab($value, '-', '_');
     }
-    private static function _isUpper($char) {
+    private static function _isUpper(string $char) : bool {
         return $char >= 'A' && $char <= 'Z';
     }
-    private static function _toSnakeOrKebab($value, $from, $to) {
+    private static function _toSnakeOrKebab(string $value, string $from, string $to) : string {
         $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
         $isNumFound = false;
@@ -140,7 +149,7 @@ class CaseConverter {
 
         return $retVal;
     }
-    private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
+    private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) : string {
         $isUpper = self::_isUpper($char);
         $retVal = '';
 
@@ -148,9 +157,8 @@ class CaseConverter {
             $retVal .= $to.strtolower($char);
         } else if ($isUpper && $x == 0) {
             $retVal .= strtolower($char);
-        } else if ($isUpper  && $x != 0 && $snakeOrKebabFound) {
+        } else if ($isUpper && $x != 0 && $snakeOrKebabFound) {
             $retVal .= strtolower($char);
-
         } else {
             $retVal .= $char;
         }
@@ -160,7 +168,7 @@ class CaseConverter {
         return $retVal;
     }
 
-    private static function addNumber($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) {
+    private static function addNumber($x, &$isNumFound, $to, $char, &$snakeOrKebabFound) : string {
         $retVal = '';
 
         if ($x == 0) {

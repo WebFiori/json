@@ -4,3 +4,7 @@ test.*
 .phpunit.result.cache
 clover.xml
 *.phar
+.idea/*
+vendor/*
+composer.lock
+.php-cs-fixer.cache
