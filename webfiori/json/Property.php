@@ -1,4 +1,13 @@
 <?php
+/**
+ * This file is licensed under MIT License.
+ *
+ * Copyright (c) 2022 Ibrahim BinAlshikh
+ *
+ * For more information on the license, please visit:
+ * https://github.com/WebFiori/.github/blob/main/LICENSE
+ *
+ */
 namespace webfiori\json;
 
 use InvalidArgumentException;
@@ -83,7 +92,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function __construct(string $name, $value, $style = null) {
+    public function __construct(string $name, $value, string $style = null) {
         $this->name = '';
         $this->setStyle('none');
 
@@ -199,7 +208,7 @@ class Property {
      * This method is only used with arrays since in some cases the developer
      * would like to have associative arrays as objects.
      * 
-     * @return boolean If the property will be represented as object, true is
+     * @return bool If the property will be represented as object, true is
      * returned. False otherwise.
      * 
      * @since 1.0
@@ -214,25 +223,25 @@ class Property {
      * This method is only used with arrays since in some cases the developer
      * would like to have associative arrays as objects.
      * 
-     * @param boolean $bool True to represent the array as object. False 
+     * @param bool $bool True to represent the array as object. False 
      * otherwise.
      * 
      * @since 1.0
      */
-    public function setAsObject($bool) {
-        $this->asObject = $bool === true;
+    public function setAsObject(bool $bool) {
+        $this->asObject = $bool;
     }
     /**
      * Sets the name of the property.
      * 
      * @param string $name The name of the property.
      * 
-     * @return boolean If the name is set, the method will return true. False
+     * @return bool If the name is set, the method will return true. False
      * otherwise.
      * 
      * @since 1.0
      */
-    public function setName(string $name) {
+    public function setName(string $name) : bool {
         $keyValidity = self::_isValidKey($name, $this->getStyle());
 
         if ($keyValidity === false) {
@@ -294,11 +303,11 @@ class Property {
     /**
      * Checks if the key is a valid key string.
      * 
-     * The key is invalid if its an empty string.
+     * The key is invalid if it's an empty string.
      * 
      * @param string $key The key that will be validated.
      * 
-     * @return boolean|string If the key is valid, it will be returned 
+     * @return bool|string If the key is valid, it will be returned 
      * after trimmed. If not valid, false is returned.
      * 
      * @since 1.0

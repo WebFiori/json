@@ -1,4 +1,13 @@
 <?php
+/**
+ * This file is licensed under MIT License.
+ *
+ * Copyright (c) 2022 Ibrahim BinAlshikh
+ *
+ * For more information on the license, please visit:
+ * https://github.com/WebFiori/.github/blob/main/LICENSE
+ *
+ */
 namespace webfiori\json;
 
 /**
@@ -163,15 +172,15 @@ class JsonConverter {
      * 
      * @param array $array
      * 
-     * @param type $asObj
+     * @param bool $asObj
      * 
-     * @param type $propsStyle
+     * @param string $propsStyle
      * 
      * @return string
      * 
      * @since 1.0
      */
-    private static function arrayToJsonString(array $array, $asObj, $propsStyle = 'snake') {
+    private static function arrayToJsonString(array $array, bool $asObj, string $propsStyle = 'snake') {
         $retVal = '';
 
         if ($asObj === true) {
@@ -300,7 +309,7 @@ class JsonConverter {
     }
     /**
      * 
-     * @param type $val
+     * @param mixed $val
      * 
      * @return string
      * 
@@ -321,15 +330,15 @@ class JsonConverter {
     }
     /**
      * 
-     * @param type $probVal
+     * @param object $probVal
      * 
-     * @param type $style
+     * @param string $style
      * 
      * @return string
      * 
      * @since 1.0
      */
-    private static function objToJson($probVal, $style) {
+    private static function objToJson($probVal, string $style) {
         if (!($probVal instanceof Json)) {
             if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
                 $probVal = self::objectToJson($probVal);
@@ -401,7 +410,7 @@ class JsonConverter {
      * 
      * @since 1.0
      */
-    private static function updateTab($increase = true) {
+    private static function updateTab(bool $increase = true) {
         if ($increase === true) {
             self::$CurrentTab++;
         } else {

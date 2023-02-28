@@ -1,26 +1,12 @@
 <?php
-/*
- * The MIT License
+/**
+ * This file is licensed under MIT License.
  *
- * Copyright 2019 Ibrahim, WebFiori Json library.
+ * Copyright (c) 2019 Ibrahim BinAlshikh
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * For more information on the license, please visit:
+ * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
  */
 namespace webfiori\json;
 
@@ -95,12 +81,12 @@ class Json {
      * Creates new instance of the class.
      * 
      * @param array|string $initialData Initial data which is used to initialize 
-     * the object. It can be a string which looks like JSON or it can be an 
+     * the object. It can be a string which looks like JSON, or it can be an
      * associative array. If it is an associative array, then the keys will be 
      * acting as properties and the value of each key will be the value of 
      * the property.
      * 
-     * @param boolean $isFormatted If this attribute is set to true, the generated 
+     * @param bool $isFormatted If this attribute is set to true, the generated 
      * JSON will be indented and have new lines (readable). Note that the parameter 
      * will be ignored if the constant 'WF_VERBOSE' is defined and is set to true.
      * 
@@ -124,9 +110,9 @@ class Json {
      * @param string $key The value of the key. Note that the style of the key 
      * does not matter.
      * 
-     * @return Json|mixed|null The return type will depends on the value which 
+     * @return Json|mixed|null The return type will depend on the value which
      * was set by any method which can be used to add props. It can be a number, 
-     * a boolean, string, an object or null if does not exist.
+     * a boolean, string, an object or null if it does not exist.
      * 
      * @since 1.2
      */
@@ -189,7 +175,7 @@ class Json {
      * is an array. If set to true, the array will be added as an object. 
      * Default is false.
      * 
-     * @return boolean The method will return true if the value is set. 
+     * @return bool The method will return true if the value is set. 
      * If the given value or key is invalid, the method will return false.
      * 
      * @since 1.1
@@ -215,11 +201,11 @@ class Json {
      * 
      * @param array $value The array that will be added.
      * 
-     * @param boolean $asObject If this parameter is set to true, 
+     * @param bool $asObject If this parameter is set to true, 
      * the array will be added as an object in JSON string. Note that if the 
      * array is associative, each index will be added as an object. Default is false.
      * 
-     * @return boolean The method will return false if the given key is invalid 
+     * @return bool The method will return false if the given key is invalid 
      * or the given value is not an array.
      */
     public function addArray(string $key, $value, $asObject = false) {
@@ -248,16 +234,16 @@ class Json {
      * 
      * @param string $key The name of the key.
      * 
-     * @param boolean $val true or false. If not specified, 
+     * @param bool $val true or false. If not specified, 
      * The default will be true.
      * 
-     * @return boolean The method will return true in case the value is set. 
+     * @return bool The method will return true in case the value is set. 
      * If the given value is not a boolean or the key value is invalid string, 
      * the method will return false.
      * 
      * @since 1.0
      */
-    public function addBoolean($key, $val = true) {
+    public function addBoolean($key, $val = true) : bool {
         if (!$this->updateExisting($key, $val)) {
             $prop = $this->createProb($key, $val);
 
@@ -294,10 +280,10 @@ class Json {
      * 
      * @param string $key The name of value key.
      * 
-     * @return boolean The method will return true if the value is set. 
+     * @return bool The method will return true if the value is set. 
      * If the given value or key is invalid, the method will return false.
      */
-    public function addNull(string $key) {
+    public function addNull(string $key) : bool {
         $nul = null;
 
         if (!$this->updateExisting($key, $nul)) {
@@ -327,7 +313,7 @@ class Json {
      * 
      * @param int|double $value The value of the key.
      * 
-     * @return boolean The method will return true in case the number is 
+     * @return bool The method will return true in case the number is 
      * added. If the given value is not a number or the key value is invalid 
      * string, the method 
      * will return false. 
@@ -356,11 +342,11 @@ class Json {
      * The object that will be added can implement the interface JsonI to make 
      * the generated JSON string customizable. Also, the object can be of 
      * type Json. If the given value is an object that does not implement the 
-     * interface JsonI or it is not of type Json, 
+     * interface JsonI, or it is not of type Json,
      * The method will try to extract object information based on its "getXxxxx()" public 
      * methods. Assuming that the object has 2 public methods with names 
      * <code>getFirstProp()</code> and <code>getSecondProp()</code>. 
-     * In that case, the generated JSON will be on the formate 
+     * In that case, the generated JSON will be on the format
      * <b>{"FirstProp":"prop-1","SecondProp":""}</b>.
      * This method also can be used to update the value of an existing property.
      * 
@@ -368,7 +354,7 @@ class Json {
      * 
      * @param JsonI|Json|object $val The object that will be added.
      * 
-     * @return boolean The method will return true if the object is added. 
+     * @return bool The method will return true if the object is added. 
      * If the key value is invalid string, the method will return false.
      * 
      * @since 1.0
@@ -394,11 +380,11 @@ class Json {
      * 
      * This method also can be used to update the value of an existing property.
      * 
-     * @param string $key The name of the key. Must be non empty string.
+     * @param string $key The name of the key. Must be non-empty string.
      * 
      * @param string $val The value of the string.
      * 
-     * @return boolean The method will return true in case the string is added. 
+     * @return bool The method will return true in case the string is added. 
      * If the given value is not a string or the given key is invalid, the 
      * method will return false.
      * 
@@ -558,7 +544,7 @@ class Json {
      * 
      * @param string $key The name of the key. 
      * 
-     * @return boolean The method will return true if the 
+     * @return bool The method will return true if the 
      * key exists. false if not.
      * 
      * @since 1.2
@@ -574,7 +560,8 @@ class Json {
      * This can be used to make the generated output readable by adding 
      * indentation and new lines.
      * 
-     * @return boolean True if will be formatted. False otherwise.
+     * @return bool The method will return true if the output will be formatted.
+     * False otherwise.
      */
     public function isFormatted() {
         return $this->formatted;
@@ -616,7 +603,7 @@ class Json {
      * a tree. If not formatted, the output string will be generated as one line. 
      * 
      * 
-     * @param boolean $bool True to make the output formatted and false to make 
+     * @param bool $bool True to make the output formatted and false to make 
      * it not.
      * 
      * @since 1.2.5
@@ -671,7 +658,7 @@ class Json {
      * sent to. If the file does not exist, the method will attempt to create it.
      * 
      * @param string $path The folder in file system that the file will be created
-     * at. If does not exist, the method will attempt to create it.
+     * at. If it does not exist, the method will attempt to create it.
      * 
      * @param bool $override If a file exist in the specified location with same
      * name and this parameter is set to true, the method will override existing
