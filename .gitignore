@@ -6,3 +6,4 @@ clover.xml
 *.phar
 .idea/*
 vendor/*
+composer.lock
