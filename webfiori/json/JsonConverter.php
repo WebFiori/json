@@ -244,9 +244,9 @@ class JsonConverter {
         } else if ($valType == JsonTypes::OBJ) {
             $retVal .= self::objToJson($val, $propsStyle);
         } else if ($valType == JsonTypes::ARR) {
-                $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
-
+            $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
         }
+
         return $retVal;
     }
     private static function checkJsonXType($datatype, $value, Property $prop = null, $isArrayValue = false) {
@@ -302,7 +302,6 @@ class JsonConverter {
             } else {
                 $retVal = self::arrayToJsonX($prop, $value);
             }
-
         }
 
         return $retVal;
