@@ -19,26 +19,26 @@ A helper class library for creating JSON or JSONx strings in PHP. It can be used
 
 ## What is JSON?
 
-Accoording to [json.org](https://www.json.org/json-en.html), JSON is a data exchange format which is based partially on JavaScript. It is easy for humans to read and for machines to understand. JSON data is represented as pairs of keys and values.
+According to [json.org](https://www.json.org/json-en.html), JSON is a data exchange format which is based partially on JavaScript. It is easy for humans to read and for machines to understand. JSON data is represented as pairs of keys and values.
 
 ## Library Features
 * Support fo creating well formatted JSON.
 * Support for creating [JSONx](https://www.ibm.com/docs/en/datapower-gateways/10.0.1?topic=20-jsonx).
 * Ability to decode JSON strings and convert them to `Json` objects.
-* Ability to read JSON files and map JSON values to PHP datatypes.
-* Ability to manupulate JSON properties as needed.
+* Ability to read JSON files and map JSON values to PHP data types.
+* Ability to manipulate JSON properties as needed.
 
 ## Supported PHP Versions
-| Build Status |
-|:-----------:|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php70.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.0/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php71.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.1/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php72.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.2/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php73.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.3/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php74.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.4/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php80.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.0/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.1/badge.svg?branch=master"></a>|
-|<a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.2/badge.svg?branch=dev"></a><br>(dev)|
+|                                                                                        Build Status                                                                                         |
+|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php70.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.0/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php71.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.1/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php72.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.2/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php73.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.3/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php74.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%207.4/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php80.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.0/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.1/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/workflows/Build%20PHP%208.2/badge.svg?branch=master"></a> |
 
 ## Installation
 If you are using composer to manage your dependencies, then it is possible to install the library by including the entry `"webfiori/jsonx":"*"` in the `require` section of your `composer.json` file to install the latest release. 
