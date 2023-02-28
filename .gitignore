@@ -4,3 +4,4 @@ test.*
 .phpunit.result.cache
 clover.xml
 *.phar
+.idea/*
