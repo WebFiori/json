@@ -242,7 +242,7 @@ class Property {
      * @since 1.0
      */
     public function setName(string $name) : bool {
-        $keyValidity = self::_isValidKey($name, $this->getStyle());
+        $keyValidity = self::isValidKey($name, $this->getStyle());
 
         if ($keyValidity === false) {
             return false;
@@ -293,12 +293,14 @@ class Property {
      * @since 1.0
      */
     public function setValue($val) {
-        if (is_subclass_of($val, 'webfiori\\json\\JsonI')) {
+        $this->datatype = gettype($val);
+        
+        if ($this->getType() == 'object' && is_subclass_of($val, 'webfiori\\json\\JsonI')) {
             $this->value = $val->toJSON();
         } else {
             $this->value = $val;
         }
-        $this->datatype = gettype($val);
+        
     }
     /**
      * Checks if the key is a valid key string.
@@ -312,7 +314,7 @@ class Property {
      * 
      * @since 1.0
      */
-    private static function _isValidKey($key, $style = 'kebab') {
+    private static function isValidKey($key, $style = 'kebab') {
         $trimmedKey = trim($key);
 
         if (strlen($trimmedKey) != 0) {
