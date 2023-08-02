@@ -18,25 +18,6 @@ use InvalidArgumentException;
  */
 class Property {
     /**
-     * An array of supported property styles.
-     * 
-     * This array holds the following values:
-     * <ul>
-     * <li>camel</li>
-     * <li>kebab</li>
-     * <li>snake</li>
-     * <li>none</li>
-     * </ul>
-     * 
-     * @since 1.0
-     */
-    const PROP_NAME_STYLES = [
-        'camel',
-        'kebab',
-        'snake',
-        'none'
-    ];
-    /**
      * 
      * @var boolean
      * 
@@ -92,7 +73,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function __construct(string $name, $value, string $style = null) {
+    public function __construct(string $name, $value, string $style = null, string $lettersCase = 'same') {
         $this->name = '';
         $this->setStyle('none');
 
@@ -102,8 +83,8 @@ class Property {
 
         $this->setAsObject(false);
 
-        if ($style !== null) {
-            $this->setStyle($style);
+        if (in_array($style, CaseConverter::PROP_NAME_STYLES)) {
+            $this->setStyle($style, $lettersCase);
         }
 
 
@@ -184,6 +165,9 @@ class Property {
     public function getStyle() : string {
         return $this->probsStyle;
     }
+    public function getLettersCase() : string {
+        return $this->lettersCase;
+    }
     /**
      * Returns the datatype of property value.
      * 
@@ -258,7 +242,7 @@ class Property {
      * define the global constant 'JSONX_PROP_STYLE' and set its value to 
      * the desired style. Note that the method will change already added properties 
      * to the new style. Also, it will override the style which is set using 
-     * the constant 'JSONX_PROP_STYLE'.
+     * the constant 'JSON_PROP_STYLE'.
      * 
      * @param string $style The style that will be used. It can be one of the 
      * following values:
@@ -271,12 +255,14 @@ class Property {
      * 
      * @since 1.0
      */
-    public function setStyle(string $style) {
+    public function setStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
-
-        if (in_array($trimmed, self::PROP_NAME_STYLES)) {
+        $trimmedLetterCase = strtolower(trim($lettersCase));
+        
+        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedLetterCase, CaseConverter::LETTER_CASE)) {
             $this->probsStyle = $trimmed;
-            $this->setName(CaseConverter::convert($this->getName(), $trimmed));
+            $this->lettersCase = $trimmedLetterCase;
+            $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
         }
         $val = $this->getValue();
 
@@ -284,6 +270,7 @@ class Property {
             $val->setPropsStyle($trimmed);
         }
     }
+    private $lettersCase;
     /**
      * Sets the value of the property.
      * 

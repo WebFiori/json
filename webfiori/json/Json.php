@@ -29,7 +29,6 @@ use InvalidArgumentException;
  * 
  * @author Ibrahim
  * 
- * @version 1.2.5
  */
 class Json {
     /**
@@ -48,7 +47,6 @@ class Json {
      * 
      * @var array JSON special characters.
      * 
-     * @since 1.0
      */
     const SPECIAL_CHARS = [
         //order of characters maters
@@ -60,7 +58,6 @@ class Json {
      * 
      * @var array escaped JSON special characters.
      * 
-     * @since 1.0
      */
     const SPECIAL_CHARS_ESC = [
         "\\\\","\/",'\"',"\\t","\\r","\\n","\\f"
@@ -70,7 +67,6 @@ class Json {
      * 
      * @var string 
      * 
-     * @since 1.2.4
      */
     private $attrNameStyle;
     private $formatted;
@@ -86,23 +82,52 @@ class Json {
      * acting as properties and the value of each key will be the value of 
      * the property.
      * 
+     * @param string|null $propsStyle The name of the style that the properties will be 
+     * using. It can be one of 4 values:
+     * <ul>
+     * <li>snake</li>
+     * <li>kebab</li>
+     * <li>camel</li>
+     * <li>none</li>
+     * </ul>
+     * Default is 'none'
+     * 
+     * @param string $lettersCase This is used to set the case of properties names.
+     * it can have one of following values:
+     * <ul>
+     * <li>same: Leave letter case as provided.</li>
+     * <li>lower: Convert all letters to lower case.</li>
+     * <li>upper: Convert all letter to upper case.</li>
+     * </ul>
+     * 
      * @param bool $isFormatted If this attribute is set to true, the generated 
      * JSON will be indented and have new lines (readable). Note that the parameter 
      * will be ignored if the constant 'WF_VERBOSE' is defined and is set to true.
      * 
-     * @since 1.2.2
      */
-    public function __construct(array $initialData = [], $isFormatted = false) {
+    public function __construct(array $initialData = [], string $propsStyle = null, string $lettersCase = null, bool $isFormatted = false) {
         $this->propsArr = [];
 
         $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));
-        $this->setPropsStyle('none');
-
-        if (defined('JSON_PROP_STYLE')) {
-            $this->setPropsStyle(JSON_PROP_STYLE);
+        
+        if (!in_array($propsStyle, CaseConverter::PROP_NAME_STYLES)) {
+            if (defined('JSON_STYLE')) {
+                $propsStyle = JSON_STYLE;
+            } else {
+                $propsStyle = 'none';
+            }
         }
+        if (!in_array($lettersCase, CaseConverter::LETTER_CASE)) {
+            if (defined('JSON_CASE')) {
+                $lettersCase = JSON_CASE;
+            } else {
+                $lettersCase = 'same';
+            }
+        }
+        $this->setPropsStyle($propsStyle, $lettersCase);
 
-        $this->_initData($initialData);
+
+        $this->initData($initialData);
     }
     /**
      * Returns the value at the given key.
@@ -114,7 +139,6 @@ class Json {
      * was set by any method which can be used to add props. It can be a number, 
      * a boolean, string, an object or null if it does not exist.
      * 
-     * @since 1.2
      */
     public function &get($key) {
         $keyTrimmed = CaseConverter::convert($key, $this->getPropStyle());
@@ -178,7 +202,6 @@ class Json {
      * @return bool The method will return true if the value is set. 
      * If the given value or key is invalid, the method will return false.
      * 
-     * @since 1.1
      */
     public function add(string $key, $value, $arrayAsObj = false) {
         if (!$this->updateExisting($key, $value)) {
@@ -241,7 +264,6 @@ class Json {
      * If the given value is not a boolean or the key value is invalid string, 
      * the method will return false.
      * 
-     * @since 1.0
      */
     public function addBoolean($key, $val = true) : bool {
         if (!$this->updateExisting($key, $val)) {
@@ -266,7 +288,6 @@ class Json {
      * 
      * @throws InvalidArgumentException If the given parameter is not an array.
      * 
-     * @since 1.2.3
      */
     public function addMultiple(array $arr) {
         foreach ($arr as $key => $value) {
@@ -318,7 +339,6 @@ class Json {
      * string, the method 
      * will return false. 
      * 
-     * @since 1.0
      */
     public function addNumber(string $key, $value) {
         if (!$this->updateExisting($key, $value)) {
@@ -357,7 +377,6 @@ class Json {
      * @return bool The method will return true if the object is added. 
      * If the key value is invalid string, the method will return false.
      * 
-     * @since 1.0
      */
     public function addObject(string $key, &$val) {
         if (!$this->updateExisting($key, $val)) {
@@ -388,7 +407,6 @@ class Json {
      * If the given value is not a string or the given key is invalid, the 
      * method will return false.
      * 
-     * @since 1.0
      */
     public function addString(string $key, $val) {
         if (!$this->updateExisting($key, $val)) {
@@ -420,7 +438,7 @@ class Json {
      * method will return an array that contains information about parsing error. 
      * The array will have two indices, 'error-code' and 'error-message'.
      * 
-     * @since 1.2.5
+     * 
      */
     public static function decode($jsonStr) {
         $decodedStd = json_decode($jsonStr);
@@ -430,7 +448,7 @@ class Json {
             $objProps = get_object_vars($decodedStd);
 
             foreach ($objProps as $key => $val) {
-                self::_fixParsed($jsonXObj, $key, $val);
+                self::fixParsed($jsonXObj, $key, $val);
             }
 
             return $jsonXObj;
@@ -446,7 +464,6 @@ class Json {
      * 
      * @return string An escaped version of the string.
      * 
-     * @since 1.0
      */
     public static function escapeJSONSpecialChars($string) {
         $escapedJson = '';
@@ -479,7 +496,7 @@ class Json {
      * array that contains error information. The array will have two indices, 
      * 'error-code' and 'error-message' Other than that, it will return null.
      * 
-     * @since 1.2.5
+     * 
      */
     public static function fromJsonFile($pathToJsonFile) {
         if (file_exists($pathToJsonFile)) {
@@ -506,7 +523,7 @@ class Json {
      * 
      * @return array An array that contains the names of all added properties.
      * 
-     * @since 1.2.5
+     * 
      */
     public function getPropsNames() {
         $retVal = [];
@@ -529,10 +546,25 @@ class Json {
      * </ul>
      * The default value is 'none'.
      * 
-     * @since 1.2.4
+     * 
      */
     public function getPropStyle() {
         return $this->attrNameStyle;
+    }
+    private $attrLetterCase;
+    /**
+     * Returns the case at which the names of the properties will be set to.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'none'.
+     */
+    public function getPropsLettersCase() : string {
+        return $this->attrLetterCase;
     }
     /**
      * Checks if Json instance has the given key or not.
@@ -547,7 +579,6 @@ class Json {
      * @return bool The method will return true if the 
      * key exists. false if not.
      * 
-     * @since 1.2
      */
     public function hasKey($key) {
         $keyTrimmed = CaseConverter::convert($key, $this->getPropStyle());
@@ -575,7 +606,7 @@ class Json {
      * @return Property|null The method will return the property as object if
      * removed. Other than that, the method will return null.
      * 
-     * @since 1.2.5
+     * 
      */
     public function remove($keyName) {
         $keyValidated = CaseConverter::convert($keyName, $this->getPropStyle());
@@ -606,7 +637,7 @@ class Json {
      * @param bool $bool True to make the output formatted and false to make 
      * it not.
      * 
-     * @since 1.2.5
+     * 
      */
     public function setIsFormatted($bool) {
         $this->formatted = $bool === true;
@@ -615,7 +646,7 @@ class Json {
             if ($prop->getValue() instanceof Json) {
                 $prop->getValue()->setIsFormatted($this->isFormatted());
             } else if ($prop->getType() == JsonTypes::ARR) {
-                $this->_setIsFormattedArray($prop->getValue());
+                $this->setIsFormattedArray($prop->getValue());
             }
         }
     }
@@ -637,17 +668,19 @@ class Json {
      * <li>snake</li>
      * <li>none</li>
      * </ul>
+     *  $trimmed = strtolower(trim($style));
      * 
-     * @since 1.2.4
      */
-    public function setPropsStyle($style) {
+    public function setPropsStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
-
-        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES)) {
+        $trimmedCase = strtolower(trim($lettersCase));
+        
+        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedCase, CaseConverter::LETTER_CASE)) {
             $this->attrNameStyle = $trimmed;
-
+            $this->attrLetterCase = $trimmedCase;
+            
             foreach ($this->getProperties() as $prop) {
-                $prop->setStyle($style);
+                $prop->setStyle($style, $trimmedCase);
             }
         }
     }
@@ -712,6 +745,9 @@ class Json {
     public function toJSONString() {
         return JsonConverter::toJsonString($this, $this->isFormatted());
     }
+    public function getLettersCase() {
+        return $this->attrLetterCase;
+    }
     /**
      * Creates and returns a well formatted XML string that will be created using 
      * provided data.
@@ -722,8 +758,8 @@ class Json {
     public function toJSONxString() {
         return JsonConverter::toJsonXString($this);
     }
-    private static function _checkArr($subVal, &$parentArr) {
-        $isIndexed = self::_isIndexedArr($subVal);
+    private static function checkArray($subVal, &$parentArr) {
+        $isIndexed = self::isIndexedArr($subVal);
 
         if ($isIndexed) {
             $subArr = [];
@@ -733,14 +769,14 @@ class Json {
                 $subArrVal = $subVal[$x];
 
                 if (gettype($subArrVal) == 'array') {
-                    self::_checkArr($subArrVal, $subArr);
+                    self::checkArray($subArrVal, $subArr);
                 } else if (gettype($subArrVal) == 'object') {
                     // Object inside array.
                     $subObj = new Json();
                     $props = get_object_vars($subArrVal);
 
                     foreach ($props as $propName => $propVal) {
-                        self::_fixParsed($subObj, $propName, $propVal);
+                        self::fixParsed($subObj, $propName, $propVal);
                     }
                     $subArr[] = $subObj;
                 } else {
@@ -756,11 +792,11 @@ class Json {
      * @param Json $jsonx
      * @param type $xVal
      */
-    private static function _fixParsed($jsonx, $xKey, $xVal) {
+    private static function fixParsed($jsonx, $xKey, $xVal) {
         if (gettype($xVal) == 'array') {
             // An array inside object.
             $arr = [];
-            self::_checkArr($xVal, $arr);
+            self::checkArray($xVal, $arr);
             $jsonx->add($xKey, $arr[0]);
         } else if (gettype($xVal) == 'object') {
             //An object
@@ -768,7 +804,7 @@ class Json {
             $xProps = get_object_vars($xVal);
 
             foreach ($xProps as $prop => $val) {
-                self::_fixParsed($xJson, $prop, $val);
+                self::fixParsed($xJson, $prop, $val);
             }
             $jsonx->add($xKey, $xJson);
         } else {
@@ -782,14 +818,13 @@ class Json {
     /**
      * 
      * @param array $data
-     * @since 1.2.2
      */
-    private function _initData($data) {
+    private function initData($data) {
         foreach ($data as $key => $value) {
             $this->add($key, $value);
         }
     }
-    private static function _isIndexedArr($arr) {
+    private static function isIndexedArr($arr) {
         $isIndexed = true;
 
         foreach ($arr as $index => $val) {
@@ -798,13 +833,13 @@ class Json {
 
         return $isIndexed;
     }
-    private function _setIsFormattedArray(&$arr) {
+    private function setIsFormattedArray(&$arr) {
         foreach ($arr as $arrVal) {
             if ($arrVal instanceof Json) {
                 $arrVal->setIsFormatted($this->isFormatted());
             } else {
                 if (gettype($arrVal) == 'array') {
-                    $this->_setIsFormattedArray($arrVal);
+                    $this->setIsFormattedArray($arrVal);
                 }
             }
         }
@@ -819,7 +854,10 @@ class Json {
      */
     private function createProb($name, $value) {
         try {
-            return new Property($name, $value, $this->getPropStyle());
+            if ($value instanceof Json) {
+                $value->setPropsStyle($this->getPropStyle(), $this->attrLetterCase);
+            }
+            return new Property($name, $value, $this->getPropStyle(), $this->attrLetterCase);
         } catch (InvalidArgumentException $ex) {
             throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
         }
