@@ -69,11 +69,20 @@ class Property {
      * </ul>
      * The default value is 'none'.
      * 
+     * @param string $case The case at which the name of the property will use. 
+     * It can be one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'same'.
+     * 
      * @throws InvalidArgumentException If the name of the property is invalid
      * 
      * @since 1.0
      */
-    public function __construct(string $name, $value, string $style = null, string $lettersCase = 'same') {
+    public function __construct(string $name, $value, string $style = null, string $case = 'same') {
         $this->name = '';
         $this->setStyle('none');
 
@@ -84,7 +93,7 @@ class Property {
         $this->setAsObject(false);
 
         if (in_array($style, CaseConverter::PROP_NAME_STYLES)) {
-            $this->setStyle($style, $lettersCase);
+            $this->setStyle($style, $case);
         }
 
 
@@ -165,7 +174,18 @@ class Property {
     public function getStyle() : string {
         return $this->probsStyle;
     }
-    public function getLettersCase() : string {
+    /**
+     * Returns the case at which the name of the property will be set to.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'same'.
+     */
+    public function getCase() : string {
         return $this->lettersCase;
     }
     /**
@@ -226,7 +246,7 @@ class Property {
      * @since 1.0
      */
     public function setName(string $name) : bool {
-        $keyValidity = self::isValidKey($name, $this->getStyle());
+        $keyValidity = self::isValidKey($name, $this->getStyle(), $this->getCase());
 
         if ($keyValidity === false) {
             return false;
@@ -267,7 +287,7 @@ class Property {
         $val = $this->getValue();
 
         if ($val instanceof Json) {
-            $val->setPropsStyle($trimmed);
+            $val->setPropsStyle($trimmed, $trimmedLetterCase);
         }
     }
     private $lettersCase;
@@ -301,11 +321,11 @@ class Property {
      * 
      * @since 1.0
      */
-    private static function isValidKey($key, $style = 'kebab') {
+    private static function isValidKey($key, $style = 'kebab', $case = 'same') {
         $trimmedKey = trim($key);
 
         if (strlen($trimmedKey) != 0) {
-            return CaseConverter::convert($trimmedKey, $style);
+            return CaseConverter::convert($trimmedKey, $style, $case);
         }
 
         return false;

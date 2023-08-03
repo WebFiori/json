@@ -86,7 +86,7 @@ class JsonConverter {
         $probType = $prop->getType();
         $probVal = $prop->getValue();
 
-        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->getLettersCase(), $prop->isAsObject());
+        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->getCase(), $prop->isAsObject());
 
         return $retVal;
     }
@@ -131,7 +131,7 @@ class JsonConverter {
 
         for ($x = 0 ; $x < $propsCount ; $x++) {
             $prop = $propsArr[$x];
-            $prop->setStyle($jsonObj->getPropStyle(), $jsonObj->getLettersCase());
+            $prop->setStyle($jsonObj->getPropStyle(), $jsonObj->getCase());
             if ($x + 1 != $propsCount) {
                 $jsonString .= self::propertyToJsonString($prop).','.self::$CRLF;
             } else {

@@ -151,7 +151,7 @@ class CaseConverter {
      * 
      */
     public static function toKebabCase(string $value, string $letterCase = 'same') : string {
-        return self::_toSnakeOrKebab($value, $letterCase, '_', '-');
+        return self::toSnakeOrKebab($value, $letterCase, '_', '-');
     }
     /**
      * Converts a string to snake case.
@@ -172,7 +172,7 @@ class CaseConverter {
      * 
      */
     public static function toSnackCase(string $value, string $letterCase = 'same') : string {
-        return self::_toSnakeOrKebab($value, $letterCase, '-', '_');
+        return self::toSnakeOrKebab($value, $letterCase, '-', '_');
     }
     /**
      * Checks if an english letter is in upper case or not.
@@ -184,7 +184,7 @@ class CaseConverter {
     public static function isUpper(string $char) : bool {
         return $char >= 'A' && $char <= 'Z';
     }
-    private static function _toSnakeOrKebab(string $value, string $letterCase, string $from, string $to) : string {
+    private static function toSnakeOrKebab(string $value, string $letterCase, string $from, string $to) : string {
         $attr1 = str_replace($from, $to, trim($value));
         $retVal = '';
         $isNumFound = false;
@@ -216,14 +216,12 @@ class CaseConverter {
     }
     private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound, $nextChar) : string {
         $isUpper = self::isUpper($char);
-        if ($nextChar !== null) {
-            $isNextUpper = self::isUpper($nextChar);
-        } else {
-            $isNextUpper = false;
-        }
+
+        $isNextUpper = self::isUpper($nextChar);
+        
         $retVal = '';
 
-        if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound && !$isNextUpper) {
+        if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound && !$isNextUpper && $nextChar != $to) {
             $retVal .= $to.strtolower($char);
         } else if ($isUpper && $x == 0 && !$isNextUpper) {
             $retVal .= strtolower($char);

@@ -553,20 +553,6 @@ class Json {
     }
     private $attrLetterCase;
     /**
-     * Returns the case at which the names of the properties will be set to.
-     * 
-     * @return string The method will return one of the following values:
-     * <ul>
-     * <li>same</li>
-     * <li>upper</li>
-     * <li>lower</li>
-     * </ul>
-     * The default value is 'none'.
-     */
-    public function getPropsLettersCase() : string {
-        return $this->attrLetterCase;
-    }
-    /**
      * Checks if Json instance has the given key or not.
      * 
      * Note that if properties style is set to 'none', the value of the key 
@@ -655,10 +641,10 @@ class Json {
      * Sets the style at which the names of the properties will use.
      * 
      * Another way to set the style that will be used by the instance is to 
-     * define the global constant 'JSONX_PROP_STYLE' and set its value to 
+     * define the global constant 'JSON_STYLE' and set its value to 
      * the desired style. Note that the method will change already added properties 
      * to the new style. Also, it will override the style which is set using 
-     * the constant 'JSONX_PROP_STYLE'.
+     * the constant 'JSON_STYLE'.
      * 
      * @param string $style The style that will be used. It can be one of the 
      * following values:
@@ -668,7 +654,6 @@ class Json {
      * <li>snake</li>
      * <li>none</li>
      * </ul>
-     *  $trimmed = strtolower(trim($style));
      * 
      */
     public function setPropsStyle(string $style, string $lettersCase = 'same') {
@@ -722,10 +707,8 @@ class Json {
 
         if ($isExist && !$override) {
             throw new JsonException("File already exist: '$fullPath'", -1);
-        } else {
-            if ($isExist && $override) {
-                unlink($fullPath);
-            }
+        } else if ($isExist && $override) {
+            unlink($fullPath);
         }
         $resource = fopen($fullPath, 'wb');
 
@@ -745,7 +728,17 @@ class Json {
     public function toJSONString() {
         return JsonConverter::toJsonString($this, $this->isFormatted());
     }
-    public function getLettersCase() {
+    /**
+     * Returns the case at which the names of the properties will use.
+     * 
+     * @return string The return value will be one of following values:
+     * <ul>
+     * <li>same: Leave letter case as provided.</li>
+     * <li>lower: Convert all letters to lower case.</li>
+     * <li>upper: Convert all letter to upper case.</li>
+     * </ul>
+     */
+    public function getCase() : string {
         return $this->attrLetterCase;
     }
     /**
@@ -855,9 +848,9 @@ class Json {
     private function createProb($name, $value) {
         try {
             if ($value instanceof Json) {
-                $value->setPropsStyle($this->getPropStyle(), $this->attrLetterCase);
+                $value->setPropsStyle($this->getPropStyle(), $this->getCase());
             }
-            return new Property($name, $value, $this->getPropStyle(), $this->attrLetterCase);
+            return new Property($name, $value, $this->getPropStyle(), $this->getCase());
         } catch (InvalidArgumentException $ex) {
             throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
         }
