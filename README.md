@@ -55,7 +55,7 @@ The process of using the classes is very simple. What you have to do is the foll
 
 For more information and advanced use cases, check [here](https://webfiori.com/learn/webfiori-json).
 
-## Simple Example
+### Simple Example
 The following code shows a very simple usage example.
 
 ```php
@@ -88,4 +88,27 @@ The output of the code will be like that:
 echo $j;
 ```
 
+Following example shows how data can be added directly using the constructure.
+
+``` php
+$jsonObj = new Json([
+    'first-name' => 'Ibrahim',
+    'last-name' => 'BinAlshikh',
+    'age' => 26,
+    'is-married' => true,
+    'mobile-number' => null
+]);
+```
+
+The JSON output of this code will be the following:
+
+``` json
+{
+    "first-name":"Ibrahim",
+    "last-name":"BinAlshikh",
+    "age":26,
+    "is-married":true,
+    "mobile-number":null
+}
+```
 
