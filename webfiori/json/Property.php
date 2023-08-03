@@ -18,25 +18,6 @@ use InvalidArgumentException;
  */
 class Property {
     /**
-     * An array of supported property styles.
-     * 
-     * This array holds the following values:
-     * <ul>
-     * <li>camel</li>
-     * <li>kebab</li>
-     * <li>snake</li>
-     * <li>none</li>
-     * </ul>
-     * 
-     * @since 1.0
-     */
-    const PROP_NAME_STYLES = [
-        'camel',
-        'kebab',
-        'snake',
-        'none'
-    ];
-    /**
      * 
      * @var boolean
      * 
@@ -50,6 +31,7 @@ class Property {
      * @since 1.0
      */
     private $datatype;
+    private $lettersCase;
     /**
      * 
      * @var string
@@ -88,11 +70,20 @@ class Property {
      * </ul>
      * The default value is 'none'.
      * 
+     * @param string $case The case at which the name of the property will use. 
+     * It can be one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'same'.
+     * 
      * @throws InvalidArgumentException If the name of the property is invalid
      * 
      * @since 1.0
      */
-    public function __construct(string $name, $value, string $style = null) {
+    public function __construct(string $name, $value, string $style = null, string $case = 'same') {
         $this->name = '';
         $this->setStyle('none');
 
@@ -102,8 +93,8 @@ class Property {
 
         $this->setAsObject(false);
 
-        if ($style !== null) {
-            $this->setStyle($style);
+        if (in_array($style, CaseConverter::PROP_NAME_STYLES)) {
+            $this->setStyle($style, $case);
         }
 
 
@@ -118,6 +109,20 @@ class Property {
      */
     public function &getValue() {
         return $this->value;
+    }
+    /**
+     * Returns the case at which the name of the property will be set to.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'same'.
+     */
+    public function getCase() : string {
+        return $this->lettersCase;
     }
     /**
      * Returns the name of XML tag that will be used when representing the
@@ -242,7 +247,7 @@ class Property {
      * @since 1.0
      */
     public function setName(string $name) : bool {
-        $keyValidity = self::isValidKey($name, $this->getStyle());
+        $keyValidity = self::isValidKey($name, $this->getStyle(), $this->getCase());
 
         if ($keyValidity === false) {
             return false;
@@ -258,7 +263,7 @@ class Property {
      * define the global constant 'JSONX_PROP_STYLE' and set its value to 
      * the desired style. Note that the method will change already added properties 
      * to the new style. Also, it will override the style which is set using 
-     * the constant 'JSONX_PROP_STYLE'.
+     * the constant 'JSON_PROP_STYLE'.
      * 
      * @param string $style The style that will be used. It can be one of the 
      * following values:
@@ -271,17 +276,19 @@ class Property {
      * 
      * @since 1.0
      */
-    public function setStyle(string $style) {
+    public function setStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
+        $trimmedLetterCase = strtolower(trim($lettersCase));
 
-        if (in_array($trimmed, self::PROP_NAME_STYLES)) {
+        if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedLetterCase, CaseConverter::LETTER_CASE)) {
             $this->probsStyle = $trimmed;
-            $this->setName(CaseConverter::convert($this->getName(), $trimmed));
+            $this->lettersCase = $trimmedLetterCase;
+            $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
         }
         $val = $this->getValue();
 
         if ($val instanceof Json) {
-            $val->setPropsStyle($trimmed);
+            $val->setPropsStyle($trimmed, $trimmedLetterCase);
         }
     }
     /**
@@ -294,13 +301,12 @@ class Property {
      */
     public function setValue($val) {
         $this->datatype = gettype($val);
-        
+
         if ($this->getType() == 'object' && is_subclass_of($val, 'webfiori\\json\\JsonI')) {
             $this->value = $val->toJSON();
         } else {
             $this->value = $val;
         }
-        
     }
     /**
      * Checks if the key is a valid key string.
@@ -314,11 +320,11 @@ class Property {
      * 
      * @since 1.0
      */
-    private static function isValidKey($key, $style = 'kebab') {
+    private static function isValidKey($key, $style = 'kebab', $case = 'same') {
         $trimmedKey = trim($key);
 
         if (strlen($trimmedKey) != 0) {
-            return CaseConverter::convert($trimmedKey, $style);
+            return CaseConverter::convert($trimmedKey, $style, $case);
         }
 
         return false;

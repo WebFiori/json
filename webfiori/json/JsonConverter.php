@@ -86,7 +86,7 @@ class JsonConverter {
         $probType = $prop->getType();
         $probVal = $prop->getValue();
 
-        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->isAsObject());
+        $retVal .= self::checkJsonType($probVal, $probType, $prop->getStyle(), $prop->getCase(), $prop->isAsObject());
 
         return $retVal;
     }
@@ -130,10 +130,13 @@ class JsonConverter {
         self::updateTab(true);
 
         for ($x = 0 ; $x < $propsCount ; $x++) {
+            $prop = $propsArr[$x];
+            $prop->setStyle($jsonObj->getPropStyle(), $jsonObj->getCase());
+
             if ($x + 1 != $propsCount) {
-                $jsonString .= self::propertyToJsonString($propsArr[$x]).','.self::$CRLF;
+                $jsonString .= self::propertyToJsonString($prop).','.self::$CRLF;
             } else {
-                $jsonString .= self::propertyToJsonString($propsArr[$x]).self::$CRLF;
+                $jsonString .= self::propertyToJsonString($prop).self::$CRLF;
             }
         }
         self::updateTab(false);
@@ -180,7 +183,7 @@ class JsonConverter {
      * 
      * @since 1.0
      */
-    private static function arrayToJsonString(array $array, bool $asObj, string $propsStyle = 'snake') {
+    private static function arrayToJsonString(array $array, bool $asObj, string $propsStyle = 'snake', $lettersCase = 'same') {
         $retVal = '';
 
         if ($asObj === true) {
@@ -198,7 +201,7 @@ class JsonConverter {
 
             foreach ($array as $val) {
                 $valType = gettype($val);
-                $retVal .= $valToPreAppend.self::$Tab.self::checkJsonType($val, $valType, $propsStyle, $asObj);
+                $retVal .= $valToPreAppend.self::$Tab.self::checkJsonType($val, $valType, $propsStyle, $lettersCase, $asObj);
 
                 $valToPreAppend = ",".self::$CRLF;
             }
@@ -226,7 +229,7 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function checkJsonType($val, $valType, $propsStyle, $asObj) {
+    private static function checkJsonType($val, $valType, $propsStyle, $lettersCase, $asObj) {
         $retVal = '';
 
         if ($valType == JsonTypes::STRING) {
@@ -242,9 +245,9 @@ class JsonConverter {
                 $retVal .= 'false';
             }
         } else if ($valType == JsonTypes::OBJ) {
-            $retVal .= self::objToJson($val, $propsStyle);
+            $retVal .= self::objToJson($val, $propsStyle, $lettersCase);
         } else if ($valType == JsonTypes::ARR) {
-            $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle);
+            $retVal .= self::arrayToJsonString($val, $asObj, $propsStyle, $lettersCase);
         }
 
         return $retVal;
@@ -337,7 +340,7 @@ class JsonConverter {
      * 
      * @since 1.0
      */
-    private static function objToJson($probVal, string $style) {
+    private static function objToJson($probVal, string $style, string $lettersCase) {
         if (!($probVal instanceof Json)) {
             if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
                 $probVal = self::objectToJson($probVal);
@@ -345,7 +348,7 @@ class JsonConverter {
                 $probVal = $probVal->toJSON();
             }
         }
-        $probVal->setPropsStyle($style);
+        $probVal->setPropsStyle($style, $lettersCase);
 
         $retVal = "{".self::$CRLF;
         self::updateTab(true);

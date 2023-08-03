@@ -53,6 +53,8 @@ class PropertyTest extends TestCase {
         $this->assertSame($obj, $prop->getValue());
         $this->assertEquals('object', $prop->getType());
         $this->assertEquals('json:object', $prop->getJsonXTagName());
+        $prop->setStyle('camel', 'upper');
+        $this->assertEquals('ANOBJ', $prop->getName());
     }
     /**
      * @test
@@ -83,6 +85,8 @@ class PropertyTest extends TestCase {
         $this->assertNull($prop->getValue());
         $this->assertEquals('NULL', $prop->getType());
         $this->assertEquals('json:null', $prop->getJsonXTagName());
+        $prop->setStyle('kebab', 'upper');
+        $this->assertEquals('NULL-VAL', $prop->getName());
     }
     /**
      * @test
@@ -103,5 +107,15 @@ class PropertyTest extends TestCase {
         $this->assertTrue(is_infinite($prop->getValue()));
         $this->assertEquals('double', $prop->getType());
         $this->assertEquals('json:string', $prop->getJsonXTagName());
+    }
+    /**
+     * @test
+     */
+    public function testConstructor09() {
+        $prop = new Property('a-double', 1.3, 'snake', 'upper');
+        $this->assertEquals('A_DOUBLE', $prop->getName());
+        $this->assertEquals(1.3, $prop->getValue());
+        $this->assertEquals('double', $prop->getType());
+        $this->assertEquals('json:number', $prop->getJsonXTagName());
     }
 }

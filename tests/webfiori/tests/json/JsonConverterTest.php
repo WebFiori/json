@@ -169,6 +169,17 @@ class JsonConverterTest extends TestCase {
     /**
      * @test
      */
+    public function testToJson12() {
+        $prop = new Property('ABCD', 'world');
+        $this->assertEquals('"ABCD":"world"', JsonConverter::propertyToJsonString($prop));
+        $prop->setStyle('snake');
+        $this->assertEquals('"ABCD":"world"', JsonConverter::propertyToJsonString($prop));
+        $prop->setStyle('snake', 'lower');
+        $this->assertEquals('"abcd":"world"', JsonConverter::propertyToJsonString($prop));
+    }
+    /**
+     * @test
+     */
     public function testToJsonX00() {
         $prop = new Property('hello', 'world');
         $this->assertEquals('<json:string name="hello">'."\r\n"
