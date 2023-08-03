@@ -30,13 +30,12 @@ class CaseConverter {
      * </ul>
      * 
      */
-    const PROP_NAME_STYLES = [
-        'camel',
-        'kebab',
-        'snake',
-        'none'
+    const LETTER_CASE = [
+        'same',
+        'upper',
+        'lower',
     ];
-        /**
+    /**
      * An array of supported property styles.
      * 
      * This array holds the following values:
@@ -48,10 +47,11 @@ class CaseConverter {
      * </ul>
      * 
      */
-    const LETTER_CASE = [
-        'same',
-        'upper',
-        'lower',
+    const PROP_NAME_STYLES = [
+        'camel',
+        'kebab',
+        'snake',
+        'none'
     ];
     /**
      * Converts a string to specific case.
@@ -90,6 +90,16 @@ class CaseConverter {
         } else {
             return self::convertCase(trim($value), $letterCase);
         }
+    }
+    /**
+     * Checks if an english letter is in upper case or not.
+     * 
+     * @param string $char The character that will be checked.
+     * 
+     * @return bool
+     */
+    public static function isUpper(string $char) : bool {
+        return $char >= 'A' && $char <= 'Z';
     }
     /**
      * Converts a string to camel case.
@@ -174,51 +184,11 @@ class CaseConverter {
     public static function toSnackCase(string $value, string $letterCase = 'same') : string {
         return self::toSnakeOrKebab($value, $letterCase, '-', '_');
     }
-    /**
-     * Checks if an english letter is in upper case or not.
-     * 
-     * @param string $char The character that will be checked.
-     * 
-     * @return bool
-     */
-    public static function isUpper(string $char) : bool {
-        return $char >= 'A' && $char <= 'Z';
-    }
-    private static function toSnakeOrKebab(string $value, string $letterCase, string $from, string $to) : string {
-        $attr1 = str_replace($from, $to, trim($value));
-        $retVal = '';
-        $isNumFound = false;
-        $snakeOrKebabFound = false;
-        $len = strlen($attr1);
-        
-        for ($x = 0 ; $x < $len ; $x++) {
-            $char = $attr1[$x];
-            $nextChar = $x < $len - 1 ? $attr1[$x + 1] : $attr1[$x];
-            
-            if ($char == $to) {
-                $snakeOrKebabFound = true;
-                $retVal .= $char;
-            } else if ($char >= '0' && $char <= '9') {
-                $retVal .= self::addNumber($x, $isNumFound, $to, $char, $snakeOrKebabFound);
-            } else {
-                $retVal .= self::addChar($x, $isNumFound, $to, $char, $snakeOrKebabFound, $nextChar);
-            }
-        }
-        return self::convertCase($retVal, $letterCase);
-    }
-    private static function convertCase($retVal, $letterCase) {
-        if ($letterCase == 'upper') {
-            return strtoupper($retVal);
-        } else if ($letterCase == 'lower') {
-            return strtolower($retVal);
-        }
-        return $retVal;
-    }
     private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound, $nextChar) : string {
         $isUpper = self::isUpper($char);
 
         $isNextUpper = self::isUpper($nextChar);
-        
+
         $retVal = '';
 
         if (($isUpper || $isNumFound) && $x != 0 && !$snakeOrKebabFound && !$isNextUpper && $nextChar != $to) {
@@ -251,5 +221,37 @@ class CaseConverter {
         $isNumFound = true;
 
         return $retVal;
+    }
+    private static function convertCase($retVal, $letterCase) {
+        if ($letterCase == 'upper') {
+            return strtoupper($retVal);
+        } else if ($letterCase == 'lower') {
+            return strtolower($retVal);
+        }
+
+        return $retVal;
+    }
+    private static function toSnakeOrKebab(string $value, string $letterCase, string $from, string $to) : string {
+        $attr1 = str_replace($from, $to, trim($value));
+        $retVal = '';
+        $isNumFound = false;
+        $snakeOrKebabFound = false;
+        $len = strlen($attr1);
+
+        for ($x = 0 ; $x < $len ; $x++) {
+            $char = $attr1[$x];
+            $nextChar = $x < $len - 1 ? $attr1[$x + 1] : $attr1[$x];
+
+            if ($char == $to) {
+                $snakeOrKebabFound = true;
+                $retVal .= $char;
+            } else if ($char >= '0' && $char <= '9') {
+                $retVal .= self::addNumber($x, $isNumFound, $to, $char, $snakeOrKebabFound);
+            } else {
+                $retVal .= self::addChar($x, $isNumFound, $to, $char, $snakeOrKebabFound, $nextChar);
+            }
+        }
+
+        return self::convertCase($retVal, $letterCase);
     }
 }

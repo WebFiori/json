@@ -31,6 +31,7 @@ class Property {
      * @since 1.0
      */
     private $datatype;
+    private $lettersCase;
     /**
      * 
      * @var string
@@ -110,6 +111,20 @@ class Property {
         return $this->value;
     }
     /**
+     * Returns the case at which the name of the property will be set to.
+     * 
+     * @return string The method will return one of the following values:
+     * <ul>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
+     * </ul>
+     * The default value is 'same'.
+     */
+    public function getCase() : string {
+        return $this->lettersCase;
+    }
+    /**
      * Returns the name of XML tag that will be used when representing the
      * property in JSONx.
      * 
@@ -173,20 +188,6 @@ class Property {
      */
     public function getStyle() : string {
         return $this->probsStyle;
-    }
-    /**
-     * Returns the case at which the name of the property will be set to.
-     * 
-     * @return string The method will return one of the following values:
-     * <ul>
-     * <li>same</li>
-     * <li>upper</li>
-     * <li>lower</li>
-     * </ul>
-     * The default value is 'same'.
-     */
-    public function getCase() : string {
-        return $this->lettersCase;
     }
     /**
      * Returns the datatype of property value.
@@ -278,7 +279,7 @@ class Property {
     public function setStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
         $trimmedLetterCase = strtolower(trim($lettersCase));
-        
+
         if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedLetterCase, CaseConverter::LETTER_CASE)) {
             $this->probsStyle = $trimmed;
             $this->lettersCase = $trimmedLetterCase;
@@ -290,7 +291,6 @@ class Property {
             $val->setPropsStyle($trimmed, $trimmedLetterCase);
         }
     }
-    private $lettersCase;
     /**
      * Sets the value of the property.
      * 
@@ -301,13 +301,12 @@ class Property {
      */
     public function setValue($val) {
         $this->datatype = gettype($val);
-        
+
         if ($this->getType() == 'object' && is_subclass_of($val, 'webfiori\\json\\JsonI')) {
             $this->value = $val->toJSON();
         } else {
             $this->value = $val;
         }
-        
     }
     /**
      * Checks if the key is a valid key string.

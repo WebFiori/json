@@ -62,6 +62,7 @@ class Json {
     const SPECIAL_CHARS_ESC = [
         "\\\\","\/",'\"',"\\t","\\r","\\n","\\f"
     ];
+    private $attrLetterCase;
     /**
      * The style of attribute name.
      * 
@@ -109,7 +110,7 @@ class Json {
         $this->propsArr = [];
 
         $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));
-        
+
         if (!in_array($propsStyle, CaseConverter::PROP_NAME_STYLES)) {
             if (defined('JSON_STYLE')) {
                 $propsStyle = JSON_STYLE;
@@ -117,6 +118,7 @@ class Json {
                 $propsStyle = 'none';
             }
         }
+
         if (!in_array($lettersCase, CaseConverter::LETTER_CASE)) {
             if (defined('JSON_CASE')) {
                 $lettersCase = JSON_CASE;
@@ -508,6 +510,19 @@ class Json {
         }
     }
     /**
+     * Returns the case at which the names of the properties will use.
+     * 
+     * @return string The return value will be one of following values:
+     * <ul>
+     * <li>same: Leave letter case as provided.</li>
+     * <li>lower: Convert all letters to lower case.</li>
+     * <li>upper: Convert all letter to upper case.</li>
+     * </ul>
+     */
+    public function getCase() : string {
+        return $this->attrLetterCase;
+    }
+    /**
      * Returns an array that holds all added attributes.
      * 
      * @return array An array that holds objects of type 'Property'.
@@ -551,7 +566,6 @@ class Json {
     public function getPropStyle() {
         return $this->attrNameStyle;
     }
-    private $attrLetterCase;
     /**
      * Checks if Json instance has the given key or not.
      * 
@@ -659,11 +673,11 @@ class Json {
     public function setPropsStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
         $trimmedCase = strtolower(trim($lettersCase));
-        
+
         if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedCase, CaseConverter::LETTER_CASE)) {
             $this->attrNameStyle = $trimmed;
             $this->attrLetterCase = $trimmedCase;
-            
+
             foreach ($this->getProperties() as $prop) {
                 $prop->setStyle($style, $trimmedCase);
             }
@@ -729,19 +743,6 @@ class Json {
         return JsonConverter::toJsonString($this, $this->isFormatted());
     }
     /**
-     * Returns the case at which the names of the properties will use.
-     * 
-     * @return string The return value will be one of following values:
-     * <ul>
-     * <li>same: Leave letter case as provided.</li>
-     * <li>lower: Convert all letters to lower case.</li>
-     * <li>upper: Convert all letter to upper case.</li>
-     * </ul>
-     */
-    public function getCase() : string {
-        return $this->attrLetterCase;
-    }
-    /**
      * Creates and returns a well formatted XML string that will be created using 
      * provided data.
      * 
@@ -778,6 +779,25 @@ class Json {
                 }
             }
             $parentArr[] = $subArr;
+        }
+    }
+    /**
+     * 
+     * @param type $name
+     * 
+     * @param type $value
+     * 
+     * @return Property|null
+     */
+    private function createProb($name, $value) {
+        try {
+            if ($value instanceof Json) {
+                $value->setPropsStyle($this->getPropStyle(), $this->getCase());
+            }
+
+            return new Property($name, $value, $this->getPropStyle(), $this->getCase());
+        } catch (InvalidArgumentException $ex) {
+            throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
     /**
@@ -835,24 +855,6 @@ class Json {
                     $this->setIsFormattedArray($arrVal);
                 }
             }
-        }
-    }
-    /**
-     * 
-     * @param type $name
-     * 
-     * @param type $value
-     * 
-     * @return Property|null
-     */
-    private function createProb($name, $value) {
-        try {
-            if ($value instanceof Json) {
-                $value->setPropsStyle($this->getPropStyle(), $this->getCase());
-            }
-            return new Property($name, $value, $this->getPropStyle(), $this->getCase());
-        } catch (InvalidArgumentException $ex) {
-            throw new InvalidArgumentException($ex->getMessage(), $ex->getCode(), $ex);
         }
     }
     private function updateExisting($key, &$val) {
