@@ -17,11 +17,27 @@ A helper class library for creating JSON or JSONx strings in PHP. It can be used
   </a>
 </p>
 
+# Content
+* [What is JSON?](what-is-json)
+* [Features](#features)
+* [Supported PHP Versions](#supported-php-versions)
+* [Installation](#installation)
+* [Code Samples](#code-samples)
+* [Basic Usage](#basic-usage)
+  * [Example](#example)
+* [Converting Properties Case](#converting-properties-case)
+* [Reading From Files](#reading-from-files)
+* [Working With Objects](#working-with-objects)
+* [Decoding JSON String](#decoding-json-string)
+* [Storing Output](#storing-output)
+* [Working With Arrays](#working-with-arrays)
+* [JSONx](#jsonx]
+
 ## What is JSON?
 
 According to [json.org](https://www.json.org/json-en.html), JSON is a data exchange format which is based partially on JavaScript. It is easy for humans to read and for machines to understand. JSON data is represented as pairs of keys and values.
 
-## Library Features
+## Features
 * Support fo creating well formatted JSON.
 * Support for creating [JSONx](https://www.ibm.com/docs/en/datapower-gateways/10.0.1?topic=20-jsonx).
 * Ability to decode JSON strings and convert them to `Json` objects.
@@ -47,7 +63,7 @@ If you are using composer to manage your dependencies, then it is possible to in
 
 Another way to include the library is by going to [releases](https://github.com/WebFiori/json/releases) and download the latest release and extract compressed file content and add them to your include directory.
 
-## Usage
+## Basic Usage
 The process of using the classes is very simple. What you have to do is the following steps:
 
   * Import (or include) the class [`Json`](https://github.com/WebFiori/json/blob/master/webfiori/json/Json.php).
@@ -57,7 +73,7 @@ The process of using the classes is very simple. What you have to do is the foll
 
 For more information and advanced use cases, check [here](https://webfiori.com/learn/webfiori-json).
 
-### Simple Example
+### Example
 The following code shows a very simple usage example.
 
 ```php
