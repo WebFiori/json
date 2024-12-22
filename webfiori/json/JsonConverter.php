@@ -252,7 +252,7 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function checkJsonXType($datatype, $value, Property $prop = null, $isArrayValue = false) {
+    private static function checkJsonXType($datatype, $value, ?Property $prop, $isArrayValue = false) {
         $retVal = self::$Tab;
         $propX = new Property('x', $value);
         $propX->setStyle($prop->getStyle());
@@ -367,7 +367,7 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function objToJsonX(Property $prop, $val = null) {
+    private static function objToJsonX(Property $prop, ?mixed $val) {
         $asJson = self::objectToJson($val);
 
         if (count($asJson->getProperties()) == 0) {

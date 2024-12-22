@@ -83,7 +83,7 @@ class Property {
      * 
      * @since 1.0
      */
-    public function __construct(string $name, $value, string $style = null, string $case = 'same') {
+    public function __construct(string $name, $value, ?string $style, string $case = 'same') {
         $this->name = '';
         $this->setStyle('none');
 
