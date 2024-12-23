@@ -47,16 +47,11 @@ According to [json.org](https://www.json.org/json-en.html), JSON is a data excha
 ## Supported PHP Versions
 |                                                                                        Build Status                                                                                         |
 |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php70.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php70.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php71.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php71.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php72.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php72.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php73.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php73.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php74.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php74.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php80.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php80.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php81.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php82.yml/badge.svg?branch=master"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php83.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php83.yml/badge.svg?branch=master"></a> |
-
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php80.yml"><img src="https://github.com/WebFiori/json/workflows/php80.yml/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/workflows/php81.yml/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/workflows/php82.yml/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php83.yml"><img src="https://github.com/WebFiori/json/workflows/php83.yml/badge.svg?branch=master"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yml"><img src="https://github.com/WebFiori/json/workflows/php84.yml/badge.svg?branch=master"></a> |
 
 ## Installation
 If you are using composer to manage your dependencies, then it is possible to install the library by including the entry `"webfiori/jsonx":"*"` in the `require` section of your `composer.json` file to install the latest release. 

@@ -106,7 +106,7 @@ class Json {
      * will be ignored if the constant 'WF_VERBOSE' is defined and is set to true.
      * 
      */
-    public function __construct(array $initialData = [], string $propsStyle = null, string $lettersCase = null, bool $isFormatted = false) {
+    public function __construct(array $initialData = [], ?string $propsStyle = '', ?string $lettersCase = '', bool $isFormatted = false) {
         $this->propsArr = [];
 
         $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));

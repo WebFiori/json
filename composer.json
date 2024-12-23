@@ -2,6 +2,8 @@
     "name": "webfiori/jsonx",
     "type": "library",
     "description": "PHP library for creating well-formatted JSON strings.",
+    "type":"library",
+    "version":"3.3.0",
     "keywords": [
         "JSON", "PHP", "JSONx"
     ],
