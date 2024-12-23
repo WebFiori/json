@@ -20,7 +20,7 @@ jobs:
     
     steps: 
       - name: Clone Repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
       
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -28,9 +28,6 @@ jobs:
           php-version: ${{ matrix.php }} 
           extensions: mysqli, mbstring, sqlsrv
           tools: phpunit:9.5.20, composer
-          
-      - name: Shutdown Ubuntu MySQL
-        run: sudo service mysql stop
          
       - name: Install Dependencies
         run: composer install --prefer-source --no-interaction --no-dev
@@ -39,4 +36,6 @@ jobs:
         run: phpunit
         
       - name: CodeCov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
