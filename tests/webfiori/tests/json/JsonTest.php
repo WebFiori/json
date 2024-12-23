@@ -12,7 +12,7 @@ class JsonTest extends TestCase {
      */
     public function testToJsonFile00() {
         $json = new Json();
-        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output');
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output', true);
         $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
         $this->assertTrue(file_exists($outputPath));
     }
