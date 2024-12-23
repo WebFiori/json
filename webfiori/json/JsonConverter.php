@@ -367,7 +367,7 @@ class JsonConverter {
 
         return $retVal;
     }
-    private static function objToJsonX(Property $prop, ?mixed $val) {
+    private static function objToJsonX(Property $prop, mixed $val) {
         $asJson = self::objectToJson($val);
 
         if (count($asJson->getProperties()) == 0) {
