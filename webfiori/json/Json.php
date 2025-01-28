@@ -446,7 +446,7 @@ class Json {
         $decodedStd = json_decode($jsonStr);
 
         if (gettype($decodedStd) == 'object') {
-            $jsonXObj = new Json();
+            $jsonXObj = new Json([], 'none', 'same');
             $objProps = get_object_vars($decodedStd);
 
             foreach ($objProps as $key => $val) {
@@ -813,7 +813,7 @@ class Json {
             $jsonx->add($xKey, $arr[0]);
         } else if (gettype($xVal) == 'object') {
             //An object
-            $xJson = new Json();
+            $xJson = new Json([], 'none', 'same');
             $xProps = get_object_vars($xVal);
 
             foreach ($xProps as $prop => $val) {
