@@ -8,7 +8,7 @@
  * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
  */
-namespace webfiori\json;
+namespace WebFiori\Json;
 
 use Exception;
 /**

@@ -8,7 +8,7 @@
  * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
  */
-namespace webfiori\json;
+namespace WebFiori\Json;
 
 use InvalidArgumentException;
 /**
@@ -302,7 +302,7 @@ class Property {
     public function setValue($val) {
         $this->datatype = gettype($val);
 
-        if ($this->getType() == 'object' && is_subclass_of($val, 'webfiori\\json\\JsonI')) {
+        if ($this->getType() == 'object' && is_subclass_of($val, 'WebFiori\\Json\\JsonI')) {
             $this->value = $val->toJSON();
         } else {
             $this->value = $val;

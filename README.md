@@ -74,7 +74,7 @@ The following code shows a very simple usage example.
 ```php
 //load the class "Json"
 require_once 'Json.php';
-use webfiori\json\Json;
+use WebFiori\Json\Json;
 
 //initialize an object of the class Json
 $j = new Json();
