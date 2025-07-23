@@ -5,17 +5,19 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-
+env:
+  OPERATING_SYS: "ubuntu-latest"
+  PHP_VERSION: 8.0
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: "$OPERATING_SYS"
     strategy: 
       fail-fast: true
       matrix: 
         os: [ ubuntu-latest ]
         php: [ 8.0 ]
             
-    name: PHP${{matrix.php}} - ${{matrix.os}}
+    name: "PHP $PHP_VERSION - $OPERATING_SYS"
     
     steps: 
       - name: Clone Repo
@@ -24,7 +26,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }} 
+          php-version: $PHP_VERSION
           extensions: mysqli, mbstring, sqlsrv
           tools: phpunit:8.5.13
           
