@@ -18,39 +18,39 @@ use InvalidArgumentException;
  */
 class Property {
     /**
+     * A boolean value that determines if an array will be represented as an object or not.
      * 
      * @var boolean
-     * 
-     * @since 1.0
      */
     private $asObject;
     /**
+     * The datatype of the property value.
      * 
      * @var string
-     * 
-     * @since 1.0
      */
     private $datatype;
-    private $lettersCase;
     /**
+     * The case of the property name (same, upper, or lower).
      * 
      * @var string
+     */
+    private $lettersCase;
+    /**
+     * The name of the property.
      * 
-     * @since 1.0
+     * @var string
      */
     private $name;
     /**
+     * The style of the property name (camel, kebab, snake, or none).
      * 
      * @var string
-     * 
-     * @since 1.0
      */
     private $probsStyle;
     /**
+     * The value of the property.
      * 
      * @var mixed
-     * 
-     * @since 1.0
      */
     private $value;
     /**
@@ -80,8 +80,6 @@ class Property {
      * The default value is 'same'.
      * 
      * @throws InvalidArgumentException If the name of the property is invalid
-     * 
-     * @since 1.0
      */
     public function __construct(string $name, $value, ?string $style = 'none', string $case = 'same') {
         $this->name = '';
@@ -104,8 +102,6 @@ class Property {
      * Returns the value of the property.
      * 
      * @return mixed|Json The value of the property.
-     * 
-     * @since 1.0
      */
     public function &getValue() {
         return $this->value;
@@ -130,8 +126,6 @@ class Property {
      * 
      * @return string The returned string will have the following syntax:
      * "json:&lt;type&gt;" where "&lt;type&gt;" is the datatype of the property.
-     * 
-     * @since 1.0
      */
     public function getJsonXTagName() : string {
         $type = $this->getType();
@@ -166,8 +160,6 @@ class Property {
      * 
      * @return string The name of the property. Note that the returned value
      * will depend on the style at which the property name is set to use.
-     * 
-     * @since 1.0
      */
     public function getName() : string {
         return $this->name;
@@ -183,8 +175,6 @@ class Property {
      * <li>none</li>
      * </ul>
      * The default value is 'none'.
-     * 
-     * @since 1.0
      */
     public function getStyle() : string {
         return $this->probsStyle;
@@ -201,8 +191,6 @@ class Property {
      * <li>object</li>
      * <li>NULL</li>
      * </ul>
-     * 
-     * @since 1.0
      */
     public function getType() : string {
         return $this->datatype;
@@ -215,8 +203,6 @@ class Property {
      * 
      * @return bool If the property will be represented as object, true is
      * returned. False otherwise.
-     * 
-     * @since 1.0
      */
     public function isAsObject() : bool {
         return $this->asObject;
@@ -230,8 +216,6 @@ class Property {
      * 
      * @param bool $bool True to represent the array as object. False 
      * otherwise.
-     * 
-     * @since 1.0
      */
     public function setAsObject(bool $bool) {
         $this->asObject = $bool;
@@ -243,8 +227,6 @@ class Property {
      * 
      * @return bool If the name is set, the method will return true. False
      * otherwise.
-     * 
-     * @since 1.0
      */
     public function setName(string $name) : bool {
         $keyValidity = self::isValidKey($name, $this->getStyle(), $this->getCase());
@@ -274,7 +256,7 @@ class Property {
      * <li>none</li>
      * </ul>
      * 
-     * @since 1.0
+     * @param string $lettersCase The case of the letters in the property name.
      */
     public function setStyle(string $style, string $lettersCase = 'same') {
         $trimmed = strtolower(trim($style));
@@ -296,8 +278,6 @@ class Property {
      * 
      * @param mixed $val The value of the property. This can be a string or
      * array or number or an object or null.
-     * 
-     * @since 1.0
      */
     public function setValue($val) {
         $this->datatype = gettype($val);
@@ -317,8 +297,6 @@ class Property {
      * 
      * @return bool|string If the key is valid, it will be returned 
      * after trimmed. If not valid, false is returned.
-     * 
-     * @since 1.0
      */
     private static function isValidKey($key, $style = 'kebab', $case = 'same') {
         $trimmedKey = trim($key);

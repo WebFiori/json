@@ -14,21 +14,17 @@ namespace WebFiori\Json;
  * A class which is used to convert string case from one to another (e.g. camel to snake).
  *
  * @author Ibrahim
- * 
- * @version 1.0
  */
 class CaseConverter {
     /**
-     * An array of supported property styles.
+     * An array of supported letter cases.
      * 
      * This array holds the following values:
      * <ul>
-     * <li>camel</li>
-     * <li>kebab</li>
-     * <li>snake</li>
-     * <li>none</li>
+     * <li>same</li>
+     * <li>upper</li>
+     * <li>lower</li>
      * </ul>
-     * 
      */
     const LETTER_CASE = [
         'same',
@@ -45,7 +41,6 @@ class CaseConverter {
      * <li>snake</li>
      * <li>none</li>
      * </ul>
-     * 
      */
     const PROP_NAME_STYLES = [
         'camel',
@@ -76,13 +71,11 @@ class CaseConverter {
      * </ul>
      * If the given value is none of the given 3, the string wouldn't be changed.
      * 
-     * 
      * @return string The same string converted to selected style.
-     * 
      */
     public static function convert(string $value, string $style, string $letterCase = 'same') : string {
         if ($style == 'snake') {
-            return self::toSnackCase($value, $letterCase);
+            return self::toSnakeCase($value, $letterCase);
         } else if ($style == 'kebab') {
             return self::toKebabCase($value, $letterCase);
         } else if ($style == 'camel') {
@@ -117,7 +110,6 @@ class CaseConverter {
      * 
      * @return string The method will return the string after conversion. For
      * example, if the string is 'my-val', the method will return the string 'myVal'.
-     * 
      */
     public static function toCamelCase(string $value, string $letterCase = 'same') : string {
         $retVal = '';
@@ -158,7 +150,6 @@ class CaseConverter {
      * 
      * @return string The method will return the string after conversion. For
      * example, if the string is 'myVal', the method will return the string 'my-val'.
-     * 
      */
     public static function toKebabCase(string $value, string $letterCase = 'same') : string {
         return self::toSnakeOrKebab($value, $letterCase, '_', '-');
@@ -179,9 +170,8 @@ class CaseConverter {
      * 
      * @return string The method will return the string after conversion. For
      * example, if the string is 'my-val', the method will return the string 'my_val'.
-     * 
      */
-    public static function toSnackCase(string $value, string $letterCase = 'same') : string {
+    public static function toSnakeCase(string $value, string $letterCase = 'same') : string {
         return self::toSnakeOrKebab($value, $letterCase, '-', '_');
     }
     private static function addChar($x, &$isNumFound, $to, $char, &$snakeOrKebabFound, $nextChar) : string {

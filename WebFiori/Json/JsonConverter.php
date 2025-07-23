@@ -14,8 +14,6 @@ namespace WebFiori\Json;
  * A class to convert Json instance to it's JSON string representation.
  *
  * @author Ibrahim
- * 
- * @version 1.0
  */
 class JsonConverter {
     private static $CRLF = "\r\n";
