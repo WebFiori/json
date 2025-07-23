@@ -12,7 +12,7 @@ jobs:
   test:
     runs-on: "ubuntu-latest"
             
-    name: "PHP $PHP_VERSION - $OPERATING_SYS"
+    name: "PHP ${{ env.PHP_VERSION }} - ${{ env.OPERATING_SYS }}"
     
     steps: 
       - name: Clone Repo
