@@ -1,5 +1,5 @@
 <?php
-namespace jsonx\tests;
+namespace WebFiori\Tests;
 
 use WebFiori\Json\JsonI;
 use WebFiori\Json\Json;

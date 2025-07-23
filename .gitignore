@@ -8,3 +8,4 @@ clover.xml
 vendor/*
 composer.lock
 .php-cs-fixer.cache
+json-output/json-file.json

@@ -3,8 +3,8 @@
 namespace WebFiori\Tests\Json;
 
 use WebFiori\Json\Json;
-use jsonx\tests\Obj0;
-use jsonx\tests\Obj1;
+use WebFiori\Tests\Obj0;
+use WebFiori\Tests\Obj1;
 use PHPUnit\Framework\TestCase;
 use WebFiori\Json\Property;
 use WebFiori\Json\JsonConverter;

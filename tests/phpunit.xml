@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true" bootstrap="tests/loader.php">
+<phpunit colors="true" bootstrap="bootstrap.php">
     <php>
     </php>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>./webfiori/json</directory>
+            <directory>../WebFiori/Json</directory>
         </whitelist>
     </filter>
     <logging>
@@ -12,7 +12,7 @@
     </logging>
     <testsuites>
         <testsuite name="Json Tests">
-            <directory>./tests/webfiori/tests/json</directory>
+            <directory>./WebFiori/Tests/Json</directory>
         </testsuite>
     </testsuites>
 </phpunit>
