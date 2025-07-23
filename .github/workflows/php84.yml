@@ -2,9 +2,9 @@ name: Build PHP 8.4
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 env:
   OPERATING_SYS: "ubuntu-latest"
   PHP_VERSION: 8.4

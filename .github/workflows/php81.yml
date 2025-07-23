@@ -2,9 +2,9 @@ name: Build PHP 8.1
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 env:
   OPERATING_SYS: "ubuntu-latest"
   PHP_VERSION: 8.1
@@ -35,4 +35,4 @@ jobs:
       - name: CodeCov
         uses: codecov/codecov-action@v4
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

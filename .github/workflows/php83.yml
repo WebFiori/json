@@ -2,9 +2,9 @@ name: Build PHP 8.3
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
 env:
   OPERATING_SYS: "ubuntu-latest"
   PHP_VERSION: 8.3
@@ -47,7 +47,7 @@ jobs:
     needs:
       - "test"
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - uses: google-github-actions/release-please-action@v3
