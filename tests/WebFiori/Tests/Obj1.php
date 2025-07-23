@@ -38,7 +38,7 @@ class Obj1 implements JsonI {
     }
     public function toJSON() : Json {
         $json = new Json();
-        $json->addString('property-00', $this->getProperty00());
+        $json->addNumber('property-00', $this->getProperty00());
         $json->addNumber('property-01', $this->getProperty01());
         $json->add('property-02', $this->getProperty02());
         return $json;
