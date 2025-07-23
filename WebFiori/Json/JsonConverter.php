@@ -101,7 +101,7 @@ class JsonConverter {
 
         self::push($prop->getJsonXTagName());
         $retVal .= self::checkJsonXType($prop->getType(), $prop->getValue(), $prop);
-        $retVal .= self::pop().self::$CRLF;
+        $retVal .= self::pop();
 
         return $retVal;
     }
@@ -164,7 +164,7 @@ class JsonConverter {
         foreach ($json->getProperties() as $prop) {
             $retVal .= self::propertyToJsonXString($prop);
         }
-        $retVal .= self::pop();
+        $retVal .= self::pop().self::$CRLF;
 
         return $retVal;
     }
@@ -382,7 +382,6 @@ class JsonConverter {
     }
     private static function pop() {
         self::updateTab(false);
-
         return array_pop(self::$XmlClosingPool);
     }
     private static function push($tagName) {
