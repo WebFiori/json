@@ -6,13 +6,13 @@ on:
   pull_request:
     branches: [ main, dev ]
 env:
-  OPERATING_SYS: "ubuntu-latest"
+  OPERATING_SYS: ubuntu-latest
   PHP_VERSION: 8.3
 jobs:
   test:
-    runs-on: ${{ env.OPERATING_SYS }}
+    runs-on: "ubuntu-latest"
             
-    name: "PHP ${{ env.PHP_VERSION }} - ${{ env.OPERATING_SYS }}"
+    name: "PHP 8.3 - Ubuntu-Latest"
     
     steps: 
       - name: Clone Repo
@@ -46,7 +46,7 @@ jobs:
     name: Prepare Production Release Branch / Publish Release
     needs:
       - "test"
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
