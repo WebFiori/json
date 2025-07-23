@@ -65,7 +65,7 @@ class JsonConverterTest extends TestCase {
         $prop = new Property('hello', 'world');
         $this->assertEquals('<json:string name="hello">'."\r\n"
                 . '    world'."\r\n"
-                . '</json:string>', JsonConverter::propertyToJsonXString($prop));
+                . '</json:string>'."\r\n", JsonConverter::propertyToJsonXString($prop));
     }
     /**
      * @test
@@ -74,6 +74,6 @@ class JsonConverterTest extends TestCase {
         $prop = new Property('hello', 'world');
         $this->assertEquals('<json:string>'."\r\n"
                 . '    world'."\r\n"
-                . '</json:string>', JsonConverter::propertyToJsonXString($prop, false));
+                . '</json:string>'."\r\n", JsonConverter::propertyToJsonXString($prop, false));
     }
 }

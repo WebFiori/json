@@ -103,7 +103,7 @@ class PropertyTest extends TestCase {
     public function testConstructor09() {
         $prop = new Property('hello', new Obj0('1', 2, 3, 4, 5));
         $this->assertEquals('hello', $prop->getName());
-        $this->assertTrue($prop->getValue() instanceof Json);
+        $this->assertTrue($prop->getValue() instanceof Obj0);
         $this->assertEquals('object', $prop->getType());
         $this->assertEquals('json:object', $prop->getJsonXTagName());
     }
@@ -245,7 +245,7 @@ class PropertyTest extends TestCase {
         $prop = new Property('hello', 'world');
         $this->assertEquals('world', $prop->getValue());
         $prop->setValue(new Obj0('1', 2, 3, 4, 5));
-        $this->assertTrue($prop->getValue() instanceof Json);
+        $this->assertTrue($prop->getValue() instanceof Obj0);
         $this->assertEquals('object', $prop->getType());
     }
 }
