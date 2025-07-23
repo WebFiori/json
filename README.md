@@ -57,7 +57,6 @@ According to [json.org](https://www.json.org/json-en.html), JSON is a data excha
 ## Supported PHP Versions
 |                                                                                        Build Status                                                                                         |
 |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php80.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php80.yml/badge.svg?branch=main"></a> |
 | <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php81.yml/badge.svg?branch=main"></a> |
 | <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php82.yml/badge.svg?branch=main"></a> |
 | <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php83.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php83.yml/badge.svg?branch=main"></a> |
