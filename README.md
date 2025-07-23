@@ -18,7 +18,7 @@ A helper class library for creating JSON or JSONx strings in PHP. It can be used
 </p>
 
 # Content
-* [What is JSON?](what-is-json)
+* [What is JSON?](#what-is-json)
 * [Features](#features)
 * [Supported PHP Versions](#supported-php-versions)
 * [Installation](#installation)
@@ -31,7 +31,7 @@ A helper class library for creating JSON or JSONx strings in PHP. It can be used
 * [Decoding JSON String](#decoding-json-string)
 * [Storing Output](#storing-output)
 * [Working With Arrays](#working-with-arrays)
-* [JSONx](#jsonx]
+* [JSONx](#jsonx)
 
 ## What is JSON?
 
