@@ -15,7 +15,6 @@ namespace WebFiori\Json;
  *
  * @author Ibrahim
  * 
- * @version 1.0
  */
 class JsonConverter {
     private static $CRLF = "\r\n";
@@ -37,7 +36,7 @@ class JsonConverter {
      * @return Json
      */
     public static function objectToJson($obj) {
-        if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
+        if (is_subclass_of($obj, 'Webfiori\\Json\\JsonI')) {
             return $obj->toJSON();
         } else {
             if ($obj instanceof Json) {
