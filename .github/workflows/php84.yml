@@ -10,7 +10,7 @@ env:
   PHP_VERSION: 8.4
 jobs:
   test:
-    runs-on: ${{ env.OPERATING_SYS }}
+    runs-on: "ubuntu-latest"
             
     name: "PHP $PHP_VERSION - $OPERATING_SYS"
     
