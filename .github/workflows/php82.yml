@@ -2,21 +2,17 @@ name: Build PHP 8.2
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ master ]
-
+    branches: [ main ]
+env:
+  OPERATING_SYS: ubuntu-latest
+  PHP_VERSION: 8.2
 jobs:
   test:
-    runs-on: ${{ matrix.os }} 
-
-    strategy: 
-      fail-fast: true
-      matrix: 
-        os: [ ubuntu-latest ]
-        php: [8.2]
+    runs-on: "ubuntu-latest"
             
-    name: PHP${{matrix.php}} - ${{matrix.os}}
+    name: "PHP 8.2 - Ubuntu-Latest"
     
     steps: 
       - name: Clone Repo
@@ -25,17 +21,17 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }} 
+          php-version: ${{ env.PHP_VERSION }}
           extensions: mysqli, mbstring, sqlsrv
           tools: phpunit:9.5.20, composer
          
       - name: Install Dependencies
-        run: composer install --prefer-source --no-interaction --no-dev
+        run: composer install --prefer-source --no-interaction
       
       - name: Execute Tests
-        run: phpunit
+        run: phpunit --configuration=tests/phpunit.xml
         
       - name: CodeCov
         uses: codecov/codecov-action@v4
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

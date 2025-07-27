@@ -8,24 +8,21 @@
  * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
  */
-namespace webfiori\json;
+namespace WebFiori\Json;
 
 /**
- * An interface for the objects that can be added to an instance of JsonX.
+ * An interface for the objects that can be added to an instance of Json.
  * @author Ibrahim 
- * @version 1.0
- * @see JsonX
+ * @see Json
  */
 interface JsonI {
     /**
-     * Returns an object of type JsonX.
+     * Returns an object of type Json.
      * This method can be implemented by any class that will be added  
-     * to any JsonX instance. It is used to customize the generated 
+     * to any Json instance. It is used to customize the generated 
      * JSON string.
      * 
-     * @return Json An instance of JsonX.
-     * 
-     * @since 1.0
+     * @return Json An instance of Json.
      */
     public function toJSON() : Json;
 }

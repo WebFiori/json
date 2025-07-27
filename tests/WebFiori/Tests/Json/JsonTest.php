@@ -1,9 +1,9 @@
 <?php
-namespace webfiori\tests\json;
+namespace WebFiori\Tests\Json;
 
-use webfiori\json\Json;
-use jsonx\tests\Obj0;
-use jsonx\tests\Obj1;
+use WebFiori\Json\Json;
+use WebFiori\Tests\Obj0;
+use WebFiori\Tests\Obj1;
 use PHPUnit\Framework\TestCase;
 
 class JsonTest extends TestCase {
@@ -630,7 +630,7 @@ class JsonTest extends TestCase {
      * @test
      */
     public function testDecode07() {
-        $this->expectException(\webfiori\json\JsonException::class);
+        $this->expectException(\WebFiori\Json\JsonException::class);
         $this->expectExceptionMessage('Syntax error');
         $this->expectExceptionCode(4);
         $jsonStr = '{prop-1:1}';
@@ -1282,6 +1282,9 @@ class JsonTest extends TestCase {
                 .'        }'."\r\n"
                 .'    }'."\r\n"
                 ."}",$j.'');
+        $this->assertEquals(['hello-arr'],$j->getPropsNames());
+        $j->setPropsStyle('kebab');
+        $this->assertEquals(['hello-arr'],$j->getPropsNames());
     }
     /**
      * @test

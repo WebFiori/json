@@ -8,14 +8,13 @@
  * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
  */
-namespace webfiori\json;
+namespace WebFiori\Json;
 
 /**
  * A class to convert Json instance to it's JSON string representation.
  *
  * @author Ibrahim
  * 
- * @version 1.0
  */
 class JsonConverter {
     private static $CRLF = "\r\n";
@@ -37,7 +36,7 @@ class JsonConverter {
      * @return Json
      */
     public static function objectToJson($obj) {
-        if (is_subclass_of($obj, 'webfiori\\json\\JsonI')) {
+        if (is_subclass_of($obj, 'Webfiori\\Json\\JsonI')) {
             return $obj->toJSON();
         } else {
             if ($obj instanceof Json) {
@@ -342,7 +341,7 @@ class JsonConverter {
      */
     private static function objToJson($probVal, string $style, string $lettersCase) {
         if (!($probVal instanceof Json)) {
-            if (!is_subclass_of($probVal, 'webfiori\\json\\JsonI')) {
+            if (!is_subclass_of($probVal, 'Webfiori\\Json\\JsonI')) {
                 $probVal = self::objectToJson($probVal);
             } else {
                 $probVal = $probVal->toJSON();

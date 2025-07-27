@@ -8,7 +8,7 @@
  * https://github.com/WebFiori/.github/blob/main/LICENSE
  *
  */
-namespace webfiori\json;
+namespace WebFiori\Json;
 
 use Exception;
 use InvalidArgumentException;
@@ -72,7 +72,6 @@ class Json {
     private $attrNameStyle;
     private $formatted;
     private $propsArr;
-
 
     /**
      * Creates new instance of the class.
@@ -425,7 +424,6 @@ class Json {
 
         return true;
     }
-
     /**
      * Converts a JSON-like string to JSON object.
      * 
