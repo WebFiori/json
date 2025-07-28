@@ -7,15 +7,17 @@ on:
     branches: [ main ]
 jobs:
   test:
+    name: Run Tests
     uses: WebFiori/workflows/.github/workflows/php-test.yaml@main
     with:
       php-version: '8.1'
 
   code-coverage:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: CodeCov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           
