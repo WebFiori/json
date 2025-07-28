@@ -13,11 +13,12 @@ jobs:
       php-version: '8.1'
 
   code-coverage:
-    runs-on: ubuntu-latest
+    name: Coverage
     needs: test
-    steps:
-      - name: CodeCov
-        uses: codecov/codecov-action@v5
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    uses: WebFiori/workflows/.github/workflows/coverage-codecov.yaml@main
+    with:
+      php-version: '8.1'
+      coverage-file: 'php-8.1-coverage.xml'
+    
+        
           
