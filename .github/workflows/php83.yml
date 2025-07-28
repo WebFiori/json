@@ -14,7 +14,7 @@ jobs:
     name: Run Tests
     uses: WebFiori/workflows/.github/workflows/test-php.yaml@main
     with:
-      php-version: '8.1'
+      php-version: '8.3'
             
 
   code-coverage:
@@ -22,8 +22,8 @@ jobs:
     needs: test
     uses: WebFiori/workflows/.github/workflows/coverage-codecov.yaml@main
     with:
-      php-version: '8.1'
-      coverage-file: 'php-8.1-coverage.xml'
+      php-version: '8.3'
+      coverage-file: 'php-8.3-coverage.xml'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}  
 
@@ -31,6 +31,8 @@ jobs:
     name: Code Quality
     needs: test
     uses: WebFiori/workflows/.github/workflows/quality-sonarcloud.yaml@main
+    with:
+      coverage-file: 'php-8.3-coverage.xml'
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
