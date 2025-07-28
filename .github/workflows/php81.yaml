@@ -5,14 +5,11 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-env:
-  OPERATING_SYS: ubuntu-latest
-  PHP_VERSION: 8.1
 jobs:
   test:
     uses: WebFiori/workflows/.github/workflows/php-test.yaml@main
     with:
-      php-version: ${{ env.PHP_VERSION }}
+      php-version: '8.1'
 
   code-coverage:
     runs-on: ubuntu-latest
