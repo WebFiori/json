@@ -10,27 +10,13 @@ env:
   PHP_VERSION: 8.1
 jobs:
   test:
-    runs-on: "ubuntu-latest"
-            
-    name: "PHP 8.1 - Ubuntu-Latest"
-    
-    steps: 
-      - name: Clone Repo
-        uses: actions/checkout@v4
-      
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: mysqli, mbstring, sqlsrv
-          tools: phpunit:9.5.20, composer
-          
-      - name: Install Dependencies
-        run: composer install --prefer-source --no-interaction
-      
-      - name: Execute Tests
-        run: phpunit --configuration=tests/phpunit.xml
-        
+    uses: WebFiori/workflows/.github/workflows/php-tests.yml@main
+    with:
+      php-version: ${{ env.PHP_VERSION }}
+
+  code-coverage:
+    runs-on: ubuntu-latest
+    steps:
       - name: CodeCov
         uses: codecov/codecov-action@v4
         env:
