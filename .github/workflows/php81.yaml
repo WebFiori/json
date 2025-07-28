@@ -10,7 +10,7 @@ env:
   PHP_VERSION: 8.1
 jobs:
   test:
-    uses: WebFiori/workflows/.github/workflows/php-test.yml@main
+    uses: WebFiori/workflows/.github/workflows/php-test.yaml@main
     with:
       php-version: ${{ env.PHP_VERSION }}
 
