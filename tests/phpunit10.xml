@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         colors="true"
+         bootstrap="bootstrap.php">
+    
+    <php>
+    </php>
+    
+    <testsuites>
+        <testsuite name="Json Tests">
+            <directory>./WebFiori/Tests/Json</directory>
+        </testsuite>
+    </testsuites>
+    
+    <source>
+        <include>
+            <directory>../WebFiori/Json</directory>
+        </include>
+    </source>
+    
+    <coverage>
+        <report>
+            <clover outputFile="clover.xml"/>
+        </report>
+    </coverage>
+    
+</phpunit>
