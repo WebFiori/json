@@ -5,33 +5,22 @@ on:
     branches: [ main, dev ]
   pull_request:
     branches: [ main ]
-env:
-  OPERATING_SYS: ubuntu-latest
-  PHP_VERSION: 8.2
 jobs:
   test:
-    runs-on: "ubuntu-latest"
-            
-    name: "PHP 8.2 - Ubuntu-Latest"
+    name: Run Tests
+    uses: WebFiori/workflows/.github/workflows/test-php.yaml@main
+    with:
+      php-version: '8.2'
+
+  code-coverage:
+    name: Coverage
+    needs: test
+    uses: WebFiori/workflows/.github/workflows/coverage-codecov.yaml@main
+    with:
+      php-version: '8.2'
+      coverage-file: 'php-8.2-coverage.xml'
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     
-    steps: 
-      - name: Clone Repo
-        uses: actions/checkout@v4
-      
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: mysqli, mbstring, sqlsrv
-          tools: phpunit:9.5.20, composer
-         
-      - name: Install Dependencies
-        run: composer install --prefer-source --no-interaction
-      
-      - name: Execute Tests
-        run: phpunit --configuration=tests/phpunit.xml
         
-      - name: CodeCov
-        uses: codecov/codecov-action@v4
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          
