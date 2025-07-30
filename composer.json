@@ -2,7 +2,7 @@
     "name": "webfiori/jsonx",
     "type": "library",
     "description": "PHP library for creating well-formatted JSON strings.",
-    "version": "3.3.2",
+    "version": "4.0.0",
     "keywords": [
         "JSON",
         "PHP",
@@ -12,17 +12,17 @@
     "require": {
         "php": ">=8.0"
     },
-    "autoload" :{
-        "psr-4":{
-            "WebFiori\\Json\\":"WebFiori/Json"
+    "autoload": {
+        "psr-4": {
+            "WebFiori\\Json\\": "WebFiori/Json"
         }
     },
-    "autoload-dev" :{
-        "psr-4":{
-            "WebFiori\\Tests\\":"tests/WebFiori/Tests"
+    "autoload-dev": {
+        "psr-4": {
+            "WebFiori\\Tests\\": "tests/WebFiori/Tests"
         }
     },
-    "scripts":{
+    "scripts": {
         "test": "phpunit --configuration tests/phpunit.xml",
         "test-10": "phpunit --configuration tests/phpunit10.xml"
     },
