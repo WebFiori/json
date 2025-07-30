@@ -4,7 +4,7 @@ A helper class library for creating JSON or JSONx strings in PHP. It can be used
 
 <p align="center">
   <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yaml">
-    <img src="https://github.com/WebFiori/json/actions/workflows/php84.yml/badge.svg?branch=main">
+    <img src="https://github.com/WebFiori/json/actions/workflows/php84.yaml/badge.svg?branch=main">
   </a>
   <a href="https://codecov.io/gh/WebFiori/json">
     <img src="https://codecov.io/gh/WebFiori/json/branch/main/graph/badge.svg" />
