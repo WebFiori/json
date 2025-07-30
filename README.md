@@ -3,7 +3,7 @@
 A helper class library for creating JSON or JSONx strings in PHP. It can be used to create well-formatted JSON strings from any variable type (strings, numbers, booleans, arrays, and even objects).
 
 <p align="center">
-  <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yml">
+  <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yaml">
     <img src="https://github.com/WebFiori/json/actions/workflows/php84.yml/badge.svg?branch=main">
   </a>
   <a href="https://codecov.io/gh/WebFiori/json">
@@ -57,10 +57,10 @@ According to [json.org](https://www.json.org/json-en.html), JSON is a data excha
 ## Supported PHP Versions
 |                                                                                        Build Status                                                                                         |
 |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php81.yml/badge.svg?branch=main"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php82.yml/badge.svg?branch=main"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php83.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php83.yml/badge.svg?branch=main"></a> |
-| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yml"><img src="https://github.com/WebFiori/json/actions/workflows/php84.yml/badge.svg?branch=main"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php81.yaml"><img src="https://github.com/WebFiori/json/actions/workflows/php81.yaml/badge.svg?branch=main"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php82.yaml"><img src="https://github.com/WebFiori/json/actions/workflows/php82.yaml/badge.svg?branch=main"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php83.yaml"><img src="https://github.com/WebFiori/json/actions/workflows/php83.yaml/badge.svg?branch=main"></a> |
+| <a target="_blank" href="https://github.com/WebFiori/json/actions/workflows/php84.yaml"><img src="https://github.com/WebFiori/json/actions/workflows/php84.yaml/badge.svg?branch=main"></a> |
 
 ## Installation
 If you are using composer to manage your dependencies, then it is possible to install the library by including the entry `"webfiori/jsonx":"*"` in the `require` section of your `composer.json` file to install the latest release:
@@ -530,5 +530,3 @@ try {
 #### Static Methods
 - `Json::decode($jsonStr): Json`
 - `Json::fromJsonFile($pathToJsonFile): Json`
-
-For more information and advanced use cases, check [the official documentation](https://webfiori.com/learn/webfiori-json).
