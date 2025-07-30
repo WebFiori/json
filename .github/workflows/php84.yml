@@ -11,6 +11,7 @@ jobs:
     uses: WebFiori/workflows/.github/workflows/test-php.yaml@main
     with:
       php-version: '8.4'
+      phpunit-config: "tests/phpunit10.xml"
 
   code-coverage:
     name: Coverage
