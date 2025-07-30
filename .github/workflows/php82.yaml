@@ -1,8 +1,8 @@
-name: Build PHP 8.4
+name: Build PHP 8.2
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 jobs:
@@ -10,15 +10,16 @@ jobs:
     name: Run Tests
     uses: WebFiori/workflows/.github/workflows/test-php.yaml@main
     with:
-      php-version: '8.4'
+      php-version: '8.2'
+      phpunit-config: "tests/phpunit10.xml"
 
   code-coverage:
     name: Coverage
     needs: test
     uses: WebFiori/workflows/.github/workflows/coverage-codecov.yaml@main
     with:
-      php-version: '8.4'
-      coverage-file: 'php-8.4-coverage.xml'
+      php-version: '8.2'
+      coverage-file: 'php-8.2-coverage.xml'
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     
