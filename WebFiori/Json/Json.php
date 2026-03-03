@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is licensed under MIT License.
  *
@@ -358,26 +359,29 @@ class Json {
         return true;
     }
     /**
-     * Adds an object to the JSON string.
-     * 
-     * The object that will be added can implement the interface JsonI to make 
-     * the generated JSON string customizable. Also, the object can be of 
-     * type Json. If the given value is an object that does not implement the 
-     * interface JsonI, or it is not of type Json,
-     * The method will try to extract object information based on its "getXxxxx()" public 
-     * methods. Assuming that the object has 2 public methods with names 
-     * <code>getFirstProp()</code> and <code>getSecondProp()</code>. 
-     * In that case, the generated JSON will be on the format
-     * <b>{"FirstProp":"prop-1","SecondProp":""}</b>.
-     * This method also can be used to update the value of an existing property.
-     * 
+     * Adds an object to the JSON data.
+     *
+     * The object is serialized using the following rules:
+     * <ul>
+     * <li>If the object implements {@see JsonI}, its {@see JsonI::toJSON()} method
+     * is called to produce the JSON representation.</li>
+     * <li>If the object is already an instance of {@see Json}, it is used directly.</li>
+     * <li>Otherwise, all public getter methods (prefixed with 'get') are called and
+     * mapped to properties. The property name is the method name with the 'get' prefix
+     * removed (e.g. <code>getFirstProp()</code> becomes <code>FirstProp</code>).
+     * Methods returning false or null are skipped.</li>
+     * <li>Additionally, all public properties of the object are extracted via reflection
+     * and added to the JSON output. Public properties with a null value are included;
+     * private and protected properties are ignored.</li>
+     * </ul>
+     * This method can also be used to update the value of an existing property.
+     *
      * @param string $key The key value.
-     * 
+     *
      * @param JsonI|Json|object $val The object that will be added.
-     * 
-     * @return bool The method will return true if the object is added. 
-     * If the key value is invalid string, the method will return false.
-     * 
+     *
+     * @return bool True if the object is added, false if the key is invalid.
+     *
      */
     public function addObject(string $key, &$val) {
         if (!$this->updateExisting($key, $val)) {
@@ -755,6 +759,7 @@ class Json {
 
         if ($isIndexed) {
             $subArr = [];
+
             // A sub array. Can have sub arrays. 
             // Sub arrays can have objects.
             for ($x = 0 ; $x < count($subVal) ; $x++) {

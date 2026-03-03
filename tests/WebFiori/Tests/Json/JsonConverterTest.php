@@ -5,6 +5,7 @@ namespace WebFiori\Tests\Json;
 use WebFiori\Json\Json;
 use WebFiori\Tests\Obj0;
 use WebFiori\Tests\Obj1;
+use WebFiori\Tests\ObjWithPublicProps;
 use PHPUnit\Framework\TestCase;
 use WebFiori\Json\Property;
 use WebFiori\Json\JsonConverter;
@@ -75,5 +76,45 @@ class JsonConverterTest extends TestCase {
         $this->assertEquals('<json:string>'."\r\n"
                 . '    world'."\r\n"
                 . '</json:string>'."\r\n", JsonConverter::propertyToJsonXString($prop, false));
+    }
+
+    /**
+     * @test
+     */
+    public function testObjectToJsonPublicPropsBasic() {
+        $obj = new \WebFiori\Tests\ObjWithPublicProps('Ibrahim', 30, true);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertTrue($json instanceof Json);
+        $this->assertTrue($json->hasKey('name'));
+        $this->assertTrue($json->hasKey('age'));
+        $this->assertTrue($json->hasKey('active'));
+    }
+    /**
+     * @test
+     */
+    public function testObjectToJsonPublicPropsValues() {
+        $obj = new \WebFiori\Tests\ObjWithPublicProps('Ibrahim', 30, true);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertEquals('Ibrahim', $json->get('name'));
+        $this->assertEquals(30, $json->get('age'));
+        $this->assertEquals(true, $json->get('active'));
+    }
+    /**
+     * @test
+     */
+    public function testObjectToJsonPrivatePropsNotIncluded() {
+        $obj = new \WebFiori\Tests\ObjWithPublicProps('Ibrahim', 30, true);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertFalse($json->hasKey('secret'));
+    }
+    /**
+     * @test
+     */
+    public function testObjectToJsonPublicPropsNullValue() {
+        $obj = new \WebFiori\Tests\ObjWithPublicProps('Ibrahim', 30, true);
+        $obj->name = null;
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertTrue($json->hasKey('name'));
+        $this->assertNull($json->get('name'));
     }
 }
