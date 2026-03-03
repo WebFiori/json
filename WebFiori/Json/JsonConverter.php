@@ -11,10 +11,22 @@
 namespace WebFiori\Json;
 
 /**
- * A class to convert Json instance to it's JSON string representation.
+ * A class to convert objects and Json instances to their JSON string representation.
+ *
+ * The conversion of plain objects follows this order of precedence:
+ * <ol>
+ * <li>If the object implements {@see JsonI}, its {@see JsonI::toJSON()} method is called.</li>
+ * <li>If the object is already an instance of {@see Json}, it is returned as-is.</li>
+ * <li>Otherwise, public getter methods (prefixed with 'get') are called and their return
+ * values are mapped to properties. The property name is derived by stripping the 'get'
+ * prefix (e.g. <code>getFullName()</code> becomes <code>FullName</code>). Methods that
+ * return false or null are skipped.</li>
+ * <li>Finally, all public properties are extracted via reflection and added to the JSON
+ * output. Unlike getter-based mapping, public properties with a null value are included.</li>
+ * </ol>
  *
  * @author Ibrahim
- * 
+ *
  */
 class JsonConverter {
     private static $CRLF = "\r\n";
@@ -23,25 +35,31 @@ class JsonConverter {
     private static $TabSize = 0;
     private static $XmlClosingPool = [];
     /**
-     * Convert an object to Json object.
-     * 
-     * Note that the properties which will be in the generated Json
-     * object will depend on the public 'get' methods of the object.
-     * The name of the properties will depend on the name of the method. For
-     * example, if the name of one of the methods is 'getFullName', then
-     * property name will be 'FullName'.
-     * 
-     * @param object $obj The object that will be converted.
-     * 
-     * @return Json
+     * Converts a plain PHP object to a {@see Json} instance.
+     *
+     * The conversion follows this order:
+     * <ol>
+     * <li>If the object implements {@see JsonI}, its {@see JsonI::toJSON()} method is
+     * called and the result is returned directly.</li>
+     * <li>If the object is already an instance of {@see Json}, it is returned as-is.</li>
+     * <li>All public methods whose names start with 'get' are called. The portion of the
+     * method name after 'get' becomes the property name (e.g. <code>getFullName()</code>
+     * produces the key <code>FullName</code>). Methods returning false or null are
+     * skipped.</li>
+     * <li>All public properties are extracted via {@see \ReflectionClass} and added to
+     * the result. Properties with a null value are included; private and protected
+     * properties are ignored.</li>
+     * </ol>
+     *
+     * @param object $obj The object to convert.
+     *
+     * @return Json A Json instance populated with the object's data.
      */
     public static function objectToJson($obj) {
         if (is_subclass_of($obj, 'Webfiori\\Json\\JsonI')) {
             return $obj->toJSON();
-        } else {
-            if ($obj instanceof Json) {
-                return $obj;
-            }
+        } else if ($obj instanceof Json) {
+            return $obj;
         }
 
         $methods = get_class_methods($obj);
@@ -61,7 +79,17 @@ class JsonConverter {
                 }
             }
         }
+
         restore_error_handler();
+
+        $reflection = new \ReflectionClass($obj);
+        $publicProps = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        
+        foreach ($publicProps as $prop) {
+            $name = $prop->getName();
+            $value = $prop->getValue($obj);
+            $json->add($name, $value);
+        }
 
         return $json;
     }
@@ -330,13 +358,18 @@ class JsonConverter {
         return $retVal;
     }
     /**
-     * 
-     * @param object $probVal
-     * 
-     * @param string $style
-     * 
-     * @return string
-     * 
+     * Converts an object value to its JSON string representation.
+     *
+     * If the value is not already a {@see Json} instance and does not implement
+     * {@see JsonI}, it is first passed through {@see self::objectToJson()} which
+     * maps public getter methods and public properties via reflection.
+     *
+     * @param object $probVal The object to convert.
+     * @param string $style   The property naming style to apply.
+     * @param string $lettersCase The letter case to apply to property names.
+     *
+     * @return string JSON object string representation.
+     *
      * @since 1.0
      */
     private static function objToJson($probVal, string $style, string $lettersCase) {
