@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is licensed under MIT License.
  *
@@ -758,6 +759,7 @@ class Json {
 
         if ($isIndexed) {
             $subArr = [];
+
             // A sub array. Can have sub arrays. 
             // Sub arrays can have objects.
             for ($x = 0 ; $x < count($subVal) ; $x++) {

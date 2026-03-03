@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is licensed under MIT License.
  *
@@ -84,7 +85,7 @@ class JsonConverter {
 
         $reflection = new \ReflectionClass($obj);
         $publicProps = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
-        
+
         foreach ($publicProps as $prop) {
             $name = $prop->getName();
             $value = $prop->getValue($obj);
