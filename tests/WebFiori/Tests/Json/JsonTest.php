@@ -18,9 +18,10 @@ class JsonTest extends TestCase {
     }
     /**
      * @test
-     * @depends testToJsonFile00
      */
     public function testToJsonFile01() {
+        $json = new Json();
+        $json->toJsonFile('json-file', ROOT.DIRECTORY_SEPARATOR.'json-output', true);
         $outputPath = ROOT.DIRECTORY_SEPARATOR.'json-output'.DIRECTORY_SEPARATOR.'json-file.json';
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("File already exist: '$outputPath'");
@@ -34,13 +35,12 @@ class JsonTest extends TestCase {
         $j = new Json(['hello'=>'world']);
         $this->assertEquals('{"hello":"world"}',$j->toJSONString());
         $this->assertEquals('world',$j->get('hello'));
-        return $j;
     }
     /**
-     * @depends testToJsonString00
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString00(Json $json) {
+    public function testToJsonXString00() {
+        $json = new Json(['hello'=>'world']);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -57,13 +57,12 @@ class JsonTest extends TestCase {
         $j = new Json(['number'=>100]);
         $this->assertEquals('{"number":100}',$j->toJSONString());
         $this->assertSame(100,$j->get('number'));
-        return $j;
     }
     /**
-     * @depends testToJsonString01
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString01(Json $json) {
+    public function testToJsonXString01() {
+        $json = new Json(['number'=>100]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -80,13 +79,12 @@ class JsonTest extends TestCase {
         $j = new Json(['number'=>20.2235]);
         $this->assertEquals('{"number":20.2235}',$j->toJSONString());
         $this->assertSame(20.2235,$j->get('number'));
-        return $j;
     }
     /**
-     * @depends testToJsonString02
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString02(Json $json) {
+    public function testToJsonXString02() {
+        $json = new Json(['number'=>20.2235]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -103,13 +101,12 @@ class JsonTest extends TestCase {
         $j = new Json(['number'=>NAN]);
         $this->assertEquals('{"number":"NaN"}',$j->toJSONString());
         $this->assertTrue(is_nan($j->get('number')));
-        return $j;
     }
     /**
-     * @depends testToJsonString03
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString03(Json $json) {
+    public function testToJsonXString03() {
+        $json = new Json(['number'=>NAN]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -126,13 +123,12 @@ class JsonTest extends TestCase {
         $j = new Json(['number'=>INF]);
         $this->assertEquals('{"number":"Infinity"}',$j->toJSONString());
         $this->assertSame(INF,$j->get('number'));
-        return $j;
     }
     /**
-     * @depends testToJsonString04
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString04(Json $json) {
+    public function testToJsonXString04() {
+        $json = new Json(['number'=>INF]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -150,13 +146,12 @@ class JsonTest extends TestCase {
         $this->assertEquals('{"bool-true":true,"bool-false":false}',$j->toJSONString());
         $this->assertSame(true,$j->get('bool-true'));
         $this->assertSame(false,$j->get('bool-false'));
-        return $j;
     }
     /**
-     * @depends testToJsonString05
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString05(Json $json) {
+    public function testToJsonXString05() {
+        $json = new Json(['bool-true'=>true,'bool-false'=>false]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -176,13 +171,12 @@ class JsonTest extends TestCase {
         $j = new Json(['null'=>null]);
         $this->assertEquals('{"null":null}',$j->toJSONString());
         $this->assertNull($j->get('null'));
-        return $j;
     }
     /**
-     * @depends testToJsonString06
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString06(Json $json) {
+    public function testToJsonXString06() {
+        $json = new Json(['null'=>null]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -199,13 +193,12 @@ class JsonTest extends TestCase {
         $j = new Json(['array'=>['one',1]]);
         $this->assertEquals('{"array":["one",1]}',$j->toJSONString());
         $this->assertEquals(['one',1],$j->get('array'));
-        return $j;
     }
     /**
-     * @depends testToJsonString07
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString07(Json $json) {
+    public function testToJsonXString07() {
+        $json = new Json(['array'=>['one',1]]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -231,13 +224,16 @@ class JsonTest extends TestCase {
             ]);
         $this->assertEquals('{"array":["one",1,null,1.8,true,false,"NaN","Infinity",{"hello":"world"},["two","good"]]}',$j->toJSONString());
     
-        return $j;
     }
     /**
-     * @depends testToJsonString08
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString08(Json $json) {
+    public function testToJsonXString08() {
+        $jx = new Json(['hello'=>'world']);
+        $arr = ['one',1,null,1.8,true,false,NAN,INF,$jx,['two','good']];
+        $json = new Json([
+            'array'=>$arr
+            ]);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -300,13 +296,14 @@ class JsonTest extends TestCase {
                 . '}',$j->toJSONString());
         $j->setIsFormatted(false);
         $this->assertEquals('{"arr":{"0":"NaN","1":"Infinity"}}',$j->toJSONString());
-        return $j;
     }
     /**
-     * @depends testToJsonString09
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString09(Json $json) {
+    public function testToJsonXString09() {
+        $arr = [NAN,INF];
+        $json = new Json();
+        $json->addArray('arr',$arr,true);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -390,13 +387,22 @@ class JsonTest extends TestCase {
                 . '}',$j.'');
         $j->setIsFormatted(false);
         $this->assertEquals('{"jsonx":{"number_one":1,"arr":[],"obj":{},"general":{"property_00":"1","property_01":"3","property_02":99,"property_04":"ok"}},"o":{"property_00":"1","property_01":2,"property_02":3}}',$j.'');
-        return $j;
     }
     /**
-     * @depends testToJsonString10
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString10(Json $json) {
+    public function testToJsonXString10() {
+        $json = new Json();
+        $subJ = new Json([
+            'number-one' => 1,
+            'arr' => [],
+            'obj' => new Json()
+        ]);
+        $json->add('jsonx',$subJ);
+        $json->add('o',new Obj1('1',2,3,4,'5'));
+        $json->setPropsStyle('snake');
+        $json->setIsFormatted(false);
+        $json->get('jsonx')->add('general',new Obj0('1','3',99,100,"ok"));
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
@@ -463,7 +469,6 @@ class JsonTest extends TestCase {
         $json->addArray('x-array', $arr, true);
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr","1":1,"2":2,"hello":"world",'
                 . '"3":{"Property00":"1","Property01":2,"Property02":3,"Property04":5},"4":{"good":true}},"1":{"bad":false}}}',$json.'');
-        return $json;
     }
     /**
      * @test
@@ -495,10 +500,22 @@ class JsonTest extends TestCase {
         
     }
     /**
-     * @depends testToJsonString11
-     * @param Json $json
+     * @test
      */
-    public function testToJsonXString11(Json $json) {
+    public function testToJsonXString11() {
+        $arr = [
+            [
+                "sub-arr",
+                1,
+                2,
+                "hello"=>"world",
+                new Obj0('1',2,3,4,5),
+                new Json(['good'=>true])
+            ],
+            new Json(['bad'=>false])
+        ];
+        $json = new Json();
+        $json->addArray('x-array', $arr, true);
         $this->assertEquals('<?xml version="1.0" encoding="UTF-8"?>'."\r\n"
                 . '<json:object xsi:schemaLocation="http://www.datapower.com/schemas/json jsonx.xsd" '
                 . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
