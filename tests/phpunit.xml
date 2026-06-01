@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true" bootstrap="bootstrap.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         colors="true"
+         bootstrap="bootstrap.php">
+    
     <php>
     </php>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory>../WebFiori/Json</directory>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-clover" target="clover.xml"/>
-    </logging>
+    
     <testsuites>
         <testsuite name="Json Tests">
             <directory>./WebFiori/Tests/Json</directory>
         </testsuite>
     </testsuites>
+    
+    <source>
+        <include>
+            <directory>../WebFiori/Json</directory>
+        </include>
+    </source>
+    
+    <coverage>
+        <report>
+            <clover outputFile="clover.xml"/>
+        </report>
+    </coverage>
+    
 </phpunit>
