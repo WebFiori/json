@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.2](https://github.com/WebFiori/json/compare/v4.0.1...v4.0.2) (2026-06-01)
+
+
+### Bug Fixes
+
+* **ci:** set platform.php to 8.1 to resolve compatible dependencies ([8a7058d](https://github.com/WebFiori/json/commit/8a7058df999073ed0134e366ea095b1443d2444d))
+
+
+### Miscellaneous Chores
+
+* align CI with ecosystem baseline ([636ea18](https://github.com/WebFiori/json/commit/636ea1827c2bab157ab2bb2e2b28c28d421a21bc))
+* align CI with ecosystem baseline ([69855d3](https://github.com/WebFiori/json/commit/69855d3282af6067c4de6723841e3e5e27ded34e))
+
 ## [4.0.0](https://github.com/WebFiori/json/compare/v3.3.2...v4.0.0) (2025-07-30)
 
 
