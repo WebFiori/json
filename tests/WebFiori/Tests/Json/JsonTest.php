@@ -1632,4 +1632,27 @@ class JsonTest extends TestCase {
         $json = new Json();
         $this->assertEquals('snake',$json->getPropStyle());
     }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/54
+     */
+    public function testStdClassSerialization() {
+        $json = new Json();
+        $obj = (object)['status' => 'ok', 'message' => 'Hello'];
+        $json->add('data', $obj);
+        $decoded = json_decode($json->toJSONString(), true);
+        $this->assertEquals('ok', $decoded['data']['status']);
+        $this->assertEquals('Hello', $decoded['data']['message']);
+    }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/54
+     */
+    public function testStdClassInArray() {
+        $json = new Json();
+        $json->add('items', [(object)['id' => 1, 'name' => 'foo']]);
+        $decoded = json_decode($json->toJSONString(), true);
+        $this->assertEquals(1, $decoded['items'][0]['id']);
+        $this->assertEquals('foo', $decoded['items'][0]['name']);
+    }
 }
