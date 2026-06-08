@@ -73,11 +73,13 @@ class JsonConverter {
             $funcNm = substr($methods[$y], 0, 3);
 
             if (strtolower($funcNm) == 'get') {
-                $propVal = call_user_func([$obj, $methods[$y]]);
+                $refMethod = new \ReflectionMethod($obj, $methods[$y]);
 
-                if ($propVal !== false && $propVal !== null) {
-                    $json->add(substr($methods[$y], 3), $propVal);
+                if (!empty($refMethod->getAttributes(JsonIgnore::class))) {
+                    continue;
                 }
+                $propVal = call_user_func([$obj, $methods[$y]]);
+                $json->add(substr($methods[$y], 3), $propVal);
             }
         }
 
@@ -87,6 +89,9 @@ class JsonConverter {
         $publicProps = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
 
         foreach ($publicProps as $prop) {
+            if (!empty($prop->getAttributes(JsonIgnore::class))) {
+                continue;
+            }
             $name = $prop->getName();
             $value = $prop->getValue($obj);
             $json->add($name, $value);
