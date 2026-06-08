@@ -117,4 +117,46 @@ class JsonConverterTest extends TestCase {
         $this->assertTrue($json->hasKey('name'));
         $this->assertNull($json->get('name'));
     }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/57
+     */
+    public function testGetterReturningNullIsIncluded() {
+        $obj = new \WebFiori\Tests\ObjWithNullFalseGetters('Ibrahim', null, true);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertTrue($json->hasKey('MiddleName'));
+        $this->assertNull($json->get('MiddleName'));
+    }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/57
+     */
+    public function testGetterReturningFalseIsIncluded() {
+        $obj = new \WebFiori\Tests\ObjWithNullFalseGetters('Ibrahim', 'Ali', false);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertTrue($json->hasKey('Active'));
+        $this->assertFalse($json->get('Active'));
+    }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/57
+     */
+    public function testJsonIgnoreOnGetter() {
+        $obj = new \WebFiori\Tests\ObjWithNullFalseGetters('Ibrahim', null, true);
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertFalse($json->hasKey('Secret'));
+    }
+    /**
+     * @test
+     * @see https://github.com/WebFiori/json/issues/57
+     */
+    public function testJsonIgnoreOnPublicProperty() {
+        $obj = new \WebFiori\Tests\ObjWithIgnoredProps();
+        $json = JsonConverter::objectToJson($obj);
+        $this->assertFalse($json->hasKey('internalId'));
+        $this->assertTrue($json->hasKey('name'));
+        $this->assertEquals('Ibrahim', $json->get('name'));
+        $this->assertTrue($json->hasKey('email'));
+        $this->assertNull($json->get('email'));
+    }
 }
