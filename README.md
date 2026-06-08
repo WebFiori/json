@@ -169,26 +169,42 @@ Output:
 
 For objects that don't implement `JsonI`, the library maps them automatically using two sources:
 
-1. **Public getter methods** — any method prefixed with `get` is called and its return value is added. The property name is the method name with `get` stripped (e.g. `getName()` → `Name`). Methods returning `null` or `false` are skipped.
+1. **Public getter methods** — any method prefixed with `get` is called and its return value is added, including `null` and `false`. The property name is the method name with `get` stripped (e.g. `getName()` → `Name`).
 2. **Public properties** — extracted via reflection and added as-is, including those with a `null` value.
 
+Use the `#[JsonIgnore]` attribute to exclude specific getters or properties from serialization.
+
 ```php
+use WebFiori\Json\Json;
+use WebFiori\Json\JsonIgnore;
+
 class Product {
-    public string $sku = 'ABC-001';       // added via reflection
+    public string $sku = 'ABC-001';
+
+    #[JsonIgnore]
+    public string $internalCode = 'X-99';  // excluded
+
     private string $name;
     private float $price;
+    private bool $available;
 
-    public function __construct(string $name, float $price) {
-        $this->name  = $name;
-        $this->price = $price;
+    public function __construct(string $name, float $price, bool $available) {
+        $this->name      = $name;
+        $this->price     = $price;
+        $this->available = $available;
     }
 
-    public function getName(): string { return $this->name; }   // → "Name"
-    public function getPrice(): float { return $this->price; }  // → "Price"
+    public function getName(): string { return $this->name; }          // → "Name"
+    public function getPrice(): float { return $this->price; }         // → "Price"
+    public function getAvailable(): bool { return $this->available; }  // → "Available" (false is included)
+    public function getDiscount(): ?float { return null; }             // → "Discount": null
+
+    #[JsonIgnore]
+    public function getSecretMargin(): float { return 0.42; }          // excluded
 }
 
 $json = new Json();
-$product = new Product('Keyboard', 49.99);
+$product = new Product('Keyboard', 49.99, false);
 $json->addObject('product', $product);
 
 echo $json;
@@ -197,7 +213,7 @@ echo $json;
 Output:
 
 ```json
-{"product":{"Name":"Keyboard","Price":49.99,"sku":"ABC-001"}}
+{"product":{"Name":"Keyboard","Price":49.99,"Available":false,"Discount":null,"sku":"ABC-001"}}
 ```
 
 ## Property Naming Styles
