@@ -61,6 +61,8 @@ class JsonConverter {
             return $obj->toJSON();
         } else if ($obj instanceof Json) {
             return $obj;
+        } else if ($obj instanceof \stdClass) {
+            return new Json(get_object_vars($obj));
         }
 
         $methods = get_class_methods($obj);
