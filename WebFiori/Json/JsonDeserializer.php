@@ -2,7 +2,6 @@
 namespace WebFiori\Json;
 
 use ReflectionClass;
-use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 
@@ -76,6 +75,131 @@ class JsonDeserializer {
     }
 
     /**
+     * Gets a value from Json by key name.
+     */
+    private static function getJsonValue(Json $json, string $key): mixed {
+        return $json->get($key);
+    }
+
+    /**
+     * Gets all property names from a Json instance.
+     */
+    private static function getPropertyNames(Json $json): array {
+        return $json->getPropsNames();
+    }
+
+    /**
+     * Hydrates a value based on a #[JsonType] attribute instance.
+     */
+    private static function hydrateByJsonType(mixed $value, JsonType $jsonType): mixed {
+        if ($jsonType->isArray) {
+            if (!is_array($value)) {
+                return [];
+            }
+
+            $result = [];
+
+            foreach ($value as $item) {
+                if ($item instanceof Json) {
+                    $result[] = self::deserialize($item, $jsonType->className);
+                } else if (is_array($item)) {
+                    $result[] = self::deserialize(new Json($item), $jsonType->className);
+                } else {
+                    $result[] = $item;
+                }
+            }
+
+            return $result;
+        }
+
+        if ($value instanceof Json) {
+            return self::deserialize($value, $jsonType->className);
+        }
+
+        if (is_array($value)) {
+            return self::deserialize(new Json($value), $jsonType->className);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Populates remaining JSON keys via setter methods or public properties.
+     */
+    private static function populateRemaining(ReflectionClass $refClass, object $instance, Json $json, array $keys): void {
+        foreach ($keys as $key) {
+            $value = self::getJsonValue($json, $key);
+            $setterName = 'set'.ucfirst($key);
+
+            if ($refClass->hasMethod($setterName)) {
+                $setter = $refClass->getMethod($setterName);
+
+                if ($setter->isPublic() && $setter->getNumberOfRequiredParameters() <= 1) {
+                    $params = $setter->getParameters();
+
+                    if (!empty($params)) {
+                        $value = self::resolveSetterValue($value, $params[0]);
+                    }
+                    $setter->invoke($instance, $value);
+
+                    continue;
+                }
+            }
+
+            if ($refClass->hasProperty($key)) {
+                $prop = $refClass->getProperty($key);
+
+                if ($prop->isPublic()) {
+                    $resolvedValue = self::resolvePropertyValue($value, $prop);
+                    $prop->setValue($instance, $resolvedValue);
+                }
+            }
+        }
+    }
+
+    /**
+     * Resolves value for a public property.
+     */
+    private static function resolvePropertyValue(mixed $value, \ReflectionProperty $prop): mixed {
+        $attrs = $prop->getAttributes(JsonType::class);
+
+        if (!empty($attrs)) {
+            return self::hydrateByJsonType($value, $attrs[0]->newInstance());
+        }
+
+        $type = $prop->getType();
+
+        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+            if ($value instanceof Json) {
+                return self::deserialize($value, $type->getName());
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Resolves value for a setter parameter.
+     */
+    private static function resolveSetterValue(mixed $value, ReflectionParameter $param): mixed {
+        $attrs = $param->getAttributes(JsonType::class);
+
+        if (!empty($attrs)) {
+            return self::hydrateByJsonType($value, $attrs[0]->newInstance());
+        }
+
+        $type = $param->getType();
+
+        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
+            if ($value instanceof Json) {
+                return self::deserialize($value, $type->getName());
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Resolves a JSON value to its proper PHP type based on parameter reflection.
      */
     private static function resolveValue(mixed $value, ReflectionParameter $param): mixed {
@@ -123,130 +247,5 @@ class JsonDeserializer {
         }
 
         return $value;
-    }
-
-    /**
-     * Hydrates a value based on a #[JsonType] attribute instance.
-     */
-    private static function hydrateByJsonType(mixed $value, JsonType $jsonType): mixed {
-        if ($jsonType->isArray) {
-            if (!is_array($value)) {
-                return [];
-            }
-
-            $result = [];
-
-            foreach ($value as $item) {
-                if ($item instanceof Json) {
-                    $result[] = self::deserialize($item, $jsonType->className);
-                } else if (is_array($item)) {
-                    $result[] = self::deserialize(new Json($item), $jsonType->className);
-                } else {
-                    $result[] = $item;
-                }
-            }
-
-            return $result;
-        }
-
-        if ($value instanceof Json) {
-            return self::deserialize($value, $jsonType->className);
-        }
-
-        if (is_array($value)) {
-            return self::deserialize(new Json($value), $jsonType->className);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Populates remaining JSON keys via setter methods or public properties.
-     */
-    private static function populateRemaining(ReflectionClass $refClass, object $instance, Json $json, array $keys): void {
-        foreach ($keys as $key) {
-            $value = self::getJsonValue($json, $key);
-            $setterName = 'set' . ucfirst($key);
-
-            if ($refClass->hasMethod($setterName)) {
-                $setter = $refClass->getMethod($setterName);
-
-                if ($setter->isPublic() && $setter->getNumberOfRequiredParameters() <= 1) {
-                    $params = $setter->getParameters();
-
-                    if (!empty($params)) {
-                        $value = self::resolveSetterValue($value, $params[0]);
-                    }
-                    $setter->invoke($instance, $value);
-
-                    continue;
-                }
-            }
-
-            if ($refClass->hasProperty($key)) {
-                $prop = $refClass->getProperty($key);
-
-                if ($prop->isPublic()) {
-                    $resolvedValue = self::resolvePropertyValue($value, $prop);
-                    $prop->setValue($instance, $resolvedValue);
-                }
-            }
-        }
-    }
-
-    /**
-     * Resolves value for a setter parameter.
-     */
-    private static function resolveSetterValue(mixed $value, ReflectionParameter $param): mixed {
-        $attrs = $param->getAttributes(JsonType::class);
-
-        if (!empty($attrs)) {
-            return self::hydrateByJsonType($value, $attrs[0]->newInstance());
-        }
-
-        $type = $param->getType();
-
-        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-            if ($value instanceof Json) {
-                return self::deserialize($value, $type->getName());
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-     * Resolves value for a public property.
-     */
-    private static function resolvePropertyValue(mixed $value, \ReflectionProperty $prop): mixed {
-        $attrs = $prop->getAttributes(JsonType::class);
-
-        if (!empty($attrs)) {
-            return self::hydrateByJsonType($value, $attrs[0]->newInstance());
-        }
-
-        $type = $prop->getType();
-
-        if ($type instanceof ReflectionNamedType && !$type->isBuiltin()) {
-            if ($value instanceof Json) {
-                return self::deserialize($value, $type->getName());
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-     * Gets a value from Json by key name.
-     */
-    private static function getJsonValue(Json $json, string $key): mixed {
-        return $json->get($key);
-    }
-
-    /**
-     * Gets all property names from a Json instance.
-     */
-    private static function getPropertyNames(Json $json): array {
-        return $json->getPropsNames();
     }
 }

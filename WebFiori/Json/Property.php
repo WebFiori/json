@@ -43,17 +43,17 @@ class Property {
      */
     private $name;
     /**
-     * The style of the property name (camel, kebab, snake, or none).
-     * 
-     * @var string
-     */
-    private $probsStyle;
-    /**
      * Whether the property name was explicitly set via #[JsonProperty] and should not be converted.
      * 
      * @var bool
      */
     private $nameIsExplicit = false;
+    /**
+     * The style of the property name (camel, kebab, snake, or none).
+     * 
+     * @var string
+     */
+    private $probsStyle;
     /**
      * The value of the property.
      * 
@@ -223,14 +223,6 @@ class Property {
         return $this->nameIsExplicit;
     }
     /**
-     * Marks the property name as explicitly set (e.g. via #[JsonProperty]).
-     * 
-     * @param bool $explicit True to prevent style conversion on this property name.
-     */
-    public function setNameIsExplicit(bool $explicit) {
-        $this->nameIsExplicit = $explicit;
-    }
-    /**
      * Sets the value of the property which is used to tell if
      * the property will be represented as object or array.
      * 
@@ -260,6 +252,14 @@ class Property {
         $this->name = $keyValidity;
 
         return true;
+    }
+    /**
+     * Marks the property name as explicitly set (e.g. via #[JsonProperty]).
+     * 
+     * @param bool $explicit True to prevent style conversion on this property name.
+     */
+    public function setNameIsExplicit(bool $explicit) {
+        $this->nameIsExplicit = $explicit;
     }
     /**
      * Sets the style at which the names of the properties will use.

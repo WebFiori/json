@@ -11,10 +11,14 @@ class Server {
     #[JsonProperty('host_name')]
     public string $hostname = 'localhost';
 
-    #[JsonProperty('server_port')]
-    public function getPort(): int { return 8080; }
+    public function getMaxConnections(): int {
+        return 100;
+    }
 
-    public function getMaxConnections(): int { return 100; }
+    #[JsonProperty('server_port')]
+    public function getPort(): int {
+        return 8080;
+    }
 }
 
 // Even with camel style, #[JsonProperty] names are preserved as-is

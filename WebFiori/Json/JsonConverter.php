@@ -85,6 +85,7 @@ class JsonConverter {
 
                 $attrs = $refMethod->getAttributes(JsonProperty::class);
                 $explicit = !empty($attrs);
+
                 if ($explicit) {
                     $propName = $attrs[0]->newInstance()->name;
                 } else {
@@ -110,6 +111,7 @@ class JsonConverter {
 
             $attrs = $prop->getAttributes(JsonProperty::class);
             $explicit = !empty($attrs);
+
             if ($explicit) {
                 $name = $attrs[0]->newInstance()->name;
             } else {
@@ -394,6 +396,15 @@ class JsonConverter {
 
         return $retVal;
     }
+    private static function isIndexedArr(array $arr) : bool {
+        foreach ($arr as $index => $val) {
+            if (!is_int($index)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
     /**
      * Converts an object value to its JSON string representation.
      *
@@ -488,14 +499,5 @@ class JsonConverter {
             self::$CurrentTab--;
         }
         self::$Tab = str_repeat(' ', self::$CurrentTab * self::$TabSize);
-    }
-    private static function isIndexedArr(array $arr) : bool {
-        foreach ($arr as $index => $val) {
-            if (!is_int($index)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

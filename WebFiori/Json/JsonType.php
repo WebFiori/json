@@ -6,5 +6,6 @@ class JsonType {
     public function __construct(
         public readonly string $className,
         public readonly bool $isArray = false
-    ) {}
+    ) {
+    }
 }

@@ -11,9 +11,14 @@ class User {
     public function __construct(
         private string $username,
         private string $email
-    ) {}
-    public function getUsername(): string { return $this->username; }
-    public function getEmail(): string { return $this->email; }
+    ) {
+    }
+    public function getEmail(): string {
+        return $this->email;
+    }
+    public function getUsername(): string {
+        return $this->username;
+    }
 }
 
 $user = Json::decodeAs('{"username":"ibrahim","email":"a@b.com"}', User::class);
@@ -26,9 +31,14 @@ class LineItem {
     public function __construct(
         private string $name,
         private int $qty
-    ) {}
-    public function getName(): string { return $this->name; }
-    public function getQty(): int { return $this->qty; }
+    ) {
+    }
+    public function getName(): string {
+        return $this->name;
+    }
+    public function getQty(): int {
+        return $this->qty;
+    }
 }
 
 class Order {
@@ -36,9 +46,14 @@ class Order {
         private User $customer,
         #[JsonType(LineItem::class, isArray: true)]
         private array $items
-    ) {}
-    public function getCustomer(): User { return $this->customer; }
-    public function getItems(): array { return $this->items; }
+    ) {
+    }
+    public function getCustomer(): User {
+        return $this->customer;
+    }
+    public function getItems(): array {
+        return $this->items;
+    }
 }
 
 $jsonStr = '{"customer":{"username":"ibrahim","email":"a@b.com"},"items":[{"name":"Keyboard","qty":2},{"name":"Mouse","qty":1}]}';
@@ -53,7 +68,7 @@ echo $order->getItems()[0]->getName()."\n";     // Keyboard
 $json = Json::decode($jsonStr);
 $json->setTypeMap([
     'customer' => User::class,
-    'items'    => [LineItem::class],
+    'items' => [LineItem::class],
 ]);
 
 $customer = $json->get('customer');

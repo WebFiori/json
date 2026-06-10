@@ -71,43 +71,13 @@ class Json {
      * 
      */
     private $attrNameStyle;
-    private $formatted;
-    private $propsArr;
-    private $typeMap = [];
-
-    private static $defaultStyle = null;
     private static $defaultCase = null;
     private static $defaultFormatted = null;
 
-    /**
-     * Sets application-wide defaults for new Json instances.
-     * 
-     * @param string|null $style The default property naming style ('camel', 'kebab', 'snake', 'none').
-     * @param string|null $case The default letter case ('same', 'upper', 'lower').
-     * @param bool|null $formatted Whether output should be formatted by default.
-     */
-    public static function setDefaults(?string $style = null, ?string $case = null, ?bool $formatted = null) {
-        if ($style !== null && in_array($style, CaseConverter::PROP_NAME_STYLES)) {
-            self::$defaultStyle = $style;
-        }
-
-        if ($case !== null && in_array($case, CaseConverter::LETTER_CASE)) {
-            self::$defaultCase = $case;
-        }
-
-        if ($formatted !== null) {
-            self::$defaultFormatted = $formatted;
-        }
-    }
-
-    /**
-     * Resets all application-wide defaults to null (library defaults will be used).
-     */
-    public static function resetDefaults() {
-        self::$defaultStyle = null;
-        self::$defaultCase = null;
-        self::$defaultFormatted = null;
-    }
+    private static $defaultStyle = null;
+    private $formatted;
+    private $propsArr;
+    private $typeMap = [];
 
     /**
      * Creates new instance of the class.
@@ -716,6 +686,36 @@ class Json {
             }
 
             return $retVal;
+        }
+    }
+
+    /**
+     * Resets all application-wide defaults to null (library defaults will be used).
+     */
+    public static function resetDefaults() {
+        self::$defaultStyle = null;
+        self::$defaultCase = null;
+        self::$defaultFormatted = null;
+    }
+
+    /**
+     * Sets application-wide defaults for new Json instances.
+     * 
+     * @param string|null $style The default property naming style ('camel', 'kebab', 'snake', 'none').
+     * @param string|null $case The default letter case ('same', 'upper', 'lower').
+     * @param bool|null $formatted Whether output should be formatted by default.
+     */
+    public static function setDefaults(?string $style = null, ?string $case = null, ?bool $formatted = null) {
+        if ($style !== null && in_array($style, CaseConverter::PROP_NAME_STYLES)) {
+            self::$defaultStyle = $style;
+        }
+
+        if ($case !== null && in_array($case, CaseConverter::LETTER_CASE)) {
+            self::$defaultCase = $case;
+        }
+
+        if ($formatted !== null) {
+            self::$defaultFormatted = $formatted;
         }
     }
     /**
