@@ -2,7 +2,7 @@
     "name": "webfiori/jsonx",
     "type": "library",
     "description": "PHP library for creating JSON.",
-    "version": "4.0.2",
+    "version": "5.0.0",
     "keywords": [
         "JSON",
         "PHP",
