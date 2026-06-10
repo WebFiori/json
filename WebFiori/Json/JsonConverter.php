@@ -69,8 +69,6 @@ class JsonConverter {
         $count = count($methods);
         $json = new Json();
 
-        set_error_handler(null);
-
         for ($y = 0 ; $y < $count; $y++) {
             $funcNm = substr($methods[$y], 0, 3);
 
@@ -80,12 +78,28 @@ class JsonConverter {
                 if (!empty($refMethod->getAttributes(JsonIgnore::class))) {
                     continue;
                 }
-                $propVal = call_user_func([$obj, $methods[$y]]);
-                $json->add(substr($methods[$y], 3), $propVal);
+
+                if ($refMethod->getNumberOfRequiredParameters() !== 0) {
+                    continue;
+                }
+
+                $attrs = $refMethod->getAttributes(JsonProperty::class);
+                $explicit = !empty($attrs);
+
+                if ($explicit) {
+                    $propName = $attrs[0]->newInstance()->name;
+                } else {
+                    $propName = substr($methods[$y], 3);
+                }
+
+                $propVal = $refMethod->invoke($obj);
+
+                if ($json->add($propName, $propVal) && $explicit) {
+                    $props = $json->getProperties();
+                    $props[count($props) - 1]->setNameIsExplicit(true);
+                }
             }
         }
-
-        restore_error_handler();
 
         $reflection = new \ReflectionClass($obj);
         $publicProps = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
@@ -94,9 +108,22 @@ class JsonConverter {
             if (!empty($prop->getAttributes(JsonIgnore::class))) {
                 continue;
             }
-            $name = $prop->getName();
+
+            $attrs = $prop->getAttributes(JsonProperty::class);
+            $explicit = !empty($attrs);
+
+            if ($explicit) {
+                $name = $attrs[0]->newInstance()->name;
+            } else {
+                $name = $prop->getName();
+            }
+
             $value = $prop->getValue($obj);
-            $json->add($name, $value);
+
+            if ($json->add($name, $value) && $explicit) {
+                $props = $json->getProperties();
+                $props[count($props) - 1]->setNameIsExplicit(true);
+            }
         }
 
         return $json;
@@ -220,6 +247,10 @@ class JsonConverter {
      */
     private static function arrayToJsonString(array $array, bool $asObj, string $propsStyle = 'snake', $lettersCase = 'same') {
         $retVal = '';
+
+        if (!$asObj && !self::isIndexedArr($array)) {
+            $asObj = true;
+        }
 
         if ($asObj === true) {
             $jsonObj = new Json();
@@ -364,6 +395,15 @@ class JsonConverter {
         }
 
         return $retVal;
+    }
+    private static function isIndexedArr(array $arr) : bool {
+        foreach ($arr as $index => $val) {
+            if (!is_int($index)) {
+                return false;
+            }
+        }
+
+        return true;
     }
     /**
      * Converts an object value to its JSON string representation.

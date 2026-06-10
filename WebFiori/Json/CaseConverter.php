@@ -128,6 +128,8 @@ class CaseConverter {
             if ($changeNextCharCase) {
                 $retVal .= strtoupper($char);
                 $changeNextCharCase = false;
+            } else if ($x === 0 && self::isUpper($char)) {
+                $retVal .= strtolower($char);
             } else {
                 $retVal .= $value[$x];
             }

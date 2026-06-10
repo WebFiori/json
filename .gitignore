@@ -9,3 +9,5 @@ vendor/*
 
 .php-cs-fixer.cache
 json-output/json-file.json
+tests/vendor/
+tests/composer.lock
