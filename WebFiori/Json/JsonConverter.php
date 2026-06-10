@@ -246,6 +246,10 @@ class JsonConverter {
     private static function arrayToJsonString(array $array, bool $asObj, string $propsStyle = 'snake', $lettersCase = 'same') {
         $retVal = '';
 
+        if (!$asObj && !self::isIndexedArr($array)) {
+            $asObj = true;
+        }
+
         if ($asObj === true) {
             $jsonObj = new Json();
             $jsonObj->setPropsStyle($propsStyle);
@@ -484,5 +488,14 @@ class JsonConverter {
             self::$CurrentTab--;
         }
         self::$Tab = str_repeat(' ', self::$CurrentTab * self::$TabSize);
+    }
+    private static function isIndexedArr(array $arr) : bool {
+        foreach ($arr as $index => $val) {
+            if (!is_int($index)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

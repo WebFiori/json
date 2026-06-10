@@ -461,10 +461,10 @@ class JsonTest extends TestCase {
         ];
         $json = new Json();
         $json->addArray('array',$arr);
-        $this->assertEquals('{"array":[['
-                . '"sub-arr",1,2,"world",{"Property00":"1","Property01":2,"Property02":3,"Property04":5},'
-                . '{"good":true}'
-                . '],{"bad":false}]}',$json.'');
+        $this->assertEquals('{"array":[{"0":"sub-arr","1":1,"2":2,"hello":"world",'
+                . '"3":{"Property00":"1","Property01":2,"Property02":3,"Property04":5},'
+                . '"4":{"good":true}'
+                . '},{"bad":false}]}',$json.'');
         $json->remove('array');
         $json->addArray('x-array', $arr, true);
         $this->assertEquals('{"x-array":{"0":{"0":"sub-arr","1":1,"2":2,"hello":"world",'
@@ -759,14 +759,14 @@ class JsonTest extends TestCase {
             [[new Obj0('p0','p1','p2','p3','p4'),$subJ,new Obj1('p0','p1','p2','p3','p4')]]];
         $j->add('big-array', $arr);
         $this->assertEquals('{'
-                .'"big-array":["world",'
-                .'{"Property00":"Nice","Property01":"To","Property02":99,"Property04":"NaN"},'
-                .'[4,1.7,true,null],'
-                .'{"property-00":"1","property-01":"Hello","property-02":"No"},'
-                .'{"test":true},'
-                .'[[{"Property00":"p0","Property01":"p1","Property02":"p2","Property04":"p4"},'
-                .'{"test":true},'
-                .'{"property-00":"p0","property-01":"p1","property-02":"p2"}]]]'
+                .'"big-array":{"hello":"world",'
+                .'"0":{"Property00":"Nice","Property01":"To","Property02":99,"Property04":"NaN"},'
+                .'"1":{"0":4,"1":1.7,"2":true,"3":null},'
+                .'"2":{"property-00":"1","property-01":"Hello","property-02":"No"},'
+                .'"3":{"test":true},'
+                .'"4":{"0":{"0":{"Property00":"p0","Property01":"p1","Property02":"p2","Property04":"p4"},'
+                .'"1":{"test":true},'
+                .'"2":{"property-00":"p0","property-01":"p1","property-02":"p2"}}}}'
                 .'}',$j->toJSONString());
     }
     /**
@@ -856,14 +856,14 @@ class JsonTest extends TestCase {
             [[new Obj0('p0','p1','p2','p3','p4'),$subJ,new Obj1('p0','p1','p2','p3','p4')]]];
         $j->add('big-array',$arr);
         $this->assertEquals('{'
-                .'"big-array":["world",'
-                .'{"Property00":"Nice","Property01":"To","Property02":99,"Property04":"NaN"},'
-                .'[4,1.7,true,null,"t",false],'
-                .'{"property-00":"1","property-01":"Hello","property-02":"No"},'
-                .'{"test":true},'
-                .'[[{"Property00":"p0","Property01":"p1","Property02":"p2","Property04":"p4"},'
-                .'{"test":true},'
-                .'{"property-00":"p0","property-01":"p1","property-02":"p2"}]]]'
+                .'"big-array":{"hello":"world",'
+                .'"0":{"Property00":"Nice","Property01":"To","Property02":99,"Property04":"NaN"},'
+                .'"1":{"0":4,"1":1.7,"2":true,"3":null,"4":"t","5":false},'
+                .'"2":{"property-00":"1","property-01":"Hello","property-02":"No"},'
+                .'"3":{"test":true},'
+                .'"4":{"0":{"0":{"Property00":"p0","Property01":"p1","Property02":"p2","Property04":"p4"},'
+                .'"1":{"test":true},'
+                .'"2":{"property-00":"p0","property-01":"p1","property-02":"p2"}}}}'
                 .'}',$j->toJSONString());
     }
     /**
@@ -962,7 +962,7 @@ class JsonTest extends TestCase {
         $arr = ["number" => 1,"Hello-1" => "world!","boolean-super" => true,NAN,null];
         $j->setPropsStyle('snake');
         $j->addArray('arr',$arr);
-        $this->assertEquals('{"arr":[1,"world!",true,"NaN",null]}',$j.'');
+        $this->assertEquals('{"arr":{"number":1,"hello_1":"world!","boolean_super":true,"0":"NaN","1":null}}',$j.'');
     }
     /**
      * @test
