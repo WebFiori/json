@@ -82,8 +82,21 @@ class JsonConverter {
                 if ($refMethod->getNumberOfRequiredParameters() !== 0) {
                     continue;
                 }
+
+                $attrs = $refMethod->getAttributes(JsonProperty::class);
+                $explicit = !empty($attrs);
+                if ($explicit) {
+                    $propName = $attrs[0]->newInstance()->name;
+                } else {
+                    $propName = substr($methods[$y], 3);
+                }
+
                 $propVal = $refMethod->invoke($obj);
-                $json->add(substr($methods[$y], 3), $propVal);
+
+                if ($json->add($propName, $propVal) && $explicit) {
+                    $props = $json->getProperties();
+                    $props[count($props) - 1]->setNameIsExplicit(true);
+                }
             }
         }
 
@@ -94,9 +107,21 @@ class JsonConverter {
             if (!empty($prop->getAttributes(JsonIgnore::class))) {
                 continue;
             }
-            $name = $prop->getName();
+
+            $attrs = $prop->getAttributes(JsonProperty::class);
+            $explicit = !empty($attrs);
+            if ($explicit) {
+                $name = $attrs[0]->newInstance()->name;
+            } else {
+                $name = $prop->getName();
+            }
+
             $value = $prop->getValue($obj);
-            $json->add($name, $value);
+
+            if ($json->add($name, $value) && $explicit) {
+                $props = $json->getProperties();
+                $props[count($props) - 1]->setNameIsExplicit(true);
+            }
         }
 
         return $json;

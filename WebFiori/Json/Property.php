@@ -49,6 +49,12 @@ class Property {
      */
     private $probsStyle;
     /**
+     * Whether the property name was explicitly set via #[JsonProperty] and should not be converted.
+     * 
+     * @var bool
+     */
+    private $nameIsExplicit = false;
+    /**
      * The value of the property.
      * 
      * @var mixed
@@ -209,6 +215,22 @@ class Property {
         return $this->asObject;
     }
     /**
+     * Checks if the property name was explicitly set and should not be subject to style conversion.
+     * 
+     * @return bool True if the name is explicit.
+     */
+    public function isNameExplicit() : bool {
+        return $this->nameIsExplicit;
+    }
+    /**
+     * Marks the property name as explicitly set (e.g. via #[JsonProperty]).
+     * 
+     * @param bool $explicit True to prevent style conversion on this property name.
+     */
+    public function setNameIsExplicit(bool $explicit) {
+        $this->nameIsExplicit = $explicit;
+    }
+    /**
      * Sets the value of the property which is used to tell if
      * the property will be represented as object or array.
      * 
@@ -266,7 +288,10 @@ class Property {
         if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedLetterCase, CaseConverter::LETTER_CASE)) {
             $this->probsStyle = $trimmed;
             $this->lettersCase = $trimmedLetterCase;
-            $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
+
+            if (!$this->nameIsExplicit) {
+                $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
+            }
         }
         $val = $this->getValue();
 
