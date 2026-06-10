@@ -69,8 +69,6 @@ class JsonConverter {
         $count = count($methods);
         $json = new Json();
 
-        set_error_handler(null);
-
         for ($y = 0 ; $y < $count; $y++) {
             $funcNm = substr($methods[$y], 0, 3);
 
@@ -80,12 +78,14 @@ class JsonConverter {
                 if (!empty($refMethod->getAttributes(JsonIgnore::class))) {
                     continue;
                 }
-                $propVal = call_user_func([$obj, $methods[$y]]);
+
+                if ($refMethod->getNumberOfRequiredParameters() !== 0) {
+                    continue;
+                }
+                $propVal = $refMethod->invoke($obj);
                 $json->add(substr($methods[$y], 3), $propVal);
             }
         }
-
-        restore_error_handler();
 
         $reflection = new \ReflectionClass($obj);
         $publicProps = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
