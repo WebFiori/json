@@ -74,6 +74,40 @@ class Json {
     private $formatted;
     private $propsArr;
 
+    private static $defaultStyle = null;
+    private static $defaultCase = null;
+    private static $defaultFormatted = null;
+
+    /**
+     * Sets application-wide defaults for new Json instances.
+     * 
+     * @param string|null $style The default property naming style ('camel', 'kebab', 'snake', 'none').
+     * @param string|null $case The default letter case ('same', 'upper', 'lower').
+     * @param bool|null $formatted Whether output should be formatted by default.
+     */
+    public static function setDefaults(?string $style = null, ?string $case = null, ?bool $formatted = null) {
+        if ($style !== null && in_array($style, CaseConverter::PROP_NAME_STYLES)) {
+            self::$defaultStyle = $style;
+        }
+
+        if ($case !== null && in_array($case, CaseConverter::LETTER_CASE)) {
+            self::$defaultCase = $case;
+        }
+
+        if ($formatted !== null) {
+            self::$defaultFormatted = $formatted;
+        }
+    }
+
+    /**
+     * Resets all application-wide defaults to null (library defaults will be used).
+     */
+    public static function resetDefaults() {
+        self::$defaultStyle = null;
+        self::$defaultCase = null;
+        self::$defaultFormatted = null;
+    }
+
     /**
      * Creates new instance of the class.
      * 
@@ -109,10 +143,22 @@ class Json {
     public function __construct(array $initialData = [], ?string $propsStyle = '', ?string $lettersCase = '', bool $isFormatted = false) {
         $this->propsArr = [];
 
-        $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));
+        if (defined('WF_VERBOSE') && WF_VERBOSE === true) {
+            @trigger_error('Global constant WF_VERBOSE is deprecated. Use Json::setDefaults(formatted: true) instead.', E_USER_DEPRECATED);
+            $isFormatted = true;
+        }
+
+        if (self::$defaultFormatted !== null && !$isFormatted) {
+            $isFormatted = self::$defaultFormatted;
+        }
+
+        $this->setIsFormatted($isFormatted);
 
         if (!in_array($propsStyle, CaseConverter::PROP_NAME_STYLES)) {
-            if (defined('JSON_STYLE')) {
+            if (self::$defaultStyle !== null) {
+                $propsStyle = self::$defaultStyle;
+            } else if (defined('JSON_STYLE')) {
+                @trigger_error('Global constant JSON_STYLE is deprecated. Use Json::setDefaults(style: ...) instead.', E_USER_DEPRECATED);
                 $propsStyle = JSON_STYLE;
             } else {
                 $propsStyle = 'none';
@@ -120,7 +166,10 @@ class Json {
         }
 
         if (!in_array($lettersCase, CaseConverter::LETTER_CASE)) {
-            if (defined('JSON_CASE')) {
+            if (self::$defaultCase !== null) {
+                $lettersCase = self::$defaultCase;
+            } else if (defined('JSON_CASE')) {
+                @trigger_error('Global constant JSON_CASE is deprecated. Use Json::setDefaults(case: ...) instead.', E_USER_DEPRECATED);
                 $lettersCase = JSON_CASE;
             } else {
                 $lettersCase = 'same';
