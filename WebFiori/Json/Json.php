@@ -71,8 +71,13 @@ class Json {
      * 
      */
     private $attrNameStyle;
+    private static $defaultCase = null;
+    private static $defaultFormatted = null;
+
+    private static $defaultStyle = null;
     private $formatted;
     private $propsArr;
+    private $typeMap = [];
 
     /**
      * Creates new instance of the class.
@@ -109,10 +114,22 @@ class Json {
     public function __construct(array $initialData = [], ?string $propsStyle = '', ?string $lettersCase = '', bool $isFormatted = false) {
         $this->propsArr = [];
 
-        $this->setIsFormatted($isFormatted === true || (defined('WF_VERBOSE') && WF_VERBOSE === true));
+        if (defined('WF_VERBOSE') && WF_VERBOSE === true) {
+            @trigger_error('Global constant WF_VERBOSE is deprecated. Use Json::setDefaults(formatted: true) instead.', E_USER_DEPRECATED);
+            $isFormatted = true;
+        }
+
+        if (self::$defaultFormatted !== null && !$isFormatted) {
+            $isFormatted = self::$defaultFormatted;
+        }
+
+        $this->setIsFormatted($isFormatted);
 
         if (!in_array($propsStyle, CaseConverter::PROP_NAME_STYLES)) {
-            if (defined('JSON_STYLE')) {
+            if (self::$defaultStyle !== null) {
+                $propsStyle = self::$defaultStyle;
+            } else if (defined('JSON_STYLE')) {
+                @trigger_error('Global constant JSON_STYLE is deprecated. Use Json::setDefaults(style: ...) instead.', E_USER_DEPRECATED);
                 $propsStyle = JSON_STYLE;
             } else {
                 $propsStyle = 'none';
@@ -120,7 +137,10 @@ class Json {
         }
 
         if (!in_array($lettersCase, CaseConverter::LETTER_CASE)) {
-            if (defined('JSON_CASE')) {
+            if (self::$defaultCase !== null) {
+                $lettersCase = self::$defaultCase;
+            } else if (defined('JSON_CASE')) {
+                @trigger_error('Global constant JSON_CASE is deprecated. Use Json::setDefaults(case: ...) instead.', E_USER_DEPRECATED);
                 $lettersCase = JSON_CASE;
             } else {
                 $lettersCase = 'same';
@@ -150,6 +170,30 @@ class Json {
             if ($val->getName() == $keyTrimmed) {
                 $retVal = $val->getValue();
                 break;
+            }
+        }
+
+        if ($retVal !== null && isset($this->typeMap[$key])) {
+            $mapping = $this->typeMap[$key];
+
+            if (is_array($mapping) && count($mapping) === 1) {
+                // Array of typed objects
+                $className = $mapping[0];
+
+                if (is_array($retVal)) {
+                    $typed = [];
+
+                    foreach ($retVal as $item) {
+                        if ($item instanceof Json) {
+                            $typed[] = JsonDeserializer::deserialize($item, $className);
+                        } else {
+                            $typed[] = $item;
+                        }
+                    }
+                    $retVal = $typed;
+                }
+            } else if (is_string($mapping) && $retVal instanceof Json) {
+                $retVal = JsonDeserializer::deserialize($retVal, $mapping);
             }
         }
 
@@ -461,6 +505,21 @@ class Json {
         throw  new JsonException(json_last_error_msg(), json_last_error());
     }
     /**
+     * Decodes a JSON string and deserializes it into an instance of the given class.
+     *
+     * @param string $jsonStr A valid JSON string.
+     * @param string $className The fully qualified class name to hydrate.
+     *
+     * @return object An instance of the given class populated with JSON data.
+     *
+     * @throws JsonException If JSON is invalid or the class cannot be hydrated.
+     */
+    public static function decodeAs(string $jsonStr, string $className): object {
+        $json = self::decode($jsonStr);
+
+        return JsonDeserializer::deserialize($json, $className);
+    }
+    /**
      * Escape JSON special characters from string.
      * If the given string is null,the method will return empty string.
      * 
@@ -629,6 +688,36 @@ class Json {
             return $retVal;
         }
     }
+
+    /**
+     * Resets all application-wide defaults to null (library defaults will be used).
+     */
+    public static function resetDefaults() {
+        self::$defaultStyle = null;
+        self::$defaultCase = null;
+        self::$defaultFormatted = null;
+    }
+
+    /**
+     * Sets application-wide defaults for new Json instances.
+     * 
+     * @param string|null $style The default property naming style ('camel', 'kebab', 'snake', 'none').
+     * @param string|null $case The default letter case ('same', 'upper', 'lower').
+     * @param bool|null $formatted Whether output should be formatted by default.
+     */
+    public static function setDefaults(?string $style = null, ?string $case = null, ?bool $formatted = null) {
+        if ($style !== null && in_array($style, CaseConverter::PROP_NAME_STYLES)) {
+            self::$defaultStyle = $style;
+        }
+
+        if ($case !== null && in_array($case, CaseConverter::LETTER_CASE)) {
+            self::$defaultCase = $case;
+        }
+
+        if ($formatted !== null) {
+            self::$defaultFormatted = $formatted;
+        }
+    }
     /**
      * Makes the JSON output appears readable or not.
      * 
@@ -684,6 +773,18 @@ class Json {
                 $prop->setStyle($style, $trimmedCase);
             }
         }
+    }
+    /**
+     * Sets a type map for typed deserialization when using get().
+     *
+     * Keys are JSON property names, values are either a class name string
+     * or a single-element array containing a class name (for arrays of that type).
+     *
+     * @param array $map The type map. Example:
+     * ['customer' => User::class, 'items' => [LineItem::class]]
+     */
+    public function setTypeMap(array $map) {
+        $this->typeMap = $map;
     }
     /**
      * Attempt to write the generated JSON to a .json file.

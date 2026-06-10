@@ -43,6 +43,12 @@ class Property {
      */
     private $name;
     /**
+     * Whether the property name was explicitly set via #[JsonProperty] and should not be converted.
+     * 
+     * @var bool
+     */
+    private $nameIsExplicit = false;
+    /**
      * The style of the property name (camel, kebab, snake, or none).
      * 
      * @var string
@@ -209,6 +215,14 @@ class Property {
         return $this->asObject;
     }
     /**
+     * Checks if the property name was explicitly set and should not be subject to style conversion.
+     * 
+     * @return bool True if the name is explicit.
+     */
+    public function isNameExplicit() : bool {
+        return $this->nameIsExplicit;
+    }
+    /**
      * Sets the value of the property which is used to tell if
      * the property will be represented as object or array.
      * 
@@ -240,6 +254,14 @@ class Property {
         return true;
     }
     /**
+     * Marks the property name as explicitly set (e.g. via #[JsonProperty]).
+     * 
+     * @param bool $explicit True to prevent style conversion on this property name.
+     */
+    public function setNameIsExplicit(bool $explicit) {
+        $this->nameIsExplicit = $explicit;
+    }
+    /**
      * Sets the style at which the names of the properties will use.
      * 
      * Another way to set the style that will be used by the instance is to 
@@ -266,7 +288,10 @@ class Property {
         if (in_array($trimmed, CaseConverter::PROP_NAME_STYLES) && in_array($trimmedLetterCase, CaseConverter::LETTER_CASE)) {
             $this->probsStyle = $trimmed;
             $this->lettersCase = $trimmedLetterCase;
-            $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
+
+            if (!$this->nameIsExplicit) {
+                $this->setName(CaseConverter::convert($this->getName(), $trimmed, $trimmedLetterCase));
+            }
         }
         $val = $this->getValue();
 
