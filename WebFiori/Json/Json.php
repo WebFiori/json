@@ -73,6 +73,7 @@ class Json {
     private $attrNameStyle;
     private $formatted;
     private $propsArr;
+    private $typeMap = [];
 
     private static $defaultStyle = null;
     private static $defaultCase = null;
@@ -199,6 +200,30 @@ class Json {
             if ($val->getName() == $keyTrimmed) {
                 $retVal = $val->getValue();
                 break;
+            }
+        }
+
+        if ($retVal !== null && isset($this->typeMap[$key])) {
+            $mapping = $this->typeMap[$key];
+
+            if (is_array($mapping) && count($mapping) === 1) {
+                // Array of typed objects
+                $className = $mapping[0];
+
+                if (is_array($retVal)) {
+                    $typed = [];
+
+                    foreach ($retVal as $item) {
+                        if ($item instanceof Json) {
+                            $typed[] = JsonDeserializer::deserialize($item, $className);
+                        } else {
+                            $typed[] = $item;
+                        }
+                    }
+                    $retVal = $typed;
+                }
+            } else if (is_string($mapping) && $retVal instanceof Json) {
+                $retVal = JsonDeserializer::deserialize($retVal, $mapping);
             }
         }
 
@@ -510,6 +535,21 @@ class Json {
         throw  new JsonException(json_last_error_msg(), json_last_error());
     }
     /**
+     * Decodes a JSON string and deserializes it into an instance of the given class.
+     *
+     * @param string $jsonStr A valid JSON string.
+     * @param string $className The fully qualified class name to hydrate.
+     *
+     * @return object An instance of the given class populated with JSON data.
+     *
+     * @throws JsonException If JSON is invalid or the class cannot be hydrated.
+     */
+    public static function decodeAs(string $jsonStr, string $className): object {
+        $json = self::decode($jsonStr);
+
+        return JsonDeserializer::deserialize($json, $className);
+    }
+    /**
      * Escape JSON special characters from string.
      * If the given string is null,the method will return empty string.
      * 
@@ -733,6 +773,18 @@ class Json {
                 $prop->setStyle($style, $trimmedCase);
             }
         }
+    }
+    /**
+     * Sets a type map for typed deserialization when using get().
+     *
+     * Keys are JSON property names, values are either a class name string
+     * or a single-element array containing a class name (for arrays of that type).
+     *
+     * @param array $map The type map. Example:
+     * ['customer' => User::class, 'items' => [LineItem::class]]
+     */
+    public function setTypeMap(array $map) {
+        $this->typeMap = $map;
     }
     /**
      * Attempt to write the generated JSON to a .json file.
