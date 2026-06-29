@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.0.1](https://github.com/WebFiori/json/compare/v5.0.0...v5.0.1) (2026-06-29)
+
+
+### Features
+
+* **Json:** add toArray() method for direct array conversion ([cb0c6d3](https://github.com/WebFiori/json/commit/cb0c6d30d015b5d9870ed1c822ba6e77bb853062)), closes [#75](https://github.com/WebFiori/json/issues/75)
+
+
+### Miscellaneous Chores
+
+* **deps:** bump friendsofphp/php-cs-fixer from 3.95.4 to 3.95.11 ([34806bc](https://github.com/WebFiori/json/commit/34806bca4a88ea9c2057880bd24f6afb12e19853))
+* **deps:** bump friendsofphp/php-cs-fixer from 3.95.4 to 3.95.11 ([f9d476f](https://github.com/WebFiori/json/commit/f9d476f334b77e3585da8b188b7bcca46a75b9df))
+* Merge pull request [#77](https://github.com/WebFiori/json/issues/77) from WebFiori/feat/75-to-array ([e5d5feb](https://github.com/WebFiori/json/commit/e5d5febe1a1eab47fa4261ad648c72b6bfecd852))
+* Merge pull request [#78](https://github.com/WebFiori/json/issues/78) from WebFiori/dev ([15be517](https://github.com/WebFiori/json/commit/15be517f1941895da7a010c72ae2dbc46a16600b))
+
 ## [5.0.0](https://github.com/WebFiori/json/compare/v4.0.2...v5.0.0) (2026-06-10)
 
 
