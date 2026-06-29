@@ -1655,4 +1655,130 @@ class JsonTest extends TestCase {
         $this->assertEquals(1, $decoded['items'][0]['id']);
         $this->assertEquals('foo', $decoded['items'][0]['name']);
     }
+    /**
+     * @test
+     */
+    public function testToArrayEmpty() {
+        $json = new Json();
+        $this->assertEquals([], $json->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayScalars() {
+        $json = new Json([
+            'name' => 'Ibrahim',
+            'age' => 30,
+            'score' => 99.5,
+            'active' => true,
+            'deleted' => false,
+        ]);
+        $json->addNull('nickname');
+        $expected = [
+            'name' => 'Ibrahim',
+            'age' => 30,
+            'score' => 99.5,
+            'active' => true,
+            'deleted' => false,
+            'nickname' => null,
+        ];
+        $this->assertEquals($expected, $json->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayNestedJson() {
+        $inner = new Json(['x' => 1, 'y' => 2]);
+        $outer = new Json();
+        $outer->add('point', $inner);
+        $expected = [
+            'point' => ['x' => 1, 'y' => 2],
+        ];
+        $this->assertEquals($expected, $outer->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayWithIndexedArray() {
+        $json = new Json();
+        $json->add('colors', ['red', 'green', 'blue']);
+        $expected = [
+            'colors' => ['red', 'green', 'blue'],
+        ];
+        $this->assertEquals($expected, $json->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayWithObject() {
+        Json::resetDefaults();
+        $obj = new Obj0('hello', 'world', 42, null, true);
+        $json = new Json();
+        $json->add('obj', $obj);
+        $result = $json->toArray();
+        $expected = json_decode($json->toJSONString(), true);
+        $this->assertEquals($expected, $result);
+    }
+    /**
+     * @test
+     */
+    public function testToArrayWithJsonI() {
+        Json::resetDefaults();
+        $obj = new Obj1('val0', 'val1', 'val2', 'val3', 'val4');
+        $json = new Json();
+        $json->add('obj', $obj);
+        $result = $json->toArray();
+        $expected = json_decode($json->toJSONString(), true);
+        $this->assertEquals($expected, $result);
+    }
+    /**
+     * @test
+     */
+    public function testToArrayDeeplyNested() {
+        Json::resetDefaults();
+        $level2 = new Json(['deep' => 'value'], 'none');
+        $level1 = new Json([], 'none');
+        $level1->add('level2', $level2);
+        $root = new Json([], 'none');
+        $root->add('level1', $level1);
+        $expected = [
+            'level1' => [
+                'level2' => [
+                    'deep' => 'value',
+                ],
+            ],
+        ];
+        $this->assertEquals($expected, $root->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayMatchesJsonDecode() {
+        $json = new Json([
+            'name' => 'WebFiori',
+            'version' => 3,
+            'stable' => true,
+            'features' => ['routing', 'cli', 'database'],
+        ]);
+        $inner = new Json(['key' => 'val']);
+        $json->add('meta', $inner);
+        $fromDecode = json_decode($json->toJSONString(), true);
+        $this->assertEquals($fromDecode, $json->toArray());
+    }
+    /**
+     * @test
+     */
+    public function testToArrayWithNestedArrayOfJsonObjects() {
+        $item1 = new Json(['id' => 1, 'name' => 'first']);
+        $item2 = new Json(['id' => 2, 'name' => 'second']);
+        $json = new Json();
+        $json->add('items', [$item1, $item2]);
+        $expected = [
+            'items' => [
+                ['id' => 1, 'name' => 'first'],
+                ['id' => 2, 'name' => 'second'],
+            ],
+        ];
+        $this->assertEquals($expected, $json->toArray());
+    }
 }

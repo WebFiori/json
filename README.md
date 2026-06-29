@@ -34,6 +34,7 @@ A PHP library for creating and parsing JSON and JSONx strings. Supports all PHP 
   - [Decoding JSON](#decoding-json)
   - [Typed Deserialization](#typed-deserialization)
   - [Saving to File](#saving-to-file)
+  - [Converting to Array](#converting-to-array)
   - [JSONx](#jsonx)
 - [Error Handling](#error-handling)
 - [API Reference](#api-reference)
@@ -300,6 +301,35 @@ $json->toJsonFile('data', '/path/to/directory', true);
 // Creates /path/to/directory/data.json
 ```
 
+### Converting to Array
+
+The `toArray()` method converts a `Json` object to a plain PHP associative array without the overhead of encoding to a JSON string and decoding it back:
+
+```php
+$json = new Json([
+    'name' => 'Ibrahim',
+    'age' => 30,
+    'active' => true,
+]);
+
+$address = new Json(['city' => 'Riyadh', 'country' => 'SA']);
+$json->add('address', $address);
+
+$array = $json->toArray();
+// Result:
+// [
+//     'name' => 'Ibrahim',
+//     'age' => 30,
+//     'active' => true,
+//     'address' => [
+//         'city' => 'Riyadh',
+//         'country' => 'SA',
+//     ],
+// ]
+```
+
+This is useful when passing structured data to functions expecting arrays, PHPUnit assertions, or merging with other arrays. See [`examples/11-to-array.php`](examples/11-to-array.php) for more examples.
+
 ### JSONx
 
 [JSONx](https://www.ibm.com/docs/en/datapower-gateways/10.0.1?topic=20-jsonx) is an IBM standard that represents JSON as XML:
@@ -376,6 +406,7 @@ try {
 | `setTypeMap(array $map): void` | Set type map for typed deserialization via get() |
 | `toJSONString(): string` | Get JSON string |
 | `toJSONxString(): string` | Get JSONx string |
+| `toArray(): array` | Get plain PHP associative array |
 | `toJsonFile(string $fileName, string $path, bool $override = false): void` | Save to file |
 | `Json::decode(string $jsonStr): Json` | Decode a JSON string |
 | `Json::decodeAs(string $jsonStr, string $className): object` | Decode and hydrate a typed object |
