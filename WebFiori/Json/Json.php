@@ -855,6 +855,55 @@ class Json {
     public function toJSONxString() {
         return JsonConverter::toJsonXString($this);
     }
+    /**
+     * Converts the JSON object to a plain PHP associative array.
+     * 
+     * This method recursively converts all properties to their plain PHP
+     * equivalents without going through JSON string encoding/decoding.
+     * Nested Json objects become nested associative arrays. Arrays are
+     * preserved with their elements recursively converted.
+     * 
+     * @return array An associative array representation of the JSON object.
+     */
+    public function toArray(): array {
+        $result = [];
+
+        foreach ($this->getProperties() as $prop) {
+            $result[$prop->getName()] = self::valueToPlain($prop->getValue());
+        }
+
+        return $result;
+    }
+    /**
+     * Converts a property value to its plain PHP equivalent.
+     * 
+     * @param mixed $value The value to convert.
+     * 
+     * @return mixed The plain PHP value.
+     */
+    private static function valueToPlain($value) {
+        if ($value instanceof Json) {
+            return $value->toArray();
+        }
+
+        if (is_array($value)) {
+            $result = [];
+
+            foreach ($value as $key => $item) {
+                $result[$key] = self::valueToPlain($item);
+            }
+
+            return $result;
+        }
+
+        if (is_object($value)) {
+            $asJson = JsonConverter::objectToJson($value);
+
+            return $asJson->toArray();
+        }
+
+        return $value;
+    }
     private static function checkArray($subVal, &$parentArr) {
         $isIndexed = self::isIndexedArr($subVal);
 
