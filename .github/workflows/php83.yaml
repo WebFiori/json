@@ -38,6 +38,6 @@ jobs:
   release-prod:
     name: Prepare Production Release Branch / Publish Release
     needs: [code-coverage, code-quality]
-    uses: WebFiori/workflows/.github/workflows/release-php.yaml@v1.2.5
+    uses: WebFiori/workflows/.github/workflows/release-php.yaml@v1.2.7
     with:
       branch: 'main'
