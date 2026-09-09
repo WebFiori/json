@@ -31,7 +31,7 @@ jobs:
   code-quality:
     name: Code Quality
     needs: test
-    uses: WebFiori/workflows/.github/workflows/quality-sonarcloud.yaml@v1.2.5
+    uses: WebFiori/workflows/.github/workflows/quality-sonarcloud.yaml@v1.2.7
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           
